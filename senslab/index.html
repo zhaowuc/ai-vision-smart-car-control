@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal · 灵敏度实验室</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH</small><h1>SensLab Personal</h1><p id="status">正在载入并校验实验室程序。</p><div class="bar"></div><p>无需账号。测试记录保存在当前浏览器；请定期导出备份，不填写隐私信息。正式测试请使用桌面 Chrome 或 Edge。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="https://github.com/zhaowuc/ai-vision-smart-car-control/tree/senslab-personal-20261017/senslab" target="_blank" rel="noopener noreferrer">GitHub 备份与离线恢复说明 ↗</a></p><noscript>需要启用 JavaScript 才能执行测试。</noscript></main><script>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal · 灵敏度实验室</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH</small><h1>SensLab Personal</h1><p id="status">正在载入并校验 v1.0.1 教程版。</p><div class="bar"></div><p>无需账号。测试记录保存在当前浏览器；请定期导出备份，不填写隐私信息。正式测试请使用桌面 Chrome 或 Edge。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="https://github.com/zhaowuc/ai-vision-smart-car-control/tree/senslab-personal-20261017/senslab" target="_blank" rel="noopener noreferrer">GitHub 备份与离线恢复说明 ↗</a></p><noscript>需要启用 JavaScript 才能执行测试。</noscript></main><script>
 (async()=>{
   const expected='052589b7c129e767245e6849d12f18345b21b6eb94f3279836f304f6aa75e6c2';
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),30000);
   try{
-    if(!window.DecompressionStream||!crypto.subtle)throw new Error('浏览器缺少所需的安全解压或校验功能。请使用 HTTPS 地址和近期桌面 Chrome/Edge，或使用交付的完整离线 HTML。');
+    if(!window.DecompressionStream||!crypto.subtle)throw new Error('浏览器缺少所需的安全解压或校验功能。请使用 HTTPS 地址和近期桌面Chrome/Edge，或使用交付的完整离线 HTML。');
     const chunks=await Promise.all(Array.from({length:8},async(_,i)=>{
       const name='app-'+String(i+1).padStart(2,'0')+'.bin';
       const r=await fetch(new URL(name,location.href),{signal:controller.signal,credentials:'omit'});
@@ -18,7 +18,17 @@
     const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',htmlBytes));
     const hash=Array.from(digest,x=>x.toString(16).padStart(2,'0')).join('');
     if(hash!==expected)throw new Error('文件完整性校验失败，程序未执行。请重新载入或使用完整离线版。');
-    const html=new TextDecoder('utf-8',{fatal:true}).decode(htmlBytes);
+    let html=new TextDecoder('utf-8',{fatal:true}).decode(htmlBytes);
+    const addonResponse=await fetch(new URL('ux.js',location.href),{signal:controller.signal,credentials:'omit'});
+    if(!addonResponse.ok)throw new Error('教程组件载入失败：HTTP '+addonResponse.status);
+    const addonBytes=await addonResponse.arrayBuffer();
+    const addonDigest=new Uint8Array(await crypto.subtle.digest('SHA-256',addonBytes));
+    const addonHash=Array.from(addonDigest,x=>x.toString(16).padStart(2,'0')).join('');
+    if(addonHash!=='f450c5cfbff1a10ac78f5f0dc839095bde60bbd777245272648eb958a69fe849')throw new Error('教程组件完整性校验失败，请重新载入。');
+    const addon=new TextDecoder('utf-8',{fatal:true}).decode(addonBytes);
+    if(addon.toLowerCase().includes('<'+'/script'))throw new Error('教程组件包含不安全的脚本结束标记。');
+    if(!html.includes('<script>'))throw new Error('程序入口不匹配。');
+    html=html.replace('<script>','<script>document.addEventListener("DOMContentLoaded",function(){\n'+addon+'\n},{once:true});</scr'+'ipt><script>');
     clearTimeout(timeout);document.open();document.write(html);document.close();
   }catch(e){
     clearTimeout(timeout);document.getElementById('status').textContent='在线程序未能完成载入。';
