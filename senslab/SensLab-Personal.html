@@ -1,0 +1,1089 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="个人FPS灵敏度实验室：实测鼠标输入、多任务随机对照、单次灵敏度比较与跨游戏cm/360换算。"><title>SensLab Personal · 找到你的控制区间</title><style>
+:root{color-scheme:dark;--bg:#0b0e13;--surface:#12171e;--surface2:#171e27;--line:#27303c;--text:#eef2f7;--muted:#9ca9ba;--accent:#c3f17c;--cyan:#82cddb;--warn:#f4c58a;--bad:#fc9c9c;--radius:18px;font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-size:14px;line-height:1.65}button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}a{color:var(--cyan);text-underline-offset:4px}button{color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 17px;transition:background .16s,transform .16s}button:hover:not(:disabled){background:#253141}button.primary{background:var(--accent);color:#16210c;border-color:var(--accent);font-weight:650}button.primary:hover:not(:disabled){background:#d4ff99}.ghost{background:transparent}.danger{color:var(--bad)}h1,h2,h3,p{margin:0}h1{font-size:42px;letter-spacing:-1.4px;line-height:1.25;font-weight:630}h2{font-size:23px;letter-spacing:-.5px}h3{font-size:16px;font-weight:620}p{color:var(--muted)}.sub{margin:12px 0 24px;max-width:830px}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:2.1px;font-weight:650;text-transform:uppercase}.app{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}.rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;gap:32px;background:#0e1218}.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:750;letter-spacing:2px;padding:0 8px}.brandmark{width:28px;height:28px;border:1px solid var(--accent);border-radius:50%;position:relative}.brandmark:before{content:'';position:absolute;inset:7px;border:1px solid var(--accent);border-radius:50%}.brandmark:after{content:'';position:absolute;inset:12px;background:var(--accent);border-radius:50%}.brand small{display:block;font-size:9px;letter-spacing:2px;color:var(--muted);font-weight:450}.nav{display:grid;gap:7px}.nav button{text-align:left;padding:13px 14px;border-color:transparent;background:transparent;color:var(--muted)}.nav button span{font-size:12px;color:#718093;display:inline-block;min-width:30px}.nav button.active{background:#202c22;color:var(--accent)}.nav button.active span{color:var(--accent)}.railfoot{margin-top:auto;padding:12px 8px;font-size:11px;color:var(--muted)}.railfoot b{color:var(--text);font-weight:500}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:7px}.main{min-width:0;padding:28px 46px 54px;max-width:1560px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--line);padding-bottom:21px;margin-bottom:35px;color:var(--muted);font-size:12px}.topbar .tools{display:flex;align-items:center;gap:12px}.topbar button{padding:6px 11px;font-size:12px}.view{display:none;animation:enter .2s ease-out}.view.active{display:block}@keyframes enter{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:center;margin:25px 0 28px}.hero h1{font-size:clamp(36px,4vw,58px);margin:14px 0 20px}.hero h1 em{font-style:normal;color:var(--accent)}.hero p{max-width:470px;line-height:1.9}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.hero .row{margin-top:28px}.scene{aspect-ratio:1.5;border:1px solid var(--line);border-radius:var(--radius);position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#203229 0,transparent 65%),#10161e}.scene canvas{width:100%;height:100%;display:block}.scene .caption{position:absolute;left:18px;bottom:14px;font-size:11px;color:var(--muted)}.chip{border:1px solid var(--line);border-radius:99px;padding:5px 10px;color:var(--muted);font-size:11px;white-space:nowrap}.scene .chip{position:absolute;top:16px;left:16px;background:#0c111acc}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:20px 0}.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px}.card.flat{background:transparent}.metric{font-size:32px;font-weight:560;letter-spacing:-1px;margin:7px 0 2px;font-variant-numeric:tabular-nums}.metric small{font-size:12px;color:var(--muted);letter-spacing:0;font-weight:400}.muted{color:var(--muted)}.tiny{font-size:12px}.accent{color:var(--accent)}.warn{color:var(--warn)}.bad{color:var(--bad)}.split{display:grid;grid-template-columns:1.1fr 1fr;gap:20px}.space{margin-top:24px}.notice{padding:15px 18px;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:10px;background:#121c23;color:var(--muted);margin:18px 0;font-size:13px}.notice.warning{border-left-color:var(--warn);background:#211e18}.step{display:flex;gap:18px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--line)}.step:last-child{border:0}.step .num{font-family:monospace;color:var(--accent);font-size:18px;width:27px}.step p{margin-top:4px;font-size:13px}.step button{margin-left:auto;flex-shrink:0;font-size:12px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}.formgrid label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:12px}.full{grid-column:1/-1}input,select,textarea{width:100%;background:#0b1016;color:var(--text);padding:11px 12px;border:1px solid #354252;border-radius:9px;min-width:0}input[type=checkbox]{width:auto;accent-color:var(--accent)}textarea{resize:vertical;min-height:98px;line-height:1.7}.check{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);margin:13px 0}.check input{margin-top:6px}.divider{border-top:1px solid var(--line);margin:24px 0}.tablewrap{overflow:auto;margin:17px 0}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:12px}th{text-align:left;color:var(--muted);font-weight:500;padding:12px;border-bottom:1px solid var(--line)}td{padding:13px 12px;border-bottom:1px solid #222b35;font-variant-numeric:tabular-nums}td.wrap{white-space:normal;min-width:150px}tr.good{background:#1b271d}.empty{padding:44px 20px;text-align:center;border:1px dashed #35404c;border-radius:16px;color:var(--muted)}.empty h3{color:var(--text);margin:12px}.progress{height:5px;background:#25303c;border-radius:5px;overflow:hidden;margin:16px 0}.progress>i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}.taskgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.task{padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px}.task .icon{font-size:23px;color:var(--cyan);margin-bottom:10px}.task p{font-size:12px;margin-top:6px}.pill{display:inline-block;background:#202c22;color:var(--accent);font-size:11px;padding:4px 9px;border-radius:6px}.stage{position:fixed;inset:0;background:#0b1119;z-index:100;display:none;touch-action:none;user-select:none}.stage.open{display:block}.stage canvas{display:block;width:100%;height:100%}.hud{position:absolute;top:22px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.hud b{font-size:18px;display:block}.hud small{color:var(--muted)}.stagehelp{position:absolute;bottom:25px;left:0;right:0;text-align:center;color:var(--muted);font-size:12px;pointer-events:none}.veil{position:absolute;inset:0;display:grid;place-items:center;background:#070c13d9;padding:20px;backdrop-filter:blur(5px)}.modal{background:#141c26;border:1px solid #354150;border-radius:22px;padding:32px;max-width:560px;width:100%;max-height:95vh;overflow:auto}.modal h2{margin-bottom:12px}.modal p{font-size:13px;margin-bottom:14px}.big{font-size:54px;letter-spacing:-2px;color:var(--accent);line-height:1.2;margin:16px 0;font-variant-numeric:tabular-nums}.statusline{font-size:12px;color:var(--muted);margin:14px 0}.toast{position:fixed;right:24px;bottom:24px;z-index:300;max-width:480px;padding:15px 21px;background:#25332a;border:1px solid #57714a;border-radius:13px;box-shadow:0 10px 30px #0008;display:none}.storagewarn{display:none;background:#5c2424;color:white;padding:12px;position:sticky;top:0;z-index:90}.reportchart{width:100%;height:auto;min-height:160px;display:block}.ref{padding:19px 0;border-bottom:1px solid var(--line)}.ref h3{font-size:14px}.ref p{font-size:12px;margin:8px 0}.ref small{color:var(--muted)}details{border-top:1px solid var(--line);padding:16px 0}summary{cursor:pointer;color:var(--text);font-weight:550}details p{margin:12px 0;font-size:13px}code{font-family:ui-monospace,Consolas,monospace;color:var(--cyan);font-size:.95em}.hide{display:none!important}.footer{color:#8190a0;font-size:11px;border-top:1px solid var(--line);margin-top:38px;padding-top:17px}.tick{font-family:monospace;color:var(--accent)}.weights{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.weights input{padding:8px}.inline-error{color:var(--bad);min-height:22px;font-size:13px;margin-top:12px}.compact{padding:16px}.logcard{padding:14px 0;border-bottom:1px solid var(--line)}.logcard p{font-size:12px}.board{margin-top:18px;display:grid;gap:12px}.legend{display:flex;gap:16px;font-size:11px;color:var(--muted);flex-wrap:wrap}.kbd{font-family:monospace;background:#263344;padding:2px 6px;border-radius:4px;color:var(--text)}
+@media(min-width:1550px){.main{padding-left:66px;padding-right:66px}}@media(max-width:1050px){.app{grid-template-columns:180px minmax(0,1fr)}.main{padding:24px}.hero{grid-template-columns:1fr}.hero .scene{display:none}.split{grid-template-columns:1fr}.taskgrid{grid-template-columns:1fr 1fr}.rail{padding:22px 10px}.brand{font-size:17px}}@media(max-width:700px){.app{display:block}.rail{position:static;width:100%;height:auto;padding:18px;gap:14px}.railfoot{display:none}.nav{display:flex;overflow:auto;gap:5px}.nav button{white-space:nowrap;padding:8px}.nav button span{display:none}.main{padding:20px 18px}.topbar{margin-bottom:24px}.topbar .tools span{display:none}.cards{grid-template-columns:1fr}.card{padding:20px}.formgrid{grid-template-columns:1fr}.hero h1{font-size:38px}.hero{margin:15px 0}.step button{display:none}.metric{font-size:28px}.weights{grid-template-columns:1fr 1fr}.taskgrid{grid-template-columns:1fr 1fr}h1{font-size:32px}.hud{left:15px;right:15px}.modal{padding:24px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.rail,.topbar,.footer,button,.stage,.toast{display:none!important}.app{display:block}.main{padding:0;max-width:none}.view{display:none!important}#results{display:block!important}body{background:white;color:black}.card,.notice{background:white;color:black;border-color:#aaa}.muted,p,th{color:#333}tr.good{background:#eee}.cards{grid-template-columns:repeat(3,1fr)}}
+
+</style></head><body>
+<div id="storageWarning" class="storagewarn">本次数据未能写入浏览器。请立即导出备份，避免关闭页面后丢失。</div>
+<div class="app"><aside class="rail"><div class="brand"><i class="brandmark"></i><div>SENSLAB<small>PERSONAL AIM LAB</small></div></div><nav class="nav" aria-label="主要导航">
+<button data-view="home" class="active"><span>01</span>实验总览</button><button data-view="setup"><span>02</span>设备与校准</button><button data-view="lab"><span>03</span>瞄准实验</button><button data-view="results"><span>04</span>结果与证据</button><button data-view="convert"><span>05</span>跨游戏换算</button><button data-view="field"><span>06</span>游戏内复核</button><button data-view="methods"><span>07</span>方法与文献</button></nav><div class="railfoot"><span class="dot"></span><b>数据仅保存在此浏览器</b><br>无登录 · 无遥测 · 可离线<br>Personal edition / v1.1.0</div></aside>
+<main class="main"><header class="topbar"><div>WORKSPACE <span class="muted">/</span> 个人灵敏度实验</div><div class="tools"><span id="dpiBadge">1600 DPI</span><button id="fullscreenBtn" title="改变窗口后需重新校准">全屏</button><button id="exportBtn">导出备份 ↗</button><button class="danger" data-restart-all title="清除旧测试记录，从第1条校准重新开始">全部重测</button></div></header><div id="hostingNote" class="notice warning hide"></div>
+<section id="home" class="view active"><div class="eyebrow">LESS GUESSWORK. MORE CONTROL.</div><div class="hero"><div><h1>把手感，<br>变成<em>证据。</em></h1><p>保留低敏的精度，找回转向的从容。<br>用你自己的重复测量，找到兼顾微调、切换、跟枪和转身的可用范围。</p><div class="row"><button class="primary" data-go="setup">开始设备校准 <span aria-hidden="true">→</span></button><button class="ghost" data-go="methods">了解实验方法</button></div></div><div class="scene"><canvas id="preview" aria-label="第一人称瞄准任务示意"></canvas><span class="chip">FIRST-PERSON · ANGULAR TARGETS</span><span class="caption">任务场景示意 · 不代表你的成绩</span></div></div>
+<div class="cards"><div class="card"><p class="tiny">01 / 实际物理灵敏度</p><div class="metric" id="homeBase">— <small>cm / 360°</small></div><p class="tiny" id="homeBaseNote">DPI不是完整的灵敏度，先测量转动距离。</p></div><div class="card"><p class="tiny">02 / 当前实验进度</p><div class="metric" id="homeDays">0 <small>有效测试日</small></div><p class="tiny" id="homePhase">尚未创建实验</p></div><div class="card"><p class="tiny">03 / 个人推荐</p><div class="metric" style="font-size:26px" id="homeRecommendation">等待实测</div><p class="tiny">不以一次高分、职业选手设置或DPI推算。</p></div></div>
+<div class="card space"><div class="row" style="justify-content:space-between"><h3>从测量到长期使用</h3><span class="chip">N-OF-1 · 个人内对照</span></div><div class="step"><div class="num">01</div><div><h3>先确认输入真的一致</h3><p>尺子校准浏览器输入，比较慢快、左右及纵向移动；检测单位偏差和疑似加速。</p></div><button data-go="setup">去校准</button></div><div class="step"><div class="num">02</div><div><h3>探索 → 锁定候选 → 独立复测</h3><p>隐藏条件数值，轮换测试顺序。探索至少3天、建议5天；锁定后用本次会话内复测确认。</p></div><button data-go="lab">去实验</button></div><div class="step"><div class="num">03</div><div><h3>回到三角洲，再决定是否更换</h3><p>分别记录烽火地带和全面战场。跨游戏保留cm/360；ADS与不同FOV另做匹配和验证。</p></div><button data-go="field">去复核</button></div></div><div class="notice">这是基于研究原则的个人实验工具，不是经过独立验证的测量量表。它寻找当前设备与任务下的稳健候选，不承诺终身、所有游戏中唯一最优的数值。</div></section>
+<section id="setup" class="view"><div class="eyebrow">01 / MEASURE BEFORE YOU OPTIMIZE</div><h1 class="space">设备与输入校准</h1><p class="sub">先用实际厘米把浏览器和桌面连接起来。不要把movementX直接当作硬件DPI计数。</p>
+<div class="split"><div class="card"><h3>你的测试环境</h3><form id="settingsForm"><div class="formgrid"><label>鼠标DPI<input id="dpi" type="number" min="100" max="64000" value="1600" required></label><label>当前实测cm / 360°<input id="baseCm" type="number" min="8" max="160" step="0.001" placeholder="例如：实测后填写" required></label><label>实验视野数值<input id="fov" type="number" min="30" max="150" value="100" required></label><label>FOV标度<select id="fovType"><option value="horizontal">实际水平FOV</option><option value="vertical">实际垂直FOV</option><option value="h43">4:3基准水平FOV</option></select></label><label>单次舒适横向行程（cm）<input id="swipe" type="number" min="5" max="100" step="0.1" placeholder="从常用位置单侧可移动距离" required></label><label>环境备注（选填）<input id="environment" maxlength="180" placeholder="鼠标、鼠标垫、刷新率、坐姿"></label></div><p class="tiny">100°是本工具的初始实验值，不是三角洲游戏FOV的自动识别值。更换显示器、缩放、姿势或FOV，应开启新实验。</p><label class="check"><input id="swipeEstimated" type="checkbox" checked>舒适行程为估计值，仅作操作范围提示，不参与评分与候选筛除。</label><p class="tiny">缺失字段可参考历史：1600 DPI；75.2 cm/360（180°中位数37.6cm×2）；舒适行程约20cm。已有保存值优先。自然握持与弧线测量可能带来不确定性，cm/360不表示高精度标准值。</p><label class="check"><input id="baseVerified" type="checkbox" required>我已在游戏中用尺子重复确认当前cm/360，且记录的是腰射而非开镜状态。</label>
+<details><summary>尚不知道cm/360？测3次再填入</summary><p>固定准星对准清晰参照物；平移鼠标完成同一转角，测量传感器对应的桌面位移。不要把回程、抬鼠标或绕弧也算进去。对180°，必须确认确切反方向；无可靠参照时测360°。</p><div class="formgrid"><label>每次转角<select id="measureAngle"><option value="360">360°</option><option value="180">180°</option><option value="90">90°（需精确角度参照）</option></select></label><label>3次距离，用逗号分隔<input id="measureDistances" placeholder="例如 22.1, 22.3, 22.2"></label></div><button type="button" id="useMeasurement">计算中位数并填入</button><p id="measureResult" class="space tiny"></p></details>
+<details><summary>预先锁定分析规则</summary><p>下列权重和阈值是可解释的工程选择，不是论文给出的最优参数。创建实验后冻结，避免看到成绩再调整规则。</p><div class="weights"><label>微调 %<input id="w0" type="number" min="1" max="97" value="25"></label><label>切换 %<input id="w1" type="number" min="1" max="97" value="25"></label><label>跟枪 %<input id="w2" type="number" min="1" max="97" value="25"></label><label>转向 %<input id="w3" type="number" min="1" max="97" value="25"></label></div><div class="formgrid"><label>实用差异阈值 %<input id="margin" type="number" min="1" max="10" value="3"></label><label>单项最大可接受下降 %<input id="taskDrop" type="number" min="1" max="30" value="10"></label><label>微调命中率最大下降（百分点）<input id="accDrop" type="number" min="0" max="20" value="5"></label><label>最高可接受费力度（0–10）<input id="maxEffort" type="number" min="1" max="8" value="5"></label></div></details><div class="row space"><button class="primary" type="submit">保存环境设置</button><span id="settingsState" class="tiny muted"></span><button type="button" id="confirmDeviceUnchanged">仅备注改字：确认设备未变</button></div></form></div>
+<div><div class="card"><div class="row" style="justify-content:space-between"><h3>浏览器物理校准</h3><span class="pill" id="calBadge">待完成</span></div><p class="space tiny">准备尺子和两条相距10 cm的平行标记。测试采用原始输入请求，并实测输入单位/厘米，而不是假设浏览器使用硬件counts。</p><div class="formgrid"><label>标记间距（cm）<input id="calDistance" type="number" min="5" max="30" value="10" step="0.1"></label><label>所需采样<input value="横向8次 + 纵向4次" disabled></label></div><div id="calSummary" class="notice">完整12次：横向左右、慢快各重复两次；纵向上下、慢快各一次。移动期间不要旋转鼠标，按空格开始和结束。</div><div class="row"><button class="primary" id="calibrateBtn">开始尺子校准 →</button><button class="danger" data-restart-all>全部重测</button></div><p class="tiny space">全部重测会清除校准、草稿、实验成绩和游戏复核记录，保留设备设置与换算配置。</p><p class="tiny space">可固定窗口或全屏；同一比较轮保持窗口和FOV一致。单纯改变窗口不会清除物理校准，DPI、设备或输入路径改变则需核对。若请求原始输入不受支持，只能练习，不能生成正式结论。</p></div><div class="card space"><h3>输入质量，而非“感觉一致”</h3><div class="step"><div class="tick">✓</div><p>校准重复变异和快慢差异各≤5%，且快慢操作耗时比≥1.5。</p></div><div class="step"><div class="tick">✓</div><p>未校准、非原始输入、失焦或显著卡顿的轮次不进入正式分析。</p></div><div class="step"><div class="tick">✓</div><p>系统和驱动关闭加速；网页无法证明游戏端也使用同一输入路径，仍须回游戏测量。</p></div></div></div></div><div id="setupError" class="inline-error" role="status"></div></section>
+<section id="lab" class="view"><div id="singleLabRoot"></div><details id="legacyLab"><summary>高级：旧多日实验（原协议与历史记录）</summary><div class="eyebrow">02 / TEST YOUR CONTROL</div><h1 class="space">瞄准实验</h1><p class="sub">真正的第一人称转角任务。准星留在屏幕中心，鼠标转动视角，而不是二维光标点击。</p><div class="taskgrid"><div class="task"><div class="icon">⊙</div><h3>微调精度</h3><p>18个小目标<br>2°–7°角位移</p></div><div class="task"><div class="icon">⇄</div><h3>目标切换</h3><p>18个离散目标<br>15°–45°角位移</p></div><div class="task"><div class="icon">∿</div><h3>连续跟枪</h3><p>25秒连续运动<br>按实际时间加权</p></div><div class="task"><div class="icon">↶</div><h3>大角度转向</h3><p>12次获取目标<br>90° / 120° / 160°</p></div></div>
+<div class="split"><div class="card"><div class="row" style="justify-content:space-between"><h3 id="labTitle">建立你的第一轮实验</h3><span class="pill" id="phaseBadge">尚未开始</span></div><p class="space tiny" id="labSummary">以你的当前值为基准，比较0.64、0.8、1、1.25、1.5625倍cm/360。数值越小，灵敏度越高。</p><div class="progress"><i id="labProgress"></i></div><div id="labNext" class="statusline"></div><label class="check"><input type="checkbox" id="sessionCheck">我确认DPI、缩放、姿势和设备未变，当前无疼痛，并会尽力但不盲目抢速度。</label><div class="row space"><button class="primary" id="runBtn">创建并开始实验 →</button><button id="practiceBtn">不计分练习</button></div><div id="labError" class="inline-error"></div></div><div class="card"><h3>测试规则</h3><p class="space tiny">每个条件先做30秒不计分适应，再完成四项任务；任务之间至少休息20秒。记录费力度及抬鼠标次数后才完成该条件。</p><p class="space tiny">每个测试日重新生成目标序列，同一天的条件使用相同序列。条件以随机起序的拉丁轮换安排；满周期可平衡出现位置，不能完全消除学习和适应偏差。</p><p class="space tiny">一整轮完成前不展示条件数值和得分。手感本身可被识别，因此这是“数值遮蔽”，不是真正双盲。</p></div></div><div class="notice warning">此处筛选的是浏览器任务上的表现，不读取游戏数据、不模拟压枪/网络延迟，也不保证直接提升胜率。发生疼痛应停止测试，不要通过更换灵敏度硬撑。</div><div class="row space"><button id="archiveBtn" class="ghost">归档当前实验，开启新实验</button><span id="archiveCount" class="tiny muted"></span></div></details></section>
+<section id="results" class="view"><div id="singleResultsRoot"></div><details id="legacyResults"><summary>查看旧多日实验结果（不与单次实验合并）</summary><div class="eyebrow">03 / EVIDENCE, NOT A HIGH SCORE</div><h1 class="space">结果与证据</h1><p class="sub">只有完整会话进入分析；同一天的重复会话先合并。探索数据用于选候选，新的确认数据用于检查可重复性。</p><div class="row"><button id="showExplore">探索结果</button><button id="showConfirm">独立确认</button><button id="csvBtn">导出原始CSV</button><button id="printBtn">打印报告</button></div><div id="resultsBody" class="space"></div><div class="card space"><h3>如何读这些数字</h3><p class="space tiny">综合比值是四项指标相对当前基准的加权几何平均，1.00代表与基准相同；它不是瞄准能力的绝对分数。微调/切换/转向采用有效命中数÷总任务秒数（含失误和超时），跟枪采用落在目标内的时间比例。</p><p class="space tiny">误差线采用“按测试日配对重采样”的bootstrap区间，且对同时与基准比较的候选作Bonferroni调整。少于3日不显示区间；确认至少6个独立新测试日。区间覆盖0只表示尚未区分，不等于证明等效。</p><p class="space tiny">“近优候选”仅指通过守门条件且点估计距领先值不超过预设阈值的已测数值。不会把中间未测的所有数值都宣称为最优。</p></div></details></section>
+<section id="convert" class="view"><div class="eyebrow">04 / ONE PHYSICAL REFERENCE</div><h1 class="space">跨游戏换算</h1><p class="sub">以cm/360为共同参照。相同转角需要相同桌面距离，并不保证不同FOV下的视觉速度、ADS或游戏表现完全相同。</p><div class="card"><div class="formgrid"><label>目标物理灵敏度（cm / 360°）<input id="convertCm" type="number" min="1" max="1000" step="0.001" placeholder="填入已测值或采用报告候选"></label><label>目标DPI<input id="convertDpi" type="number" min="100" max="64000" value="1600"></label></div><div id="convertTable"></div><p class="tiny">预设仅用于腰射、默认yaw与线性灵敏度标度；任何游戏更新、倍率、加速或修改yaw都可能使其失效。三角洲同时给出工具开发者参考值与实测映射；与实测不符时以后者为准。未核实游戏不填造常数。</p></div>
+<div class="split space"><div class="card"><h3>任意游戏 / 三角洲：用实测建立映射</h3><p class="tiny space">在同一DPI、FOV和瞄准状态，选至少3个不同设置值，各重复测3次cm/360，填入各自中位数。范围应包围你的目标。程序在相邻点的角增益之间插值，不把非线性滑块强行当作乘法。</p><div class="formgrid"><label>配置名<input id="gameName" maxlength="60" placeholder="三角洲 · 腰射 / 红点 / 其他游戏"></label><label>测量时DPI<input id="mappingDpi" type="number" min="100" value="1600"></label><label class="full">每行：游戏内数值, 实测cm/360<textarea id="mappingSamples" placeholder="请填写自己的实测值；至少3行"></textarea></label></div><button id="saveMapping" class="primary">保存映射并换算</button><div id="mappingError" class="inline-error"></div><div id="customMaps"></div><details><summary>已知精确yaw？直接计算</summary><div class="formgrid"><label>yaw（°/count / sens）<input id="customYaw" type="number" min="0" step="any" placeholder="由游戏文档或本人实测确认"></label><label>换算结果<input id="yawResult" readonly placeholder="填写yaw后计算"></label></div><p><code>sens = 914.4 / (DPI × yaw × cm/360)</code></p></details></div>
+<div class="card"><h3>ADS / 视野匹配（独立于腰射）</h3><p class="tiny space">输入真正的水平FOV，不是未经换算的游戏菜单标度。默认匹配屏幕中心的微小位移；这是几何匹配，不是“最佳开镜系数”。</p><div class="formgrid"><label>腰射实际水平FOV<input id="hipFov" type="number" min="2" max="178" value="100"></label><label>ADS实际水平FOV<input id="adsFov" type="number" min="2" max="178" value="50"></label><label>匹配位置<select id="monitorPoint"><option value="0">中心微调（0%）</option><option value="0.5">中心到边缘的50%</option><option value="1">屏幕边缘（100%）</option></select></label><label>目标ADS cm / 360°<input id="adsResult" readonly></label></div><p class="tiny">随后给该倍率单独建立实测映射。不直接输出游戏ADS乘数，因为基础灵敏度、倍率和FOV缩放的组合由游戏决定。</p><div class="divider"></div><h3>最后一步：回游戏检验</h3><div class="formgrid"><label>应用换算后，实际测得cm / 360°<input id="verifyCm" type="number" min="1" step="0.001" placeholder="重复3次后填中位数"></label><label>物理距离误差<input id="verifyOutput" readonly></label></div><p class="tiny">误差≤3%只是本工具的工程验收线，仍需判断操作是否舒服。超出时补充实测点或微调并重测，不能仅相信小数位。</p></div></div></section>
+<section id="field" class="view"><div class="eyebrow">05 / VALIDATE WHERE YOU PLAY</div><h1 class="space">游戏内复核</h1><p class="sub">将腰射候选换算回游戏后，用同一装备和交战任务分别检验烽火地带、全面战场。记录有效观察，不以一局KD决定结论。</p><div class="split"><div class="card"><h3>新增一次固定时段记录</h3><form id="fieldForm"><div class="formgrid"><label>模式<select id="fieldMode"><option value="operations">三角洲 · 烽火地带</option><option value="warfare">三角洲 · 全面战场</option><option value="apex">Apex Legends</option><option value="valorant">无畏契约</option><option value="other">其他游戏</option></select></label><label>所用条件<select id="fieldCandidate" required></select></label><label>时长（分钟，至少10）<input id="fieldMinutes" type="number" min="10" max="240" value="20" required></label><label>费力度（0轻松–10极费力）<select id="fieldEffort" required></select></label><label>转向/跟枪受到行程限制（次数）<input id="fieldLimited" type="number" min="0" max="1000" required placeholder="如实记录"></label><label>远点过冲/微调困难（次数）<input id="fieldOvershoot" type="number" min="0" max="1000" required placeholder="如实记录"></label><label class="full">观察、装备与场景（选填）<textarea id="fieldNotes" maxlength="1500" placeholder="是否频繁抬鼠标；近战、中远距离；与前一条件相比；不要只填写KD"></textarea></label></div><label class="check"><input id="fieldPain" type="checkbox">本时段出现疼痛或明显不适（勾选后应停止测试）</label><button class="primary" type="submit">保存真实记录</button><div class="inline-error" id="fieldError"></div></form></div><div class="card"><h3>先约定比较方式</h3><p class="space tiny">初次使用新候选可先在靶场适应，再进入安全的正常对局。对每个候选，每种三角洲模式至少记录2个相同时长时段，分布在至少2天。交替采用AB / BA顺序；有三候选则用ABC / BCA / CAB。</p><p class="space tiny">尽量保持武器、倍率、场景类型、视野、操作姿势和休息程度一致。先看近战跟踪、远点微调、转向限制和费力度，再考虑是否长期保留。</p><div id="fieldCoverage" class="notice">尚无实验。请先完成设备校准并创建实验。</div><p class="tiny">这里是人工记录与覆盖检查，不是对游戏性能提升的自动因果验证。新增其他游戏时同样需要复核，不能从三角洲推断所有游戏都最优。</p></div></div><div id="fieldLog" class="card space"></div></section>
+<section id="methods" class="view"><div class="eyebrow">06 / OPEN METHODS</div><h1 class="space">方法透明，结论有边界。</h1><p class="sub">研究支持实验原则；任务参数、筛选阈值和决策规则由本工具设计。它们不冒充某篇论文已经验证过的“灵敏度最优算法”。</p>
+<div class="notice"><strong>当前默认协议：单次比较 v1。</strong>20分钟含会话内3轮复测，10分钟含2轮局部复测；粗筛不进入最终复测判断。只展示配对原始变化、范围和方向一致性，不输出95%区间或显著性。时间预算与质量门槛是工程选择。下方按日bootstrap说明只适用于“高级：旧多日实验”。</div><div class="split"><div class="card"><h3>我们实际测量什么</h3><div class="step"><div class="num">01</div><p>以尺子标定浏览器输入单位/厘米。角增益为<code>360 / (输入单位每厘米 × cm/360)</code>，横纵轴分别标定；目标与碰撞按球面夹角定义。</p></div><div class="step"><div class="num">02</div><p>同一人、同一设备、相同目标条件下比较多个灵敏度。控制顺序和多日波动，保留命中率、耗时、跟踪误差和主观费力度。</p></div><div class="step"><div class="num">03</div><p>探索后锁定最多3个条件（包括原基准），使用新数据进行6日确认。用按日配对bootstrap表示不确定性；不把几百次点击伪装成几百个独立样本。</p></div><div class="step"><div class="num">04</div><p>满足精度/单项表现/费力度守门线才考虑推荐。近优时偏好更接近原基准的值，避免为小幅噪声反复改设置。</p></div></div><div class="card"><h3>哪些结论不能推出</h3><p class="space tiny">Fitts定律有助于理解速度–精度权衡，但不能单独从它算出你的最佳DPI或cm/360。本网站不声称Fitts吞吐量就是全部FPS能力，也不把过冲次数直接变成升降灵敏度指令。</p><p class="space tiny">数值遮蔽无法消除手感识别，30秒适应不能消除长期熟练度差异。更换灵敏度的适应程度仍可能影响结果，所以需要多日复测和游戏内验证。</p><p class="space tiny">浏览器输入和显示存在事件合并、帧率及计时限制。这里的帧率不是鼠标回报率，记录时间也不是实验室级端到端延迟。原始输入请求成功仍不能替代物理校准。</p><p class="space tiny">未测试的灵敏度、其他显示设备、其他FOV与未来能力变化均在本次结论之外。领先点落在搜索边界时，应扩展范围，而不是宣称已找到全局最优。非边缘领先区域可先用约5%间隔另建细化探索，再进入新数据确认。</p><p class="space tiny">点按任务忽略目标生成后80ms（微调）/100ms（其他点按）内的点击，以防事件突发重复命中；这会限制极快反应测量，不用于判断个人反应能力。本文使用的5%、3%、6日、任务权重、目标尺寸和休息规则是预先声明的实用设计，不是普适生理阈值。相同转角映射不等于跨游戏画面手感完全相同。</p></div></div>
+<div class="card space"><h3>可追溯的研究与技术依据</h3><div class="ref"><h3>01 · Mouse Sensitivity in First-Person Targeting Tasks</h3><p>Boudaoud, Spjut & Kim · IEEE Transactions on Games 15(4), 493–506 · 2023 · DOI: 10.1109/TG.2023.3293692</p><p>支持第一人称转角/物理位移表述及速度–精度权衡；实验中较优范围不是对每个玩家、所有任务的终身保证。</p><a href="https://research.nvidia.com/publication/2023-07_mouse-sensitivity-first-person-targeting-tasks" target="_blank" rel="noopener">NVIDIA Research · 作者研究页 ↗</a></div>
+<div class="ref"><h3>02 · KovaaK’s aim trainer as a reliable metrics platform for assessing shooting proficiency in esports players: a pilot study</h3><p>Rogers et al. · Frontiers in Sports and Active Living · 2024 · DOI: 10.3389/fspor.2024.1309991</p><p>采用微调、较大范围甩枪、横移跟踪、掩体射击等重复测量；提醒区分可靠性、任务覆盖和实际游戏效度。本工具不是该研究的直接复刻。</p><a href="https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2024.1309991/full" target="_blank" rel="noopener">开放获取原文 ↗</a></div>
+<div class="ref"><h3>03 · Assessment of human expertise and movement kinematics in first-person shooter games</h3><p>Donovan et al. · Frontiers in Human Neuroscience · 2022 · DOI: 10.3389/fnhum.2022.979293</p><p>研究任务要求与运动学、速度–精度表现的关系；其合并任务表现不能被Fitts定律充分刻画。因此本工具不把单一理论公式当作万能筛选器。</p><a href="https://doi.org/10.3389/fnhum.2022.979293" target="_blank" rel="noopener">研究原文 ↗</a></div>
+<div class="ref"><h3>04 · Sensitivity Matcher / KovaaK’s</h3><p>作者关于yaw、360°匹配及未知游戏实测的说明。只借用转角映射原则，不在游戏中注入或自动操作。</p><a href="https://www.kovaak.com/sensitivity-matcher/" target="_blank" rel="noopener">开发者技术说明 ↗</a> · <a href="https://www.kovaaks.com/kovaaks/sens-converter/valorant" target="_blank" rel="noopener">官方换算器交叉复核 ↗</a></div>
+<div class="ref"><h3>05 · Pointer Lock API / MDN</h3><p>浏览器相对移动、unadjustedMovement及支持差异。校准通过物理测量规避仅靠DPI推定movementX单位的问题。</p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API" target="_blank" rel="noopener">API文档 ↗</a></div>
+<div class="ref"><h3>06 · How to Configure and Convert Your Sensitivity in Aimlabs</h3><p>Aimlabs · 2026 · 关于cm/360、手动输入DPI、游戏配置、FOV和ADS分离的官方说明。</p><a href="https://aimlabs.com/articles/aimlabs/how-to-configure-and-convert-your-sensitivity-in-aimlabs/" target="_blank" rel="noopener">Aimlabs官方说明 ↗</a></div></div>
+<div class="card space"><h3>隐私、备份与复现</h3><p class="space tiny">测试、映射和统计在浏览器本地完成；无账户、分析SDK、广告或后台上传。在线托管服务仍可能记录常规访问日志。共享托管域名不是独立安全存储边界，勿记录隐私内容。隐私窗口、清理站点数据或换域名会让本地数据不可用，请定期导出JSON。导入会替换工作区，先备份当前数据。</p><div class="row space"><button id="importBtn">导入JSON备份</button><button id="sourceBtn">导出可离线网页</button><button id="resetBtn" class="ghost danger">清空本机工作区</button><input id="importFile" type="file" accept=".json,application/json" class="hide"></div><p class="space tiny">软件首次交付日期：2026-10-17。源码、统计规则和测试均可随项目保存；工具质量检查不能替代用户实际的鼠标测量。</p></div></section>
+<footer class="footer">SENSLAB PERSONAL · Measure → Compare → Replicate → Transfer &nbsp; / &nbsp; 不预设你的答案。所有正式结果来自你的实测。</footer></main></div>
+<div id="stage" class="stage" role="dialog" aria-modal="true" aria-label="瞄准与校准场景"><canvas id="arena"></canvas><div class="hud"><div><b id="hudTitle">实验场景</b><small id="hudDetail"></small></div><div style="text-align:right"><b id="hudRight"></b><small id="hudInput"></small></div></div><div id="stageHelp" class="stagehelp"></div><div id="veil" class="veil"><div id="modal" class="modal"></div></div></div><div id="toast" class="toast" role="status"></div>
+<noscript><p>本工具需要JavaScript；未运行脚本不会生成任何测试结论。</p></noscript><script>
+document.addEventListener("DOMContentLoaded",function(){
+/* SensLab 1.0.1: tutorial and input diagnostics. No changes to scoring or gain. */
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+if (!$('arena') || $('guide')) return;
+const style = document.createElement('style');
+style.textContent = `
+.ux-banner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.ux-guide h2{margin:26px 0 12px}.ux-guide h3{margin-bottom:10px}.ux-guide p+p{margin-top:10px}.ux-guide .card{margin:16px 0}.ux-guide strong{color:var(--text)}.ux-guide .number{color:var(--accent);margin-right:9px}.ux-demo{position:relative;height:160px;border-radius:12px;background:#0c131c;border:1px solid var(--line);overflow:hidden;margin:16px 0}.ux-demo:before,.ux-demo:after{content:'';position:absolute;background:#263743}.ux-demo:before{height:1px;width:100%;top:50%}.ux-demo:after{width:1px;height:100%;left:50%}.ux-demo .target{position:absolute;left:67%;top:35%;width:24px;height:24px;border-radius:50%;background:#88d3df}.ux-demo .caption{position:absolute;bottom:8px;width:100%;text-align:center;font-size:12px;color:#9ca9ba}.ux-sight{width:20px;height:20px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:2}.ux-sight svg{display:block;width:20px;height:20px;overflow:visible}.ux-input{position:absolute;bottom:62px;left:26px;max-width:min(500px,calc(100% - 52px));padding:10px 14px;background:#0c131ce8;border:1px solid #354252;border-radius:10px;color:#b7c5d5;font-size:12px;line-height:1.7;pointer-events:none;z-index:2;font-variant-numeric:tabular-nums}.ux-input strong{color:#c3f17c;font-weight:550}.ux-input small{display:block;color:#b7c5d5}.ux-onboard{padding:13px 15px;border:1px solid #3d5359;border-radius:10px;background:#0c151d;margin:0 0 16px}.ux-onboard p{margin:0!important}.ux-mini{position:relative;display:inline-block;width:28px;height:28px;vertical-align:middle;margin-right:7px}.ux-version-note{font-size:12px}.ux-stage-tag{position:absolute;left:50%;top:calc(50% + 30px);transform:translateX(-50%);padding:5px 10px;border-radius:6px;background:#0c131ce8;color:#d4e6f4;font-size:12px;white-space:nowrap;pointer-events:none;z-index:2}@media(max-width:700px){.topbar .tools{flex-wrap:wrap}.ux-input{bottom:72px;font-size:11px}.ux-stage-tag{font-size:11px}.ux-guide .tablewrap{white-space:normal}}`;
+document.head.append(style);
+const sight = `<svg viewBox="-10 -10 20 20" aria-hidden="true"><path d="M-8 0H-3M3 0H8M0-8V-3M0 3V8" stroke="#06101b" stroke-width="3.5" fill="none"/><path d="M-8 0H-3M3 0H8M0-8V-3M0 3V8" stroke="#f0f4f8" stroke-width="1.5" fill="none"/><rect x="-1.3" y="-1.3" width="2.6" height="2.6" fill="#06101b"/><rect x="-.7" y="-.7" width="1.4" height="1.4" fill="#f0f4f8"/></svg>`;
+const guide = document.createElement('section');
+guide.id = 'guide'; guide.className = 'view ux-guide';
+guide.innerHTML = `
+<div class="eyebrow">START HERE / 新手教程</div><h1 class="space">先会操作，再找灵敏度。</h1><p class="sub">已有有效设置与校准时，从“瞄准实验”直接开始10/20分钟测试。只有缺少基础数据时才需要填写和校准。</p>
+<div class="notice warning"><strong>系统箭头消失是正常的；中央准星消失才需要排查。</strong><br>锁定鼠标后，以屏幕正中的白色十字为瞄准位置。鼠标控制视角，不是拖着箭头点圆圈。按 Esc 可释放鼠标；当前未完成任务不计分。</div>
+<div class="split"><div class="card"><h3><span class="number">01</span>先做一次不计分练习</h3><p>点下面的按钮，再点“开始练习”，允许鼠标锁定。等待3秒倒计时。</p><div class="ux-demo"><span class="target"></span><span class="ux-sight">${sight}</span><span class="caption">白色十字 = 你的准星 · 蓝色圆点 = 目标</span></div><p><strong>准星固定在中央。移动鼠标让蓝色目标进入准星，并持续跟住。此练习不需要开火。</strong></p><p>左下角显示锁定状态、收到的移动事件及累计ΔX/ΔY。移动时数字应更新；这些数字是输入诊断，不是你的成绩、实际DPI或鼠标回报率。</p><div class="row space"><button class="primary" data-ux="practice">打开30秒不计分练习 →</button></div></div>
+<div class="card"><h3><span class="number">02</span>确认画面是否正常</h3><p><strong>正常：</strong>没有Windows箭头，但有中心十字；鼠标移动时网格视角变化，跟枪目标自身也会运动。</p><p><strong>不正常：</strong>十字也不显示；或正在移动鼠标，但左下角事件计数一直为0。按Esc退出，独立打开完整网页，再允许锁定。</p><p>不要在聊天附件预览框或网页嵌入框内测试。可保存完整HTML后用桌面Chrome/Edge打开；失败提示中的“普通输入练习”只作操作检查，不能替代正式校准。</p><p><strong>尺子校准是例外：</strong>校准画面不随鼠标转动。看桌面的尺子和两条标记，用空格控制记录，不要尝试瞄准蓝点。</p><p class="tiny">技术依据：<a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API" target="_blank" rel="noopener noreferrer">MDN Pointer Lock API</a>。</p></div></div>
+<div class="card"><h3><span class="number">03</span>测当前游戏的cm/360，填设备设置</h3><p>保持1600 DPI和当前游戏灵敏度。到安全的训练场，人物原地站定，不开镜，不移动角色。准星对准远处清晰参照物，鼠标沿桌面水平直线移动，视角恰好转一整圈重新对准它；量鼠标传感器在桌面上移动的距离。重复3次。</p><p>进入“设备与校准”，展开“尚不知道cm/360？测3次再填入”，选择360°，输入3个距离，再点“计算中位数并填入”。<strong>示例：</strong>40.1、40.4、40.2cm → 填40.2cm/360。这只是演示，不是给你的推荐值。</p><p>鼠标垫放不下整圈时，有准确角度参照才使用180°，换算值为所测距离×2。不能把大概回头当作精确180°；不要把抬鼠标回中、回程或弧线长度算进距离。</p><p><strong>DPI填1600；当前cm/360填实测值；单次舒适横向行程填从常用位置向一侧舒适可移动的距离，不是鼠标垫总宽。</strong>FOV不确定时，可先用100° / 实际水平FOV作为本工具的固定实验环境，不能声称它已匹配三角洲。其他分析规则先保留默认。点“保存环境设置”。</p><div class="row space"><button data-go="setup">去设备与校准 →</button></div></div>
+<div class="card"><h3><span class="number">04</span>用尺子校准浏览器输入</h3><p>先确定以后固定使用的全屏或窗口模式，再校准。桌面画两条间隔10cm的标记；纵向另准备间隔相同的前后标记。鼠标始终朝前，不靠旋转鼠标改变方向。</p><p><strong>每一次：</strong>按画面指定方向，把传感器对齐起点 → 按空格开始 → 向指定方向平移10cm → 停稳 → 再按空格结束。结束后才把鼠标移到下一次的起点。</p><p>共12次：横向8次、纵向4次，方向与快慢以屏幕提示为准。慢速可先试约2秒走完，快速约0.5–1秒；仅为操作示例，不是最佳动作要求。不能以用力甩动换取速度。</p><p><strong>空格：</strong>开始/结束一条；<strong>Backspace：</strong>重做当前记录或上一条；<strong>Esc：</strong>退出本组校准。显示通过后返回。失败时看报告原因，不能跳过并假装通过。</p><p>DPI、设备、缩放或输入路径改变时需核对物理校准；窗口大小或FOV变化会暂停当前任务，不会清空参数。正式瞄准允许自然弧线移动。</p></div>
+<div class="card"><h3><span class="number">05</span>单次实验：四类任务各12秒</h3><p>微调、切换、大角度转向：用固定中心准星瞄准，左键单击。跟枪：持续覆盖目标，不用开火。自然握持和弧线移动不会使正式任务无效。</p><p>20分钟：40秒共同熟悉＋5组粗筛＋40秒休息＋3条件×3轮复测。10分钟：40秒熟悉＋3组粗筛＋40秒休息＋2条件×2轮复测。首次阅读、主动暂停、额外适应与故障重试单独记录，不包含在计划预算。</p><p>适应不足可延长不计分练习。每组必须明确填写费力度与是否疼痛；未作答时停下来等待。</p></div>
+<div class="card"><h3><span class="number">06</span>查看本次复测，再拿回游戏试用</h3><p>粗筛仅挑选候选，最终判断以本次2或3轮配对复测为主。不要求额外连续测试6天。不稳定、样本不足或没有实用优势时，可以继续使用原灵敏度；边界领先时只提示范围可能不足。</p><p>在“结果与证据”采用通过守门条件的候选，到“跨游戏换算”保持1600 DPI。三角洲按实测距离复核换算，腰射和开镜分开处理。分别在烽火地带和全面战场记录转向限制、微调困难和舒适度。</p><p><strong>数据管理：</strong>右上角“导出备份”保存JSON；“方法与文献 → 导入JSON备份”恢复。换浏览器、网址或本地文件时不要假设数据自动同步。新版增加准星描边；旧版已有有效成绩时，建议先备份并归档，避免混合不同显示条件。</p></div>
+<div class="notice">有有效校准后，可以在同一天完成本次比较并查看结果。结果仅反映当前设备、任务和短时适应条件，真实游戏仍需自行验证。</div>`;
+document.querySelector('.main').insertBefore(guide, document.querySelector('.footer'));
+const nav = document.createElement('button');nav.dataset.view='guide';nav.innerHTML='<span>?</span>使用教程';document.querySelector('.nav').prepend(nav);
+const help = document.createElement('button');help.dataset.go='guide';help.textContent='使用教程';document.querySelector('.topbar .tools').prepend(help);
+const banner = document.createElement('div');banner.className='notice ux-banner';banner.innerHTML='<div><strong>第一次使用？先看操作教程。</strong><br>进入测试后箭头会隐藏；用中央十字准星瞄准，不是移动网页光标。</div><button data-go="guide">教程与光标排查 →</button>';$('home').prepend(banner);
+document.querySelector('.railfoot').innerHTML=document.querySelector('.railfoot').innerHTML.replace('v1.0.0','v1.0.1 · 教程版');
+const stage=$('stage'), veil=$('veil'), arena=$('arena');
+const reticle=document.createElement('div');reticle.id='uxReticle';reticle.className='ux-sight hide';reticle.setAttribute('aria-hidden','true');reticle.innerHTML=sight;
+const panel=document.createElement('div');panel.id='uxInput';panel.className='ux-input hide';panel.innerHTML='<strong id="uxLock"></strong><small id="uxMotion"></small><small id="uxTip"></small>';
+const tag=document.createElement('div');tag.id='uxCenterTag';tag.className='ux-stage-tag hide';tag.textContent='↑ 这是准星，箭头隐藏是正常的';
+stage.insertBefore(reticle,veil);stage.insertBefore(panel,veil);stage.insertBefore(tag,veil);
+let moves=0,dx=0,dy=0,lastPaint=0,tagTimer=null;
+function visible(el,on){if(el.classList.contains('hide')===on)el.classList.toggle('hide',!on);}
+function text(el,value){if(el.textContent!==value)el.textContent=value;}
+function paint(){const locked=document.pointerLockElement===arena,shown=stage.classList.contains('open')&&veil.classList.contains('hide')&&locked;visible(reticle,shown);visible(panel,shown);if(!shown)visible(tag,false);if(!shown)return;
+ text($('uxLock'),'鼠标已锁定 · 系统箭头隐藏正常');
+ text($('uxMotion'),moves?`收到 ${moves} 次移动事件 · 累计 ΔX ${Math.round(dx)} / ΔY ${Math.round(dy)}`:'等待移动鼠标 · 事件计数 0');
+ text($('uxTip'),$('hudTitle').textContent.startsWith('校准')?'校准画面保持静止。看桌面尺子，空格开始 / 结束。':'瞄准中央十字 · 移动鼠标转动视角 · Esc释放鼠标');
+}
+function instructions(){const modal=$('modal');if(!modal.querySelector('[data-action="acquire"]')||modal.querySelector('.ux-onboard'))return;const box=document.createElement('div');box.className='ux-onboard';const cal=modal.textContent.includes('校准')&&!modal.textContent.includes('练习');box.innerHTML=`<p><span class="ux-mini"><span class="ux-sight">${sight}</span></span><strong>进入后系统箭头会隐藏，这是正常行为。</strong><br>${cal?'这是尺子测量，不用点目标。按空格开始和结束，移动期间看桌面的距离标记。':'用屏幕中央的白色十字瞄准；鼠标转动视角。倒计时后按本任务说明操作。'}<br>按 Esc 释放鼠标并退出当前未完成任务。</p>`;modal.insertBefore(box,modal.querySelector('.row')||null);}
+new MutationObserver(()=>{paint();instructions();}).observe(stage,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===arena){moves=0;dx=0;dy=0;clearTimeout(tagTimer);const informal=$('hudTitle').textContent.includes('练习');if(informal){tag.classList.remove('hide');tagTimer=setTimeout(()=>tag.classList.add('hide'),5000);}}else{clearTimeout(tagTimer);tag.classList.add('hide');}paint();});
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==arena)return;if(!Number.isFinite(e.movementX)||!Number.isFinite(e.movementY))return;if(!e.movementX&&!e.movementY)return;moves++;dx+=e.movementX;dy+=e.movementY;const now=performance.now();if(now-lastPaint>=100){lastPaint=now;paint();}},{passive:true});
+document.addEventListener('click',e=>{const button=e.target.closest('[data-ux="practice"]');if(!button)return;document.querySelector('[data-view="lab"]').click();$('practiceBtn').click();});
+instructions();paint();
+})();
+
+},{once:true});
+
+</script><script>
+/* SensLab Personal 1.0 — pure, dependency-free experimental math. */
+(function(root){
+'use strict';
+const C={VERSION:'1.1.0', TASKS:['micro','switch','track','turn'],
+ NAMES:{micro:'微调精度',switch:'目标切换',track:'连续跟枪',turn:'大角度转向'},
+ rad:d=>d*Math.PI/180,deg:r=>r*180/Math.PI,
+ clamp:(x,a,b)=>Math.min(b,Math.max(a,x)),
+ mean:a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:NaN,
+ median(a){return this.quantile(a,.5)},
+ quantile(a,p){if(!a.length)return NaN;const b=[...a].sort((x,y)=>x-y),z=(b.length-1)*p,k=Math.floor(z);return b[k]+(b[Math.ceil(z)]-b[k])*(z-k)},
+ cv(a){const m=this.mean(a);return a.length>1&&m>0?Math.sqrt(this.mean(a.map(x=>(x-m)**2)))/m:Infinity},
+ rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}},
+ shuffle(a,r){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a},
+ candidates(base){if(!(base>=8&&base<=160))throw Error('基准须在8–160 cm/360内；这是软件支持范围，不是推荐范围。');return[.64,.8,1,1.25,1.5625].map((r,i)=>({id:'c'+i,cm:+(base*r).toFixed(3),baseline:i===2})).filter(x=>x.cm>=5&&x.cm<=250)},
+ order(ids,seed,k){const a=this.shuffle(ids,this.rng(seed));const n=a.length,row=k%n;return Array.from({length:n},(_,i)=>a[(i+row)%n])},
+ sensitivity(cm,dpi,yaw){if(![cm,dpi,yaw].every(x=>Number.isFinite(x)&&x>0))throw Error('距离、DPI和yaw必须大于零。');return 914.4/(cm*dpi*yaw)},
+ cm360(s,dpi,yaw){return this.sensitivity(s,dpi,yaw)},
+ mapping(samples,cm,dpi,refDpi){
+ if(samples.length<2)throw Error('至少需要两个实测点。');
+ const a=[...samples].sort((a,b)=>a.s-b.s);
+ if(!a.every(x=>x.s>=0&&x.cm>0&&Number.isFinite(x.s)&&Number.isFinite(x.cm)))throw Error('实测数值无效。');
+ for(let i=1;i<a.length;i++)if(a[i].s<=a[i-1].s||a[i].cm>=a[i-1].cm)throw Error('灵敏度升高时，cm/360必须递减，且设置值不能重复。');
+ const gain=360/cm*refDpi/dpi;
+ for(let i=0;i<a.length-1;i++){const lo=360/a[i].cm,hi=360/a[i+1].cm;if(gain>=lo-1e-10&&gain<=hi+1e-10)return a[i].s+(a[i+1].s-a[i].s)*(gain-lo)/(hi-lo)}
+ throw Error('目标超出实测范围；请补充覆盖目标的测量点，不进行外推。')},
+ focalCm(cm,hip,ads,p){if(!(cm>0&&hip>1&&hip<179&&ads>1&&ads<179&&p>=0&&p<=1))throw Error('请填写有效FOV和匹配位置。');const h=Math.tan(this.rad(hip)/2),a=Math.tan(this.rad(ads)/2);return cm*(p===0?h/a:Math.atan(p*h)/Math.atan(p*a))},
+ vec(y,p){return[Math.sin(y)*Math.cos(p),Math.sin(p),Math.cos(y)*Math.cos(p)]},
+ dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+ angle(a,b){return Math.acos(this.clamp(this.dot(a,b),-1,1))},
+ basis(y,p){return{f:this.vec(y,p),r:[Math.cos(y),0,-Math.sin(y)],u:[-Math.sin(y)*Math.sin(p),Math.cos(p),-Math.cos(y)*Math.sin(p)]}},
+ relative(y,p,a,phi){const b=this.basis(y,p);return b.f.map((v,i)=>v*Math.cos(a)+(b.r[i]*Math.cos(phi)+b.u[i]*Math.sin(phi))*Math.sin(a))},
+ calibration(rows){
+ const x=rows.filter(r=>r.axis==='x'),y=rows.filter(r=>r.axis==='y');
+ const ux=this.median(x.map(r=>r.units/r.cm)),uy=this.median(y.map(r=>r.units/r.cm));
+ const cv=Math.max(this.cv(x.map(r=>r.units/r.cm)),this.cv(y.map(r=>r.units/r.cm)));
+ const ratio=axis=>{const slow=this.median(rows.filter(r=>r.axis===axis&&r.speed==='slow').map(r=>r.units/r.cm));const fast=this.median(rows.filter(r=>r.axis===axis&&r.speed==='fast').map(r=>r.units/r.cm));return Math.abs(fast/slow-1)};
+ const speedError=Math.max(ratio('x'),ratio('y'));
+ const speedContrast=Math.min(...['x','y'].map(axis=>this.median(rows.filter(r=>r.axis===axis&&r.speed==='slow').map(r=>r.ms/r.cm))/this.median(rows.filter(r=>r.axis===axis&&r.speed==='fast').map(r=>r.ms/r.cm))));
+ const pathGood=rows.every(r=>r.path>0&&r.units/r.path>=.97&&r.cross/r.units<.1&&r.units>50&&r.ms>60);
+ const ok=x.length===8&&y.length===4&&cv<=.05&&speedError<=.05&&speedContrast>=1.5&&pathGood;
+ return{ux,uy,cv,speedError,speedContrast,pathGood,ok};
+ },
+ /* Bootstrap the day-level paired log ratios, never the individual shots. */
+ bootstrap(logRatios,alpha=.05,reps=4000,seed=1731){if(logRatios.length<3)return null;const r=this.rng(seed),out=[];for(let k=0;k<reps;k++){let s=0;for(let j=0;j<logRatios.length;j++)s+=logRatios[Math.floor(r()*logRatios.length)];out.push(Math.exp(s/logRatios.length)-1)}return[this.quantile(out,alpha/2),this.quantile(out,1-alpha/2)]},
+ /* Only complete sessions from the specified phase enter selection. */
+ analyze(study,phase){
+ const candidates=phase==='confirm'?study.finalists:study.candidates;if(!candidates)return{rows:[],days:0,sessions:0};
+ const ids=candidates.map(x=>x.id),base=study.candidates.find(x=>x.baseline).id;
+ const sessions=study.sessions.filter(s=>s.phase===phase&&s.complete&&(phase!=='confirm'||!study.lockedAt||s.started>=study.lockedAt)&&ids.every(id=>s.blocks[id]&&this.TASKS.every(t=>s.blocks[id][t]?.valid)&&s.ratings[id]));
+ const days=[...new Set(sessions.map(s=>s.day))].sort();
+ const weights=study.config.weights,multiplicity=Math.max(1,ids.length-1);
+ const rows=candidates.map(c=>{
+ let scores=[],vectors=[],accuracies=[],efforts=[],pains=0,usableDays=0;
+ for(const day of days){const ss=sessions.filter(s=>s.day===day);let logs=[],tv=[],av=[];
+ for(const s of ss){const b=s.blocks[base],v=s.blocks[c.id];
+ if(this.TASKS.some(t=>!(b[t].score>0&&Number.isFinite(v[t].score))))continue;
+ const ratios=this.TASKS.map(t=>v[t].score/b[t].score);
+ // A zero target result receives a tiny computational floor; explicitly flagged in UI.
+ logs.push(ratios.reduce((z,x,i)=>z+weights[i]*Math.log(Math.max(1e-8,x)),0));tv.push(ratios);av.push(v.micro.accuracy-b.micro.accuracy);
+ }
+ if(logs.length){scores.push(this.mean(logs));vectors.push(this.TASKS.map((_,i)=>this.mean(tv.map(x=>x[i]))));accuracies.push(this.mean(av));usableDays++}
+ const rr=ss.map(s=>s.ratings[c.id]);efforts.push(this.mean(rr.map(x=>x.effort)));pains+=rr.filter(x=>x.pain).length;
+ }
+ pains=study.sessions.filter(ss=>ss.phase===phase&&ss.ratings[c.id]?.pain).length;
+ const relative=scores.length?Math.exp(this.mean(scores)):null;
+ const taskRatios=this.TASKS.map((_,i)=>this.mean(vectors.map(v=>v[i])));
+ const effort=this.mean(efforts),accDiff=this.mean(accuracies);
+ const gates=pains===0&&effort<=study.config.maxEffort&&accDiff>=-study.config.accDrop&&taskRatios.every(x=>x>=1-study.config.taskDrop);
+ return{...c,relative,taskRatios,effort,pains,accDiff,days:usableDays,gates,ci:c.baseline?[0,0]:this.bootstrap(scores,.05/multiplicity),logs:scores};
+ });
+ const ranked=rows.filter(r=>r.gates&&r.relative!==null).sort((a,b)=>b.relative-a.relative);
+ const leader=ranked[0]||null,near=leader?ranked.filter(r=>r.relative>=leader.relative*(1-study.config.margin)):[];
+ // Prefer continuity, then comfort, among practically near leaders (not equivalence proof).
+ const anchor=near.slice().sort((a,b)=>Math.abs(Math.log(a.cm/study.config.baseCm))-Math.abs(Math.log(b.cm/study.config.baseCm))||a.effort-b.effort)[0]||null;
+ return{rows,days:days.length,sessions:sessions.length,leader,near,anchor,confidence:100*(1-.05/multiplicity)};
+ }
+};
+root.SensMath=C;if(typeof module!=='undefined'&&module.exports)module.exports=C;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script><script>
+/* SensLab single-session protocol. Pure calculations; no DOM, storage or legacy bootstrap. */
+(function(root){
+'use strict';
+const VERSION='senslab-session/1';
+const TASKS=['micro','switch','track','turn'];
+const NAMES={micro:'微调',switch:'切换',track:'跟枪',turn:'转向'};
+const QUALITY={minimumDurationMs:11900,minimumHits:2,minimumShots:3,driftThreshold:.10,pairedRoundGatePolicy:'each-round'};
+const clone=value=>JSON.parse(JSON.stringify(value));
+const finite=(x,min=-Infinity,max=Infinity)=>Number.isFinite(x)&&x>=min&&x<=max;
+const mean=a=>a.length?a.reduce((sum,x)=>sum+x,0)/a.length:null;
+const unique=a=>new Set(a).size===a.length;
+const fail=message=>{throw Error(message)};
+const stamp=value=>{const d=new Date(value??Date.now());if(!Number.isFinite(d.getTime()))fail('时间无效');return d.toISOString()};
+function modeName(mode){if(['20min','20',20,'full20'].includes(mode))return '20min';if(['10min','10',10,'quick10'].includes(mode))return '10min';return fail('请选择10分钟或20分钟模式')}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash(seed,tag){let n=seed>>>0;for(const c of tag)n=Math.imul(n^c.charCodeAt(0),16777619)>>>0;return n}
+function shuffle(values,seed){const out=values.slice(),random=rng(seed);for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
+function rotate(values,n){return values.map((_,i)=>values[(i+n)%values.length])}
+function geometric(values,weights){if(!values.length||values.some(v=>!finite(v,0)))return null;if(values.some(v=>v===0))return 0;const result=Math.exp(values.reduce((sum,v,i)=>sum+Math.log(v)*(weights?weights[i]:1/values.length),0));return finite(result,0)?result:null}
+function ratio(a,b){if(!finite(a,0)||!finite(b,0)||b===0)return null;const result=a/b;return finite(result,0)?result:null}
+function configSnapshot(input){
+  if(!input||typeof input!=='object')fail('缺少已保存设备设置');
+  const c=clone(input);
+  c.weights=c.weights??[.25,.25,.25,.25];c.margin=c.margin??.03;c.taskDrop=c.taskDrop??.10;c.accDrop=c.accDrop??.05;c.maxEffort=c.maxEffort??5;
+  if(!finite(c.baseCm,5,250)||!finite(c.dpi,100,64000))fail('基准距离或DPI超出软件范围');
+  if(!finite(c.fov,30,150)||!['horizontal','vertical','h43'].includes(c.fovType))fail('实验FOV数值或标度无效');
+  if(!Array.isArray(c.weights)||c.weights.length!==4||c.weights.some(x=>!finite(x,0.001,1))||Math.abs(c.weights.reduce((s,x)=>s+x,0)-1)>1e-6)fail('四项权重必须为正且合计1');
+  if(!finite(c.margin,.01,.10)||!finite(c.taskDrop,.01,.30)||!finite(c.accDrop,0,.20)||!finite(c.maxEffort,1,8))fail('分析规则无效');
+  return c;
+}
+function calibrationValid(cal){return !!(cal&&cal.ok===true&&cal.raw==='requested'&&finite(cal.ux,1,1e6)&&finite(cal.uy,1,1e6)&&finite(cal.dpi,100,64000)&&cal.env&&typeof cal.env==='object'&&!Array.isArray(cal.env))}
+function candidates(base,mode='20min',seed=1){
+  mode=modeName(mode);if(!finite(base,5,250))fail('基准距离超出软件范围');
+  const factors=mode==='20min'?[.64,.8,1,1.25,1.5625]:[.8,1,1.25];
+  const rows=factors.map((factor,i)=>({id:'c'+i,cm:factor===1?base:+(base*factor).toFixed(6),baseline:factor===1})).filter(c=>c.cm>=5&&c.cm<=250);
+  const labels=shuffle(rows.map((_,i)=>String.fromCharCode(65+i)),hash(seed,'labels'));
+  return rows.map((c,i)=>({...c,label:labels[i]}));
+}
+function plan(mode='20min',counts={}){
+  mode=modeName(mode);const full=mode==='20min',screenCount=counts.screenCount??(full?5:3),retestCount=counts.retestCount??(full?3:2),rounds=full?3:2;
+  if(!Number.isInteger(screenCount)||screenCount<1||screenCount>5||!Number.isInteger(retestCount)||retestCount<1||retestCount>(full?3:2))fail('实验条件数量无效');
+  const familiarizationSeconds=40,breakSeconds=40,screenGroupSeconds=80,retestGroupSeconds=full?80:70;
+  return{mode,familiarizationSeconds,breakSeconds,screenCount,retestCount,retestRounds:rounds,screenGroupSeconds,retestGroupSeconds,screenSeconds:screenCount*80,retestSeconds:retestCount*rounds*retestGroupSeconds,totalSeconds:40+screenCount*80+40+retestCount*rounds*retestGroupSeconds};
+}
+function makeGroup(stage,round,candidateId,seed,taskOrder,mode,index){
+  const short=stage==='retest'&&mode==='10min';
+  return{id:stage+'-'+round+'-'+index,stage,round,candidateId,seed,taskOrder:taskOrder.slice(),adaptSeconds:short?10:15,ratingSeconds:short?6:11,taskSeconds:12,transitionSeconds:2,plannedSeconds:short?70:80};
+}
+function groupSteps(group){
+  const steps=[{kind:'adapt',seconds:group.adaptSeconds}];
+  group.taskOrder.forEach((task,index)=>{steps.push({kind:'task',task,seconds:group.taskSeconds});if(index<3)steps.push({kind:'transition',seconds:group.transitionSeconds})});
+  steps.push({kind:'rating',seconds:group.ratingSeconds});return steps;
+}
+function createStudy({mode='20min',config,calibration,seed=1,id,now,provenance={}}={}){
+  mode=modeName(mode);if(!Number.isInteger(seed)||!finite(seed,0,4294967295))fail('随机种子无效');
+  const c=configSnapshot(config);if(!calibrationValid(calibration))fail('正式实验需要有效物理校准；可先进行不计分练习');
+  if(calibration.dpi!==undefined&&calibration.dpi!==c.dpi)fail('校准DPI与当前已保存设置不一致');
+  const created=stamp(now),all=candidates(c.baseCm,mode,seed),order=shuffle(all.map(x=>x.id),hash(seed,'screen-order')),taskOrder=shuffle(TASKS,hash(seed,'screen-tasks')),targetSeed=hash(seed,'screen-targets');
+  const groups=order.map((candidateId,index)=>makeGroup('screen',0,candidateId,targetSeed,taskOrder,mode,index));
+  const p=plan(mode,{screenCount:all.length,retestCount:Math.min(mode==='20min'?3:2,all.length)});
+  return{protocolVersion:VERSION,mode,id:id||'session-'+seed.toString(16)+'-'+Date.parse(created),created,seed,configSnapshot:c,calSnapshot:clone(calibration),provenance:clone(provenance),qualityRules:clone(QUALITY),candidates:all,groups,results:{},attempts:[],segments:[],discardedRounds:[],retest:null,status:'screen',plannedSeconds:p.totalSeconds,nominalSeconds:mode==='20min'?1200:600};
+}
+function blockValid(b){return !!(b&&b.valid===true&&finite(b.score,0,1000)&&finite(b.accuracy,0,1)&&finite(b.duration,0,1e7))}
+function groupComplete(study,group){const result=study.results[group.id];return !!(result&&TASKS.every(t=>blockValid(result.tasks?.[t]))&&result.rating&&finite(result.rating.effort,0,10)&&typeof result.rating.pain==='boolean')}
+function sampleProblems(result){
+  const reasons=[];
+  for(const t of TASKS){const b=result?.tasks?.[t];if(!blockValid(b)){reasons.push(NAMES[t]+'任务缺失或中断');continue}
+    if(b.raw!=='requested')reasons.push(NAMES[t]+'原始输入未确认');
+    if(b.duration<QUALITY.minimumDurationMs)reasons.push(NAMES[t]+'有效记录时间不足');
+    if(t!=='track'&&(!Number.isInteger(b.hits)||b.hits<QUALITY.minimumHits||!Number.isInteger(b.shots)||b.shots<QUALITY.minimumShots))reasons.push(NAMES[t]+'点击样本不足');
+    if(b.score===0)reasons.push(NAMES[t]+'零表现，保留原值但不足以支持优势结论');
+  }
+  return reasons;
+}
+function rawSummary(groups,study){
+  return Object.fromEntries(TASKS.map(t=>{
+    const blocks=groups.map(g=>study.results[g.id]?.tasks?.[t]).filter(blockValid);
+    const sum=key=>blocks.reduce((s,b)=>s+(finite(b[key])?b[key]:0),0);
+    return[t,{score:mean(blocks.map(b=>b.score)),accuracy:mean(blocks.map(b=>b.accuracy)),duration:sum('duration'),hits:sum('hits'),shots:sum('shots'),timeouts:sum('timeouts'),meanAcquireMs:mean(blocks.map(b=>b.meanAcquireMs).filter(x=>finite(x,0))),rmsDeg:mean(blocks.map(b=>b.rmsDeg).filter(x=>finite(x,0))),blocks:blocks.length}];
+  }));
+}
+function driftReport(study){
+  const base=study.candidates.find(c=>c.baseline),good=study.groups.filter(g=>g.candidateId===base.id&&groupComplete(study,g)),screen=good.find(g=>g.stage==='screen'),retests=good.filter(g=>g.stage==='retest').sort((a,b)=>a.round-b.round);
+  const compare=(a,b)=>{if(!a||!b)return null;const ratios=TASKS.map(t=>ratio(study.results[a.id].tasks[t].score,study.results[b.id].tasks[t].score));return ratios.every(x=>x!==null)?geometric(ratios,study.configSnapshot.weights):null};
+  const screenRatios=retests.map(g=>compare(g,screen)).filter(x=>x!==null),screenRelative=geometric(screenRatios),roundRelative=retests.length>1?compare(retests.at(-1),retests[0]):null;
+  const screenToRetest=screenRelative===null?null:screenRelative-1,roundChange=roundRelative===null?null:roundRelative-1,flagged=[screenToRetest,roundChange].some(x=>x!==null&&Math.abs(x)>QUALITY.driftThreshold+1e-12);
+  return{screenToRetest,roundChange,flagged,threshold:QUALITY.driftThreshold,rounds:retests.map(g=>({round:g.round,scores:TASKS.map(t=>study.results[g.id].tasks[t].score)})),note:flagged?'基准随时间变化，可能存在练习、疲劳或状态漂移；数据仍全部保留。':'未按漂移剔除任何数据；短时结果不能证明不存在状态变化。'};
+}
+function analyze(study,stage='retest'){
+  if(!['screen','retest'].includes(stage))fail('未知分析阶段');
+  const config=study.configSnapshot,base=study.candidates.find(c=>c.baseline),ids=stage==='screen'?study.candidates.map(c=>c.id):(study.retest?.candidateIds||[]),groups=study.groups.filter(g=>g.stage===stage),requiredRounds=stage==='screen'?1:(study.mode==='20min'?3:2),roundNumbers=[...new Set(groups.map(g=>g.round))].sort((a,b)=>a-b);
+  const rows=ids.map(id=>{
+    const c=study.candidates.find(x=>x.id===id),own=groups.filter(g=>g.candidateId===id),complete=own.filter(g=>groupComplete(study,g)),missingReasons=[],rounds=[];
+    for(const round of roundNumbers){const g=own.find(x=>x.round===round),b=groups.find(x=>x.round===round&&x.candidateId===base.id);
+      if(!g||!b||!groupComplete(study,g)||!groupComplete(study,b)){missingReasons.push('第'+(round||1)+'轮缺少完整配对');continue}
+      const v=study.results[g.id],reference=study.results[b.id],ratios=TASKS.map(t=>ratio(v.tasks[t].score,reference.tasks[t].score)),relative=ratios.every(x=>x!==null)?geometric(ratios,config.weights):null,problems=[...sampleProblems(v),...sampleProblems(reference).map(x=>'基准：'+x)];
+      if(relative===null)problems.push('基准含零分或无有限比值；未使用极小数替代');
+      missingReasons.push(...problems);
+      const accDiff=v.tasks.micro.accuracy-reference.tasks.micro.accuracy,roundGateReasons=[];
+      if(v.rating.pain)roundGateReasons.push('疼痛或明显不适');if(v.rating.effort>config.maxEffort)roundGateReasons.push('费力度超过预设上限');if(accDiff< -config.accDrop-1e-12)roundGateReasons.push('微调命中率下降超过守门线');
+      TASKS.forEach((t,i)=>{if(ratios[i]!==null&&ratios[i]<1-config.taskDrop-1e-12)roundGateReasons.push(NAMES[t]+'退步超过预设上限')});
+      rounds.push({round,groupId:g.id,baselineGroupId:b.id,relative,ratios,accDiff,effort:v.rating.effort,pain:v.rating.pain,sufficient:problems.length===0,gates:roundGateReasons.length===0,gateReasons:roundGateReasons,raw:Object.fromEntries(TASKS.map(t=>[t,{candidate:clone(v.tasks[t]),baseline:clone(reference.tasks[t])}]))});
+    }
+    const paired=rounds.filter(r=>r.relative!==null),relative=geometric(paired.map(r=>r.relative)),taskRatios=TASKS.map((_,i)=>{const values=paired.map(r=>r.ratios[i]);return values.length?geometric(values):null}),accDiff=mean(paired.map(r=>r.accDiff)),effort=mean(complete.map(g=>study.results[g.id].rating.effort));
+    const pains=own.filter(g=>study.results[g.id]?.rating?.pain===true).length,gateReasons=[];
+    if(pains)gateReasons.push('疼痛或明显不适');if(effort===null||effort>config.maxEffort)gateReasons.push(effort===null?'缺少费力度评分':'费力度超过预设上限');
+    if(accDiff===null||accDiff< -config.accDrop-1e-12)gateReasons.push(accDiff===null?'缺少命中率配对':'微调命中率下降超过守门线');
+    TASKS.forEach((t,i)=>{if(taskRatios[i]===null||taskRatios[i]<1-config.taskDrop-1e-12)gateReasons.push(NAMES[t]+(taskRatios[i]===null?'缺少可比较分数':'退步超过预设上限'))});
+    for(const round of rounds)for(const reason of round.gateReasons)gateReasons.push('第'+(round.round||1)+'轮：'+reason);
+    const sufficient=rounds.length===requiredRounds&&rounds.every(r=>r.sufficient),positiveRounds=paired.filter(r=>r.relative>1+1e-12).length,consistent=sufficient&&positiveRounds===requiredRounds;
+    if(rounds.length<requiredRounds)missingReasons.push('复测/筛选轮次尚未完成');
+    const angleGain=config.baseCm/c.cm;
+    return{...c,relative,range:paired.length?[Math.min(...paired.map(r=>r.relative)),Math.max(...paired.map(r=>r.relative))]:null,taskRatios,taskChanges:Object.fromEntries(TASKS.map((t,i)=>[t,taskRatios[i]===null?null:taskRatios[i]-1])),rounds,raw:rawSummary(complete,study),effort,pains,accDiff,accuracyDiff:accDiff,gates:gateReasons.length===0,gateReasons,sufficient,consistent,positiveRounds,pairedRounds:paired.length,requiredRounds,completeGroups:complete.length,missingReasons:[...new Set(missingReasons)],angleGain,angleGainChange:angleGain-1,ci:null};
+  });
+  const ranked=rows.filter(r=>r.sufficient&&r.gates&&r.relative!==null).sort((a,b)=>b.relative-a.relative),leader=ranked[0]||null,near=leader?ranked.filter(r=>r.relative>=leader.relative*(1-config.margin)-1e-12):[],improved=stage==='retest'?ranked.filter(r=>!r.baseline&&r.consistent&&r.relative>=1+config.margin-1e-12):[];
+  const allAdequate=rows.length>0&&rows.every(r=>r.sufficient),pain=rows.some(r=>r.pains),chosen=improved[0]||base,cm=chosen.cm,angleGain=config.baseCm/cm;
+  const abandoned=study.status==='abandoned'||study.runtime?.phase==='abandoned';
+  const action=stage==='retest'&&allAdequate&&!pain&&!abandoned?(improved.length?'try-candidate':'keep-baseline'):'insufficient';
+  const reason=pain?'出现疼痛或明显不适，应停止测试。':abandoned?'本次测试已主动结束，记录保留，不生成换敏推荐。':!allAdequate?'有效配对或样本不足，保留数据，不生成可信优势结论。':stage==='screen'?'粗筛仅用于冻结复测候选，尚未形成最终判断。':improved.length?'全部复测轮的方向一致，并超过预设实用差异线；可拿回游戏试用。':'本次没有稳定且实用的优势，继续使用原设置。';
+  const selected=action==='try-candidate'?chosen:base,limits=study.candidates.map(c=>c.cm),boundary=!!(leader&&(leader.cm===Math.min(...limits)||leader.cm===Math.max(...limits))),drift=driftReport(study),warnings=[];
+  if(boundary)warnings.push('领先值位于已测范围边界，最佳点可能仍在范围外；不外推未测数值。');if(drift.flagged)warnings.push(drift.note);if(!allAdequate)warnings.push('最低数据要求是工程质检条件，不是科学常数。');if(study.mode==='10min')warnings.push('快速局部筛选，仅比较本次已测局部范围。');
+  warnings.push('每一配对轮都检查精度、单项退步和费力度守门线，避免平均成绩掩盖某轮明显退步。');
+  warnings.push('单场2–3轮不计算正式95%区间或显著性，也不证明近似候选统计等效。');
+  return{stage,rows,leader,near,improved,recommendation:{candidateId:selected.id,cm:selected.cm,baseline:!!selected.baseline,action,reason,angleGain:config.baseCm/selected.cm,angleGainChange:config.baseCm/selected.cm-1},status:pain?'pain-stop':abandoned?'abandoned':!allAdequate?'insufficient':stage==='screen'?'screen-only':'complete',pairedRounds:rows.length?Math.min(...rows.map(r=>r.pairedRounds)):0,requiredRounds,drift,boundary,warnings,ci:null,confidence:null};
+}
+function selectRetest(study){
+  if(study.retest)return study.retest.candidateIds.map(id=>study.candidates.find(c=>c.id===id));
+  const groups=study.groups.filter(g=>g.stage==='screen');if(!groups.every(g=>groupComplete(study,g)))fail('请先完成全部粗筛任务及明确评分');
+  if(groups.some(g=>study.results[g.id].rating.pain))fail('已记录疼痛或明显不适，停止本次测试');
+  const analysis=analyze(study,'screen'),base=study.candidates.find(c=>c.baseline),other=analysis.rows.filter(r=>!r.baseline&&r.sufficient&&r.gates&&r.relative!==null).sort((a,b)=>b.relative-a.relative).slice(0,study.mode==='20min'?2:1);
+  return[base,...other.map(r=>study.candidates.find(c=>c.id===r.id))];
+}
+function freezeRetest(study,{now}={}){
+  if(study.retest)return study.retest;
+  const selected=selectRetest(study),candidateIds=selected.map(c=>c.id),order=shuffle(candidateIds,hash(study.seed,'retest-order')),baseTasks=shuffle(TASKS,hash(study.seed,'retest-tasks')),rounds=study.mode==='20min'?3:2,usedSeeds=new Set(study.groups.map(g=>g.seed));
+  for(let round=1;round<=rounds;round++){
+    let seed=hash(study.seed,'retest-targets-'+round);while(usedSeeds.has(seed))seed=(seed+1)>>>0;usedSeeds.add(seed);
+    const tasks=rotate(baseTasks,round-1);rotate(order,round-1).forEach((id,index)=>study.groups.push(makeGroup('retest',round,id,seed,tasks,study.mode,index)));
+  }
+  study.retest={candidateIds,lockedAt:stamp(now),selection:analyze(study,'screen').rows.map(r=>({candidateId:r.id,relative:r.relative,gates:r.gates,sufficient:r.sufficient})),rules:clone(study.configSnapshot)};
+  study.plannedSeconds=plan(study.mode,{screenCount:study.candidates.length,retestCount:candidateIds.length}).totalSeconds;study.status='retest';return study.retest;
+}
+function validateStudy(study){
+  // Reject non-JSON values and excessive nesting/collections before inspecting derived data.
+  let nodes=0;const visit=(v,depth=0)=>{if(++nodes>2000000||depth>24)fail('单次实验备份过大');if(typeof v==='number'&&!Number.isFinite(v))fail('备份包含非有限数值');if(v===null||['string','boolean','number'].includes(typeof v))return;if(typeof v!=='object')fail('备份包含无效数据类型');if(Array.isArray(v)&&v.length>200000)fail('备份列表过长');for(const x of Object.values(v))visit(x,depth+1)};visit(study);
+  const date=value=>typeof value==='string'&&Number.isFinite(Date.parse(value));
+  const text=value=>typeof value==='string'&&value.length<=10000;
+  if(!study||study.protocolVersion!==VERSION||!['20min','10min'].includes(study.mode)||typeof study.id!=='string'||!study.id||!Number.isInteger(study.seed)||!finite(study.seed,0,4294967295)||!date(study.created))fail('单次实验标识无效');
+  configSnapshot(study.configSnapshot);if(!calibrationValid(study.calSnapshot)||study.calSnapshot.dpi!==study.configSnapshot.dpi)fail('单次实验缺少有效且DPI一致的校准快照');
+  const expected=candidates(study.configSnapshot.baseCm,study.mode,study.seed),all=study.candidates;
+  if(!Array.isArray(all)||all.length!==expected.length||!unique(all.map(c=>c?.id))||!unique(all.map(c=>c?.label)))fail('单次实验候选集合无效');
+  for(const c of all){const e=expected.find(x=>x.id===c.id);if(!e||c.cm!==e.cm||c.baseline!==e.baseline||c.label!==e.label)fail('候选不符合冻结协议')}
+  const ids=all.map(c=>c.id),base=all.find(c=>c.baseline),groups=study.groups;
+  if(!Array.isArray(groups)||groups.length>20||!unique(groups.map(g=>g?.id))||!study.results||typeof study.results!=='object'||Array.isArray(study.results))fail('单次实验组或结果无效');
+  if(!Array.isArray(study.attempts)||study.attempts.length>10000||!Array.isArray(study.segments)||study.segments.length>1000)fail('实验过程记录无效');
+  if(study.retest){const r=study.retest;if(!Array.isArray(r.candidateIds)||!unique(r.candidateIds)||r.candidateIds.length<1||r.candidateIds.length>(study.mode==='20min'?3:2)||r.candidateIds.some(id=>!ids.includes(id))||!r.candidateIds.includes(base.id)||!date(r.lockedAt))fail('冻结复测候选无效');if(!r.rules||JSON.stringify(r.rules)!==JSON.stringify(study.configSnapshot))fail('冻结规则与设置快照不一致')}
+  const stageRounds={screen:[0],retest:study.retest?Array.from({length:study.mode==='20min'?3:2},(_,i)=>i+1):[]};
+  for(const g of groups){if(!g||typeof g.id!=='string'||!['screen','retest'].includes(g.stage)||!stageRounds[g.stage].includes(g.round)||!ids.includes(g.candidateId)||!Number.isInteger(g.seed)||!finite(g.seed,0,4294967295)||!Array.isArray(g.taskOrder)||g.taskOrder.length!==4||!unique(g.taskOrder)||g.taskOrder.some(t=>!TASKS.includes(t)))fail('任务组结构无效');const short=g.stage==='retest'&&study.mode==='10min';if(g.adaptSeconds!==(short?10:15)||g.ratingSeconds!==(short?6:11)||g.taskSeconds!==12||g.transitionSeconds!==2||g.plannedSeconds!==(short?70:80))fail('任务预算不符合协议')}
+  const seeds=[];
+  for(const stage of ['screen','retest'])for(const round of stageRounds[stage]){const rows=groups.filter(g=>g.stage===stage&&g.round===round),expectedIds=stage==='screen'?ids:study.retest.candidateIds;if(rows.length!==expectedIds.length||!unique(rows.map(g=>g.candidateId))||expectedIds.some(id=>!rows.some(g=>g.candidateId===id)))fail('比较轮缺少或重复条件');if(rows.some(g=>g.seed!==rows[0].seed||g.taskOrder.join(',')!==rows[0].taskOrder.join(',')))fail('同轮任务种子或顺序不一致');seeds.push(rows[0].seed)}
+  if(!unique(seeds))fail('粗筛与复测轮必须使用新的目标种子');
+  const checkResult=(result,g)=>{if(!result||typeof result!=='object'||!result.tasks||typeof result.tasks!=='object')fail('任务结果结构无效');for(const t of Object.keys(result.tasks)){const b=result.tasks[t];if(!TASKS.includes(t)||!b||typeof b.valid!=='boolean'||!finite(b.score,0,1000)||!finite(b.accuracy,0,1)||!finite(b.duration,0,1e7))fail('任务结果数值无效');for(const k of ['hits','shots','timeouts'])if(b[k]!==undefined&&(!Number.isInteger(b[k])||!finite(b[k],0,1e7)))fail('点击计数无效');if(t!=='track'&&(!Number.isInteger(b.hits)||!Number.isInteger(b.shots)||b.hits>b.shots))fail('点击结果缺少有效计数');for(const k of ['meanAcquireMs','rmsDeg','pathCm','frameFps','frameP95'])if(b[k]!==undefined&&b[k]!==null&&!finite(b[k],0,1e7))fail('任务诊断数值无效');if(b.raw!==undefined&&!['requested','fallback','unconfirmed','unknown'].includes(b.raw))fail('输入状态无效');if(b.trials!==undefined&&(!Array.isArray(b.trials)||b.trials.length>10000))fail('逐次记录无效');if(b.trace!==undefined&&(!Array.isArray(b.trace)||b.trace.length>20000))fail('跟踪记录无效')}
+    if(result.rating!==undefined&&result.rating!==null&&(!finite(result.rating.effort,0,10)||typeof result.rating.pain!=='boolean'))fail('评分必须明确填写');if(result.completedAt&&!groupComplete({results:{[g.id]:result}},g))fail('完成标记缺少任务或评分');};
+  for(const id of Object.keys(study.results)){const g=groups.find(g=>g.id===id);if(!g)fail('结果引用未知任务组');checkResult(study.results[id],g)}
+  if(study.discardedRounds!==undefined&&(!Array.isArray(study.discardedRounds)||study.discardedRounds.length>1000))fail('废弃轮审计记录无效');
+  for(const discarded of study.discardedRounds||[]){if(!discarded||!['screen','retest'].includes(discarded.stage)||!stageRounds[discarded.stage].includes(discarded.round)||!text(discarded.reason)||!date(discarded.created)||!discarded.records||typeof discarded.records!=='object'||Array.isArray(discarded.records))fail('废弃轮审计内容无效');for(const id of Object.keys(discarded.records)){const g=groups.find(g=>g.id===id);if(!g||g.stage!==discarded.stage||g.round!==discarded.round)fail('废弃记录引用错误比较轮');checkResult(discarded.records[id],g)}}
+  const partialValid=p=>p&&typeof p==='object'&&TASKS.includes(p.task)&&finite(p.elapsed,0,1e12)&&Number.isInteger(p.hits)&&finite(p.hits,0,1e7)&&Number.isInteger(p.shots)&&finite(p.shots,0,1e7)&&p.hits<=p.shots&&Array.isArray(p.trials)&&p.trials.length<=10000&&Array.isArray(p.trace)&&p.trace.length<=20000&&finite(p.pathCm,0,1e7);
+  for(const attempt of study.attempts){if(!attempt||!groups.some(g=>g.id===attempt.groupId)||!TASKS.includes(attempt.task)||attempt.valid!==false||!text(attempt.reason)||!date(attempt.created)||(attempt.partial!==null&&attempt.partial!==undefined&&!partialValid(attempt.partial)))fail('中断尝试记录无效')}
+  for(const segment of study.segments){if(!segment||!date(segment.startedAt)||!text(segment.reason)||(segment.gapMs!==undefined&&!finite(segment.gapMs,0,1e12)))fail('会话片段记录无效')}
+  if(study.warnings!==undefined&&(!Array.isArray(study.warnings)||study.warnings.length>10000||study.warnings.some(x=>!text(x))))fail('实验提示记录无效');
+  if(study.completedAt!==undefined&&!date(study.completedAt))fail('结束时间无效');
+  if(study.status==='abandoned'&&(study.runtime?.phase!=='abandoned'||typeof study.abandonedReason!=='string'||!study.abandonedReason.trim()||study.abandonedReason.length>1000||!date(study.completedAt)||Date.parse(study.completedAt)<Date.parse(study.created)))fail('主动结束状态缺少原因或有效结束时间');
+  if(study.runtime!==undefined){
+    const r=study.runtime,phases=['familiar','adapt','task','transition','rating','ratingRest','stageRest','done','stopped','abandoned'];
+    if(!r||!phases.includes(r.phase)||!Number.isInteger(r.groupIndex)||!finite(r.groupIndex,0,groups.length)||!Number.isInteger(r.taskIndex)||!finite(r.taskIndex,0,3)||!finite(r.elapsed,0,1e12)||!finite(r.extraAdapt,0,1e12)||typeof r.paused!=='boolean'||typeof r.engaged!=='boolean'||(r.paused&&r.engaged)||!finite(r.createdWall,0,8640000000000000)||!finite(r.lastActiveAt,0,8640000000000000))fail('恢复运行状态无效');
+    for(const key of ['pauseStartedAt','waitStartedAt','ratingStartedAt'])if(r[key]!==undefined&&!finite(r[key],0,8640000000000000))fail('恢复时间戳无效');
+    if(r.restRemaining!==undefined&&!finite(r.restRemaining,0,11000))fail('剩余评分休息时间无效');
+    if(r.roundPlannedStart!==undefined&&!finite(r.roundPlannedStart,0,1e12))fail('比较轮计划耗时基点无效');
+    if(r.partial!==undefined&&r.partial!==null&&!partialValid(r.partial))fail('当前任务中断快照无效');
+    if(r.phase!=='done'&&r.groupIndex>=groups.length)fail('当前条件索引超出计划');
+    if(r.phase==='done'&&(r.groupIndex!==groups.length||!study.retest||!groups.every(g=>groupComplete(study,g))||!date(study.completedAt)))fail('已完成状态缺少全部结果');
+    if(r.phase==='familiar'&&r.groupIndex!==0)fail('共同熟悉阶段索引无效');
+    if(r.phase==='transition'&&r.taskIndex>2)fail('任务间过渡索引无效');
+    const current=groups[r.groupIndex];
+    if(r.phase==='stageRest'&&(!study.retest||current?.stage!=='retest'||current.round!==1))fail('阶段休息位置无效');
+    if(['rating','ratingRest'].includes(r.phase)&&(!current||!TASKS.every(t=>blockValid(study.results[current.id]?.tasks?.[t]))||!finite(r.ratingStartedAt,0,8640000000000000)))fail('评分阶段缺少任务或开始时间');
+    if(r.phase==='ratingRest'&&(!groupComplete(study,current)||!finite(r.restRemaining,0,11000)))fail('评分休息阶段缺少明确评分');
+    if(r.phase==='stopped'&&(!date(study.completedAt)||!Object.values(study.results).some(result=>result.rating?.pain)))fail('不适停止状态缺少记录');
+    if(r.phase==='abandoned'&&(study.status!=='abandoned'||r.paused||r.engaged))fail('主动结束状态不能仍在运行或暂停');
+    if(!study.timing||typeof study.timing!=='object'||['plannedElapsedMs','activeMs','extraAdaptMs','ratingExtraMs','pauseMs','faultMs','waitMs'].some(k=>!finite(study.timing[k],0,1e12)))fail('实验耗时累计无效');
+    if(!study.inputCheck||!Number.isInteger(study.inputCheck.events)||!finite(study.inputCheck.events,0,1e12)||!finite(study.inputCheck.dx,0,1e15)||!finite(study.inputCheck.dy,0,1e15))fail('输入检查计数无效');
+    if(!study.segments.length)fail('缺少实际会话片段');
+  }else if(study.timing!==undefined||study.inputCheck!==undefined)fail('恢复记录缺少运行状态');
+  const computed=plan(study.mode,{screenCount:all.length,retestCount:study.retest?study.retest.candidateIds.length:Math.min(study.mode==='20min'?3:2,all.length)}).totalSeconds;if(study.plannedSeconds!==computed)fail('计划总时长不一致');
+  analyze(study,'screen');if(study.retest)analyze(study,'retest');return study;
+}
+const api={VERSION,PROTOCOL_VERSION:VERSION,TASKS,NAMES,QUALITY,modeName,rng,shuffle,candidates,plan,groupSteps,createStudy,groupComplete,selectRetest,freezeRetest,analyze,validateStudy};
+root.SensSession=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script>
+<script>
+/* Single-session experiment runtime. No legacy study is modified. */
+(function (root) {
+'use strict';
+function create(bridge) {
+  const B=bridge, S=B.S||root.SensSession, M=B.M, doc=B.document||root.document;
+  const clock=B.clock||{now:()=>performance.now(),wall:()=>Date.now(),raf:f=>requestAnimationFrame(f),caf:id=>cancelAnimationFrame(id)};
+  const $=id=>doc.getElementById(id), esc=B.esc||String, fmt=B.fmt||((x,n=2)=>Number.isFinite(x)?x.toFixed(n):'—');
+  const TASKS=['micro','switch','track','turn'], NAMES={micro:'微调精度',switch:'目标切换',track:'连续跟枪',turn:'大角度转向'};
+  const TERMINAL=['done','stopped','abandoned'];
+  const LONG_GAP=5*60*1000;
+  let frame=null, live=null, disposed=false, storageFailed=false;
+  const state=()=>B.getData();
+  const activeStudy=()=>state().singleStudies?.find(x=>x.id===state().singleActive)||null;
+  const runtime=()=>activeStudy()?.runtime;
+  const isActive=()=>!!activeStudy()&&!TERMINAL.includes(runtime()?.phase)&&!!runtime()?.engaged;
+  const iso=()=>new Date(clock.wall()).toISOString();
+  const candidate=(s,g)=>s.candidates.find(c=>c.id===g.candidateId);
+  const group=()=>{const s=activeStudy();return s?.groups[s.runtime.groupIndex]||null;};
+  function stopFrame(){if(frame!==null)clock.caf(frame);frame=null;}
+  function release(){live=null;stopFrame();B.releaseLock();}
+  function save(){
+    if(B.save()!==false){storageFailed=false;return true;}
+    storageFailed=true;const r=runtime(),s=activeStudy();if(r){if(live&&live.phase==='task'&&r.phase==='task'&&live.task===group().taskOrder[r.taskIndex]){s.attempts.push({groupId:group().id,task:live.task,reason:'存储失败，当前任务中断',created:iso(),valid:false,partial:partial(live)});s.timing.faultMs+=r.elapsed;r.elapsed=0;r.partial=null;}if(!TERMINAL.includes(r.phase)){r.paused=true;r.pauseStartedAt??=clock.wall();}r.engaged=false;r.lastActiveAt=clock.wall();}
+    release();B.modal('<h2>数据尚未写入浏览器</h2><p>已完成数据仍在本页内存中。请先导出备份，检查存储后继续；关闭页面可能丢失未保存内容。</p><div class="row"><button data-single-action="export">导出备份</button><button data-single-action="resume">重试保存并继续</button></div>');return false;
+  }
+  function rules(s){const c=s.configSnapshot;return `权重 ${c.weights.map(x=>Math.round(x*100)+'%').join(' / ')}；实用差异 ${fmt(c.margin*100,1)}%；单项下降上限 ${fmt(c.taskDrop*100,1)}%；微调命中率下降 ${fmt(c.accDrop*100,1)} 个百分点；费力度 ≤${c.maxEffort}。`;}
+  function setupNote(){const d=state(),c=d.settings;return c?`${c.dpi} DPI · 基准约 ${fmt(c.baseCm,2)} cm/360 · 舒适横向行程 ${fmt(c.swipe,1)} cm（${(c.swipeEstimated??c.swipe===20)?'估计':'当前填写值'}，仅作范围提示）`:'基础设置尚未保存；可保留现有值后继续。';}
+  function start(mode){
+    if(storageFailed&&!save())return false;
+    const unfinished=state().singleStudies?.find(x=>x.runtime&&!TERMINAL.includes(x.runtime.phase));if(unfinished){state().singleActive=unfinished.id;B.toast('已有未完成测试，请继续该测试；已完成成绩不会因重开而被挑选替换。',true);renderLab();return false;}
+    if(painToday()){B.toast('今天已经记录疼痛或明显不适，请停止今天的正式测试；已有记录保留。',true);return false;}
+    const status=B.calibrationStatus();if(!status.ready){B.toast(status.detail||status.title,true);renderLab();return false;}
+    const d=state();if(!d.settings||!d.calibration||!B.inputCompatible(d.calibration.env,B.getEnv())||d.calibration.dpi!==d.settings.dpi){B.toast('DPI或物理输入校准不匹配，请查看具体设备提示；已有记录保留。',true);return false;}
+    const s=S.createStudy({mode,config:structuredClone(d.settings),calibration:structuredClone(d.calibration),seed:seed(),id:B.uid(),now:iso(),provenance:{settings:'saved',parameterSources:structuredClone(d.parameterSources||{}),swipeEstimated:d.settings.swipeEstimated??d.settings.swipe===20,measurementNote:'基准保留原测量值；弧线和端点带来测量不确定性，不增加显示精度。'}});
+    s.runtime={phase:'familiar',groupIndex:0,taskIndex:0,elapsed:0,extraAdapt:0,paused:true,engaged:false,lastActiveAt:clock.wall(),createdWall:clock.wall()};
+    s.timing={plannedElapsedMs:0,activeMs:0,extraAdaptMs:0,ratingExtraMs:0,pauseMs:0,faultMs:0,waitMs:0};
+    s.inputCheck={events:0,dx:0,dy:0};s.segments=[{startedAt:iso(),reason:'开始单次测试'}];
+    (d.singleStudies??=[]).push(s);d.singleActive=s.id;
+    if(!save())return false;showResume();renderLab();return true;
+  }
+  function seed(){return root.crypto?.getRandomValues?root.crypto.getRandomValues(new Uint32Array(1))[0]:Math.floor(Math.random()*4294967296);}
+  function remaining(s){const completed=Object.values(s.results).reduce((n,r)=>n+TASKS.filter(t=>r.tasks?.[t]?.valid).length,0),future=s.retest?0:(s.mode==='20min'?9:4)*4;return Math.max(0,s.groups.length*4+future-completed);}
+  function elapsedWall(s){return Math.max(0,(s.completedAt?Date.parse(s.completedAt):clock.wall())-s.runtime.createdWall);}
+  function painToday(){
+    const today=new Date(clock.wall()).toDateString();let found=false;
+    function walk(v,date,depth=0){if(found||!v||typeof v!=='object'||depth>12)return;const stamp=v.answeredAt||v.completedAt||v.day||v.created||v.date||v.startedAt||date;if((v.pain===true||v.pain==='yes')&&stamp&&new Date(stamp).toDateString()===today){found=true;return;}for(const x of Object.values(v))if(x&&typeof x==='object')walk(x,stamp,depth+1);}
+    walk(state().singleStudies);walk(state().studies);walk(state().field);return found;
+  }
+  function historyMarkup(){const all=state().singleStudies||[];return all.length>1?`<label class="space">单次实验历史<select id="singleHistory">${all.map(x=>`<option value="${esc(x.id)}" ${x.id===state().singleActive?'selected':''}>${esc(new Date(x.created).toLocaleString())} · ${x.mode==='20min'?'20分钟':'10分钟'} · ${x.runtime.phase==='done'?'完成':x.runtime.phase==='stopped'?'不适停止':x.runtime.phase==='abandoned'?'已结束（不完整）':'未完成'}</option>`).join('')}</select></label><button data-single-action="history">查看所选记录</button>`:'';}
+  function selectHistory(id){const s=activeStudy();if(isActive()||live||s&&!TERMINAL.includes(s.runtime.phase)){B.toast('请先完成当前测试；测试期间不切换记录。',true);return false;}const found=state().singleStudies.find(x=>x.id===id);if(!found)return false;state().singleActive=id;if(!save())return false;renderLab();renderResults();B.go('results');return true;}
+  function markRound(){const s=activeStudy(),r=s.runtime,g=group(),key=g.stage+'-'+g.round;if(r.roundKey!==key){r.roundKey=key;r.roundPlannedStart=s.timing.plannedElapsedMs;r.roundEnv=structuredClone(B.getEnv());}}
+  function renderLab(){
+    const el=$('singleLabRoot');if(!el)return;
+    const s=activeStudy(),status=B.calibrationStatus();
+    el.innerHTML=`<div class="card space"><div class="eyebrow">SINGLE SESSION · 同一天完成</div><h2>一次完整比较，再决定是否换敏</h2><p class="space">${esc(setupNote())}</p><details><summary>查看当前设置与分析规则</summary><p>已保存值优先；新实验冻结这些值。20 cm行程仅是估计，不参与评分或候选淘汰。窗口和FOV变化会暂停任务，不自动删除物理校准。</p><p>${s?esc(rules(s)):'沿用已保存的四项权重、实用差异及舒适度标准。'}</p><button data-single-action="settings">查看设备与校准</button></details>
+      <p class="${status.ready?'accent':'warn'}">${esc(status.detail||status.title)}</p><div class="row space"><button class="primary" data-single-action="start20">开始20分钟完整测试</button><button data-single-action="start10">开始10分钟快速测试</button>${s&&!TERMINAL.includes(s.runtime?.phase)?'<button class="primary" data-single-action="resume">继续未完成测试</button><button data-single-action="abandon">结束本次并保留记录</button>':''}<button data-single-action="practice">不计分练习</button></div>${historyMarkup()}
+      <p class="tiny space">20分钟：40秒熟悉＋5×80秒粗筛＋40秒休息＋3条件×3轮×80秒复测。10分钟：40＋3×80＋40＋2条件×2轮×70。每项正式任务固定12秒；适应不是充分训练的保证。评分超时、主动暂停、延长练习和故障重试另计。</p>
+      ${s?`<div class="notice"><strong>${s.mode==='20min'?'本次会话内多轮复测':'快速局部筛选'}</strong> · 计划 ${fmt(s.plannedSeconds/60,1)} 分钟 · 实际经过 ${fmt(elapsedWall(s)/60000,1)} 分钟 · 额外主动/等待/故障时间 ${fmt(extra(s)/1000,0)} 秒 · 尚余 ${remaining(s)} 项正式任务（粗筛阶段包含预计复测）。${s.retest&&s.retest.candidateIds.length<(s.mode==='20min'?3:2)?'符合粗筛条件的候选较少；按实际 '+s.retest.candidateIds.length+' 个条件复测，计划已相应缩短。':''}${s.runtime.phase==='done'?'本次已完成，可查看结果。':s.runtime.phase==='stopped'?'已因不适停止，记录保留。':s.runtime.phase==='abandoned'?'本次已主动结束，记录不完整并保留。':s.runtime.paused?'已暂停，点击继续。':''}</div><button data-single-action="results">查看本次结果与进度</button>`:''}</div>`;
+  }
+  function extra(s){const t=s.timing;return t.extraAdaptMs+t.ratingExtraMs+t.pauseMs+t.faultMs+t.waitMs;}
+  function showResume(){
+    const s=activeStudy();if(!s)return;
+    const r=s.runtime;if(TERMINAL.includes(r.phase)){B.closeStage();renderResults();B.go('results');return;}
+    if(r.phase==='rating'){showRating();return;}
+    if(r.phase==='ratingRest'){B.openStage();r.engaged=false;r.paused=false;showRest();makeLive();return;}
+    B.openStage();r.engaged=false;r.paused=true;r.waitStartedAt??=clock.wall();
+    const g=group(), name=r.phase==='familiar'?'40秒共同熟悉与输入检查':r.phase==='stageRest'?'粗筛完成 · 40秒阶段休息':`${g.stage==='screen'?'粗筛':'复测第'+g.round+'轮'} · 条件${candidate(s,g).label}`;
+    B.modal(`<h2>${name}</h2><p>系统箭头会隐藏；屏幕中央白色准星是瞄准点。鼠标转动视角。微调、切换、转向用左键；跟枪只需持续覆盖目标。</p><p>每项正式任务12秒，零命中也会保留；Esc/失焦只中断当前任务。这只是数值遮蔽，不是真正双盲；手感仍可能被识别。</p><div class="row"><button class="primary" data-single-action="lock">锁定鼠标并继续</button>${['adapt','familiar'].includes(r.phase)?'<button data-single-action="extend">还没适应，延长练习15秒</button>':''}<button data-single-action="close">稍后继续</button></div>`);
+  }
+  function resume(){
+    const s=activeStudy();if(!s)return;
+    if(storageFailed&&!save())return;
+    if(TERMINAL.includes(s.runtime.phase)){showResume();return;}
+    if(!TERMINAL.includes(s.runtime.phase)&&blockChangedInput(s))return;
+    const r=s.runtime,gap=Math.max(0,clock.wall()-(r.lastActiveAt||clock.wall()));
+    if(r.pauseStartedAt!==undefined){const pausedFor=Math.max(0,clock.wall()-r.pauseStartedAt);s.timing.pauseMs+=pausedFor;if(r.phase==='rating'&&Number.isFinite(r.ratingStartedAt))r.ratingStartedAt+=pausedFor;delete r.pauseStartedAt;r.lastActiveAt=clock.wall();}
+    if(gap>LONG_GAP){s.segments.push({startedAt:iso(),reason:'超过5分钟后恢复（工程分段阈值）',gapMs:gap});restartRound('长间隔恢复，重做本比较轮');}
+    if(!save())return;showResume();
+  }
+  function changedInput(s){
+    const current=state().settings;if(!current)return'当前已保存设备设置缺失';
+    if(current.dpi!==s.calSnapshot.dpi)return`当前声明为 ${current.dpi} DPI，本次冻结校准使用 ${s.calSnapshot.dpi} DPI`;
+    const original=s.calSnapshot.deviceNotes??s.configSnapshot.environment??'';
+    if((current.environment||'')!==original)return'当前设备说明或输入路径声明与本次开始时不同';
+    if(!B.inputCompatible(s.calSnapshot.env,B.getEnv()))return'当前浏览器输入环境与本次冻结校准不同';
+    return null;
+  }
+  function blockChangedInput(s){
+    const reason=changedInput(s);if(!reason)return false;
+    if(live)pause(reason);else{release();const r=s.runtime;if(r.waitStartedAt!==undefined){s.timing.waitMs+=Math.max(0,clock.wall()-r.waitStartedAt);delete r.waitStartedAt;}r.paused=true;r.engaged=false;r.pauseStartedAt??=clock.wall();}
+    if(storageFailed)return true;B.openStage();B.modal(`<h2>物理输入已变化，不能继续旧实验</h2><p>${esc(reason)}。请恢复本次原来的鼠标、DPI和输入路径后继续；如果确实已换设备，请结束本次并保留记录，再校准和新建实验。</p><p>冻结的校准与已完成记录不会被最新校准覆盖。仅修改基准、FOV或分析权重不会使原实验失效。</p><div class="row"><button data-single-action="close">返回并检查设备设置</button><button data-single-action="abandon-device">结束本次并保留记录</button></div>`);return true;
+  }
+  function requestLock(){const s=activeStudy();if(!s||TERMINAL.includes(s.runtime.phase)||blockChangedInput(s))return;const r=s.runtime;r.waitStartedAt??=clock.wall();B.requestLock();}
+  function onLocked(){
+    const s=activeStudy();if(!s)return false;
+    if(['rating','ratingRest',...TERMINAL].includes(s.runtime.phase)){B.releaseLock();return false;}
+    if(blockChangedInput(s))return false;
+    s.runtime.paused=false;
+    if(B.getRawMode()!=='requested'){pause('未确认原始输入，正式测试不开始');return false;}
+    if(!B.inputCompatible(s.calSnapshot.env,B.getEnv())||s.calSnapshot.dpi!==s.configSnapshot.dpi){pause('设备、DPI或输入路径发生变化，请检查校准；已有记录保留');return false;}
+    const old=s.runtime.roundEnv,now=B.getEnv();if(old&&(old.w!==now.w||old.h!==now.h)&&!['familiar','stageRest'].includes(s.runtime.phase)){s.segments.push({startedAt:iso(),reason:'恢复时显示尺寸变化'});restartRound('恢复时显示尺寸变化，重做本比较轮');}
+    const r=s.runtime;if(['rating','ratingRest',...TERMINAL].includes(r.phase)){B.releaseLock();return false;}if(r.waitStartedAt!==undefined){s.timing.waitMs+=Math.max(0,clock.wall()-r.waitStartedAt);delete r.waitStartedAt;}
+    r.paused=false;r.engaged=true;r.lastActiveAt=clock.wall();B.hideModal();makeLive();return true;
+  }
+  function phaseSeconds(){const s=activeStudy(),r=s.runtime,g=group();return r.phase==='familiar'?40:r.phase==='stageRest'?40:r.phase==='adapt'?g.adaptSeconds:r.phase==='task'?12:r.phase==='transition'?2:r.phase==='ratingRest'?(r.restRemaining||0)/1000:0;}
+  function makeLive(){
+    stopFrame();const s=activeStudy(),r=s.runtime,g=group(),task=r.phase==='task'?g.taskOrder[r.taskIndex]:'track';
+    const rng=M.rng((g?.seed||s.seed)+(TASKS.indexOf(task)+3)*7321);
+    live={owner:s.id,phase:r.phase,task,y:0,p:0,start:clock.now(),previous:clock.now(),env:structuredClone(B.getEnv()),radius:M.rad(1.1),target:M.vec(0,0),rng,nodes:Array.from({length:80},()=>({y:(rng()-.5)*1.65,p:(rng()-.5)*.4})),hits:0,shots:0,index:0,trials:[],trialStart:0,trialShots:0,onTime:0,sqTime:0,integrated:0,pathCm:0,frames:[],longFrames:0,trace:[],lastTrace:0,savedSecond:-1};
+    if(r.phase==='task'&&task!=='track')spawn(live,0);
+    schedule(live);
+  }
+  function schedule(owner){frame=clock.raf(now=>{if(disposed||live!==owner)return;frame=null;try{tick(now);}catch(e){pause('场景或输入处理异常：'+e.message);}});}
+  function stepTime(dt){const s=activeStudy(),r=s.runtime;r.elapsed+=dt;s.timing.activeMs+=dt;r.lastActiveAt=clock.wall();}
+  function tick(now){
+    const l=live,s=activeStudy();if(!l||!s||s.id!==l.owner)return;
+    const r=s.runtime,dt=Math.max(0,now-l.previous);l.previous=now;
+    if(r.phase==='ratingRest'){
+      stepTime(Math.min(dt,Math.max(0,phaseSeconds()*1000-r.elapsed)));
+      if($('singleRestTime'))$('singleRestTime').textContent=Math.ceil(Math.max(0,phaseSeconds()*1000-r.elapsed)/1000);
+      if(r.elapsed>=phaseSeconds()*1000){advanceGroup();return;}schedule(l);return;
+    }
+    if(doc.pointerLockElement!==B.getArena()){pause('鼠标锁定丢失');return;}
+    const current=B.getEnv();if(JSON.stringify(current)!==JSON.stringify(l.env)){pause('显示环境变化，当前任务暂停',{restartRound:true});return;}
+    if(dt>250||dt>100&&++l.longFrames>=3){pause('显著卡顿，当前任务作为故障中断');return;}
+    if(dt>0)l.frames.push(dt);
+    const base=phaseSeconds()*1000,limit=base+(['adapt','familiar'].includes(r.phase)?r.extraAdapt:0),step=Math.min(dt,Math.max(0,limit-r.elapsed));
+    stepTime(step);
+    if(r.phase==='task'){
+      const elapsed=r.elapsed;
+      if(l.task==='track'){
+        l.target=tracking(l,elapsed/1000);const error=M.angle(M.vec(l.y,l.p),l.target);
+        l.onTime+=(error<=l.radius?step:0);l.sqTime+=error*error*step;l.integrated+=step;
+        if(elapsed-l.lastTrace>=200){l.trace.push([elapsed,M.deg(error)]);l.lastTrace=elapsed;}
+      }else if(elapsed<12000&&elapsed-l.trialStart>=(l.task==='turn'?5000:4000))trial(false,elapsed,true);
+    }else if(['adapt','familiar'].includes(r.phase))l.target=tracking(l,(r.elapsed%30000)/1000);
+    const g=group(),cand=g?candidate(s,g):s.candidates.find(c=>c.baseline);
+    $('hudTitle').textContent=r.phase==='task'?NAMES[l.task]:r.phase==='familiar'?'共同熟悉 · 不计分':r.phase==='adapt'?'条件适应 · 不计分':r.phase==='transition'?'任务过渡 · 不计分':'阶段休息 · 不计分';
+    $('hudDetail').textContent=`${g&&r.phase!=='familiar'?`${g.stage==='screen'?'粗筛':'复测第'+g.round+'轮'} · 条件${cand.label} · `:''}计划 ${fmt(s.plannedSeconds/60,1)} 分钟 · 剩余 ${remaining(s)} 项`;
+    $('hudRight').textContent=Math.max(0,(limit-r.elapsed)/1000).toFixed(1)+' s';
+    $('hudInput').textContent=`原始输入已请求 · ${s.inputCheck.events} 次移动事件（不代替物理校准）`;
+    const upcoming=r.phase==='transition'?g.taskOrder[r.taskIndex+1]:r.phase==='adapt'?g.taskOrder[0]:l.task,operation=upcoming==='track'?'准星持续覆盖目标，无需开火':'准星瞄准目标后左键单击';
+    $('stageHelp').textContent=`系统箭头已隐藏 · 中央准星瞄准 · ${['adapt','transition'].includes(r.phase)?'接下来 '+NAMES[upcoming]+'：':''}${operation} · ${['adapt','familiar'].includes(r.phase)?'E再练15秒 · ':''}Esc暂停`;
+    B.drawScene(B.ctx,current.w,current.h,l.y,l.p,['task','adapt','familiar'].includes(r.phase)?l.target:null,l.radius,B.actualHFov(s.configSnapshot,current.w,current.h));
+    const second=Math.floor(r.elapsed/1000);if(second!==l.savedSecond){l.savedSecond=second;r.partial=r.phase==='task'?partial(l):null;if(!save())return;}
+    if(r.elapsed>=limit){finishPhase();return;}schedule(l);
+  }
+  function partial(l){return{task:l.task,elapsed:runtime().elapsed,hits:l.hits,shots:l.shots,trials:structuredClone(l.trials),trace:structuredClone(l.trace),pathCm:l.pathCm};}
+  function finishPhase(){
+    const s=activeStudy(),r=s.runtime,l=live,g=group();if(!l)return;
+    if(r.phase==='task'){
+      if(l.task!=='track')l.trials.push({index:l.index,hit:false,censored:true,ms:r.elapsed-l.trialStart,shots:l.trialShots});
+      const accuracy=l.task==='track'?l.onTime/12000:l.hits/Math.max(1,l.shots);
+      const b={valid:true,task:l.task,duration:12000,actualDuration:r.elapsed,score:l.task==='track'?accuracy:l.hits/12,accuracy,hits:l.hits,shots:l.shots,timeouts:l.trials.filter(x=>x.timeout).length,meanAcquireMs:l.trials.some(x=>x.hit)?M.mean(l.trials.filter(x=>x.hit).map(x=>x.ms)):null,rmsDeg:l.task==='track'?M.deg(Math.sqrt(l.sqTime/12000)):null,pathCm:l.pathCm,trials:l.trials,trace:l.trace,frameFps:1000/M.median(l.frames),raw:B.getRawMode(),seed:g.seed,env:l.env,created:iso(),unfinishedTarget:'right-censored-at-12s'};
+      const result=s.results[g.id]??={tasks:{},env:l.env};
+      if(!result.tasks[l.task])result.tasks[l.task]=b;
+      s.timing.plannedElapsedMs+=12000;r.partial=null;
+      if(r.taskIndex<3){r.phase='transition';r.elapsed=0;}else{r.phase='rating';r.elapsed=0;r.ratingStartedAt=clock.wall();r.engaged=false;release();if(save())showRating();return;}
+    }else if(r.phase==='familiar'){
+      if(s.inputCheck.events<2){s.timing.faultMs+=r.elapsed;r.elapsed=0;pause('40秒内没有收到足够鼠标移动；这只是输入检查，重新熟悉后再进入正式计分');return;}
+      s.timing.plannedElapsedMs+=40000;s.timing.extraAdaptMs+=Math.max(0,r.elapsed-40000);r.phase='adapt';r.elapsed=0;r.extraAdapt=0;markRound();
+    }else if(r.phase==='adapt'){
+      s.timing.plannedElapsedMs+=g.adaptSeconds*1000;s.timing.extraAdaptMs+=Math.max(0,r.elapsed-g.adaptSeconds*1000);(s.results[g.id]??={tasks:{}}).adaptMs=r.elapsed;r.phase='task';r.taskIndex=0;r.elapsed=0;r.extraAdapt=0;
+    }else if(r.phase==='transition'){s.timing.plannedElapsedMs+=2000;r.phase='task';r.taskIndex++;r.elapsed=0;}
+    else if(r.phase==='stageRest'){s.timing.plannedElapsedMs+=40000;r.phase='adapt';r.elapsed=0;r.taskIndex=0;markRound();}
+    if(save())makeLive();
+  }
+  function showRating(){
+    const s=activeStudy(),r=s.runtime,g=group();release();r.engaged=false;r.paused=false;B.openStage();
+    B.modal(`<h2>条件${candidate(s,g).label} · 记录感受</h2><p>请明确回答两项。页面会等待，不自动填0分或“无疼痛”。评分与短休预算共${g.ratingSeconds}秒，超过部分计为额外耗时。</p><div class="formgrid"><label>费力度（0–10）<select id="singleEffort"><option value="">请选择</option>${Array.from({length:11},(_,i)=>`<option value="${i}">${i}</option>`).join('')}</select></label><label>疼痛或明显不适<select id="singlePain"><option value="">请选择</option><option value="no">没有</option><option value="yes">有，停止测试</option></select></label></div><button class="primary" data-single-action="rate">保存评分</button><p id="singleRatingError" class="bad"></p>`);
+  }
+  function showRest(){B.modal('<h2>评分已保存 · 短暂休息</h2><p>剩余 <span id="singleRestTime">'+Math.ceil(Math.max(0,phaseSeconds()*1000-runtime().elapsed)/1000)+'</span> 秒。下一组需点击重新锁定鼠标。</p><button data-single-action="close">暂停，稍后继续</button>');}
+  function rate(effort,pain){
+    const s=activeStudy(),r=s?.runtime,g=group();if(!s||r.phase!=='rating')return false;
+    if(effort===''||!Number.isInteger(+effort)||+effort<0||+effort>10||!['yes','no'].includes(pain)){if($('singleRatingError'))$('singleRatingError').textContent='请选择费力度，并明确选择是否疼痛。';return false;}
+    const elapsed=Math.max(0,clock.wall()-r.ratingStartedAt),budget=g.ratingSeconds*1000;
+    const result=s.results[g.id];result.rating={effort:+effort,pain:pain==='yes',answeredAt:iso()};result.completedAt=iso();result.ratingMs=elapsed;
+    s.timing.ratingExtraMs+=Math.max(0,elapsed-budget);s.timing.plannedElapsedMs+=Math.min(elapsed,budget);
+    if(pain==='yes'){r.phase='stopped';r.engaged=false;s.status='stopped';s.stoppedReason='疼痛或明显不适';s.completedAt=iso();if(!save())return false;B.modal('<h2>已记录不适，测试停止</h2><p>请停止今天的测试。已完成记录保留，不通过舒适度守门线；不必为了凑满计划继续。</p><button data-single-action="results">查看已有记录</button>');renderLab();return true;}
+    r.restRemaining=Math.max(0,budget-elapsed);r.phase='ratingRest';r.elapsed=0;r.engaged=false;if(!save())return false;
+    if(r.restRemaining===0)advanceGroup();else{showRest();makeLive();}return true;
+  }
+  function advanceGroup(){
+    const s=activeStudy(),r=s.runtime,g=group();s.timing.plannedElapsedMs+=r.restRemaining||0;r.restRemaining=0;r.groupIndex++;r.taskIndex=0;r.elapsed=0;release();
+    if(g.stage==='screen'&&r.groupIndex===s.groups.length){S.freezeRetest(s,{now:iso()});r.phase='stageRest';}
+    else if(r.groupIndex>=s.groups.length){r.phase='done';s.status='completed';s.completedAt=iso();r.engaged=false;r.paused=false;if(save()){B.closeStage();renderLab();renderResults();B.go('results');}return;}
+    else{r.phase='adapt';markRound();}
+    r.paused=true;r.engaged=false;r.lastActiveAt=clock.wall();r.waitStartedAt=clock.wall();if(save()){showResume();renderLab();}
+  }
+  function restartRound(reason){
+    const s=activeStudy(),r=s.runtime,g=group();if(!g||['familiar','stageRest'].includes(r.phase))return;
+    const ids=s.groups.filter(x=>x.stage===g.stage&&x.round===g.round).map(x=>x.id);
+    const records={};for(const id of ids)if(s.results[id]){records[id]=structuredClone(s.results[id]);delete s.results[id];}
+    const spent=Math.max(0,s.timing.plannedElapsedMs-(r.roundPlannedStart??s.timing.plannedElapsedMs));
+    s.timing.faultMs+=spent+(['adapt','transition','ratingRest'].includes(r.phase)?r.elapsed:0);s.timing.plannedElapsedMs-=spent;
+    (s.discardedRounds??=[]).push({stage:g.stage,round:g.round,reason,created:iso(),records});
+    r.groupIndex=s.groups.findIndex(x=>x.id===ids[0]);r.taskIndex=0;r.phase='adapt';r.elapsed=0;r.extraAdapt=0;r.roundEnv=structuredClone(B.getEnv());
+    s.warnings??=[];s.warnings.push(reason+'；原轮全部记录保留在备份中，不混入新的配对轮。');
+  }
+  function pause(reason,options={}){
+    const s=activeStudy(),r=s?.runtime;if(!s||TERMINAL.includes(r.phase))return;
+    if(r.paused&&!live)return;
+    if(live&&r.phase==='task'){
+      s.attempts.push({groupId:group().id,task:live.task,reason,created:iso(),valid:false,partial:partial(live)});s.timing.faultMs+=r.elapsed;r.elapsed=0;r.partial=null;
+    }
+    if(!r.paused||r.pauseStartedAt===undefined){r.lastActiveAt=clock.wall();r.pauseStartedAt=clock.wall();}delete r.waitStartedAt;r.paused=true;r.engaged=false;release();
+    if(options.restartRound||/窗口|视野|FOV|显示环境/.test(reason)){s.segments.push({startedAt:iso(),reason});restartRound(reason);}
+    if(!save())return;
+    B.modal(`<h2>本次测试已暂停</h2><p>${esc(reason)}。已完成任务保留；当前中断任务及原因也会保存，不按得分选择重测。</p><p>恢复超过5分钟将分段记录；复测阶段重做当前配对轮，保留旧轮历史。窗口变化不自动清除物理校准。</p><div class="row"><button class="primary" data-single-action="resume">准备好，继续</button>${['adapt','familiar'].includes(r.phase)?'<button data-single-action="extend">还没适应，延长练习15秒</button>':''}<button data-single-action="close">稍后继续</button></div>`);renderLab();
+  }
+  function abandon(reason='用户主动结束本次测试'){
+    const s=activeStudy();if(!s||TERMINAL.includes(s.runtime.phase))return false;
+    const confirm=B.confirm||root.confirm;if(!confirm||!confirm('结束本次并保留记录？已完成成绩和中断记录全部保留，本次标记为不完整，不给换敏推荐。原因：'+reason))return false;
+    pause(reason);const r=s.runtime;if(r.pauseStartedAt!==undefined){s.timing.pauseMs+=Math.max(0,clock.wall()-r.pauseStartedAt);delete r.pauseStartedAt;}
+    release();r.phase='abandoned';r.paused=false;r.engaged=false;s.status='abandoned';s.abandonedReason=String(reason).slice(0,1000);s.completedAt=iso();
+    if(!save())return false;B.closeStage();renderLab();renderResults();B.go('results');return true;
+  }
+  function extend(){const s=activeStudy(),r=s?.runtime;if(!r||!['adapt','familiar'].includes(r.phase))return;r.extraAdapt+=15000;(s.extensions??=[]).push({phase:r.phase,groupId:group()?.id,seconds:15,created:iso()});save();B.toast('已增加15秒不计分练习，实际流程将延长。');}
+  function spawn(l,t){const sets=l.task==='micro'?[2,4,7]:l.task==='switch'?[15,30,45]:[90,120,160],a=M.rad(sets[l.index%3]);let phi=l.task==='turn'?(l.rng()<.5?0:Math.PI)+(l.rng()-.5)*.07:l.rng()*2*Math.PI;l.radius=M.rad(l.task==='micro'?(l.index%2?.5:.3):l.task==='switch'?(l.index%2?1.1:.8):2);l.target=M.relative(l.y,l.p,a,phi);if(Math.abs(l.target[1])>Math.sin(M.rad(65)))l.target=M.relative(l.y,l.p,a,l.rng()<.5?0:Math.PI);l.amplitude=M.deg(a);l.trialStart=t;l.trialShots=0;}
+  function trial(hit,t,timeout=false){const l=live;l.trials.push({index:l.index,hit,timeout,ms:t-l.trialStart,shots:l.trialShots,errorDeg:M.deg(M.angle(M.vec(l.y,l.p),l.target)),amplitude:l.amplitude,radiusDeg:M.deg(l.radius)});if(hit)l.hits++;l.index++;spawn(l,t);}
+  function cat(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);}
+  function tracking(l,sec){const v=sec/1.15,k=Math.floor(v),t=v-k,n=l.nodes;return M.vec(cat(n[k].y,n[k+1].y,n[k+2].y,n[k+3].y,t),cat(n[k].p,n[k+1].p,n[k+2].p,n[k+3].p,t));}
+  function mousemove(e){
+    if(!isActive()||!live||doc.pointerLockElement!==B.getArena())return;
+    const dx=e.movementX,dy=e.movementY;if(!Number.isFinite(dx)||!Number.isFinite(dy)){pause('输入事件含非有限数值');return;}
+    if(!dx&&!dy)return;const s=activeStudy(),l=live,g=group(),cm=runtime().phase==='familiar'?s.configSnapshot.baseCm:g?candidate(s,g).cm:s.configSnapshot.baseCm;
+    s.inputCheck.events++;s.inputCheck.dx+=Math.abs(dx);s.inputCheck.dy+=Math.abs(dy);
+    l.y+=dx/s.calSnapshot.ux*2*Math.PI/cm;l.y=Math.atan2(Math.sin(l.y),Math.cos(l.y));l.p=M.clamp(l.p-dy/s.calSnapshot.uy*2*Math.PI/cm,-M.rad(85),M.rad(85));l.pathCm+=Math.hypot(dx/s.calSnapshot.ux,dy/s.calSnapshot.uy);
+  }
+  function mousedown(e){if(e.button!==0||!isActive()||!live||runtime().phase!=='task'||live.task==='track'||doc.pointerLockElement!==B.getArena())return;e.preventDefault();const t=runtime().elapsed;live.shots++;live.trialShots++;if(t-live.trialStart<(live.task==='micro'?80:100))return;if(M.angle(M.vec(live.y,live.p),live.target)<=live.radius)trial(true,t);}
+  function keydown(e){if(isActive()&&e.code==='KeyE'&&!e.repeat){e.preventDefault();extend();}}
+  function driftText(d){if(!d)return'尚无足够基准记录';const f=x=>Number.isFinite(x)?fmt(x*100,1)+'%':'数据不足';return '粗筛到复测均值 '+f(d.screenToRetest)+'，首轮到末轮复测 '+f(d.roundChange)+'。'+(d.note||'');}
+  function renderResults(){
+    const el=$('singleResultsRoot'),s=activeStudy();if(!el)return false;
+    if(!s){el.innerHTML='<div class="card space"><h2>单次测试结果</h2><p>还没有单次实验。旧多日实验保留在下方高级历史中。</p></div>';return false;}
+    const a=S.analyze(s,'retest'),rec=a.recommendation,full=TERMINAL.includes(s.runtime.phase),ready=s.runtime.phase==='done'&&rec.action==='try-candidate';
+    const headline=s.runtime.phase==='abandoned'?'本次已结束：记录不完整，不作换敏推荐':s.runtime.phase==='stopped'?'因疼痛或不适停止：不作换敏推荐':!full?'测试尚未完成：当前仅显示记录':rec.action==='insufficient'?'本次数据不足：尚不能判断换敏收益':ready?`本次更值得游戏试用：约 ${fmt(rec.cm,2)} cm/360`:'当前证据支持保留原灵敏度';
+    const rowHtml=a.rows.map(x=>`<tr><td>${fmt(x.cm,2)}${x.baseline?' · 基准':''}</td><td>${fmt(x.angleGain,3)}×（${fmt(x.angleGainChange*100,1)}%）</td><td>${fmt(x.relative,3)}</td>${x.taskRatios.map(y=>`<td>${Number.isFinite(y)?fmt((y-1)*100,1)+'%':'缺少有效配对'}</td>`).join('')}<td>${x.positiveRounds}/${a.requiredRounds}轮向上</td><td>${fmt(x.effort,1)} / 疼痛${x.pains}</td><td>${esc([...(x.gateReasons||[]),...(x.missingReasons||[])].join('；')||'通过本次工程检查')}</td></tr>`).join('');
+    const raw=s.groups.map(g=>{const result=s.results[g.id];if(!result)return'';return TASKS.map(t=>{const b=result.tasks?.[t];return b?`<tr><td>${g.stage==='screen'?'粗筛':'复测第'+g.round+'轮'}</td><td>${full?fmt(candidate(s,g).cm,2):'条件'+candidate(s,g).label}</td><td>${NAMES[t]}</td><td>${fmt(b.score,3)}</td><td>${fmt(b.accuracy*100,1)}%</td><td>${b.hits}/${b.shots}</td><td>${fmt(b.meanAcquireMs,0)}ms</td><td>${b.timeouts}</td><td>${fmt(b.rmsDeg,2)}°</td></tr>`:'';}).join('');}).join('');
+    el.innerHTML=`<div class="card space"><div class="eyebrow">${s.mode==='10min'?'快速局部筛选':'本次会话内多轮复测'}</div><h2>${headline}</h2><p class="space">${esc(s.runtime.phase==='abandoned'?s.abandonedReason:full?rec.reason:'完成预定复测后才作最终判断。粗筛成绩不会混入复测比较。')}</p><p>计划 ${fmt(s.plannedSeconds/60,1)} 分钟；实际经过 ${fmt(elapsedWall(s)/60000,1)} 分钟；已完成配对轮 ${a.pairedRounds}/${a.requiredRounds}。结果不代表终身最佳或跨日独立验证，不提供正式95%区间。</p>${a.boundary?'<p class="warn">领先点位于搜索边界，最佳点可能仍在范围外；不外推未测数值。</p>':''}${[...(a.warnings||[]),...(s.warnings||[])].map(w=>`<p class="warn">${esc(w)}</p>`).join('')}
+    <p class="tiny">工程最低数据线：每任务有效时长≥11.9秒，点选每块至少2次命中与3次射击才支持可信比较；零命中仍保留，不能用极小数制造优势。所有正式左键都计入射击次数；双击保护仅拒绝微调80ms、切换/转向100ms以内的过早命中，不删除误点。跟枪按真实时间加权。12秒末尾未完成目标按右删失记录，保留全部12秒作分母，不额外计超时。</p>
+    ${full?`<div class="tablewrap"><table><thead><tr><th>cm/360</th><th>相对角增益</th><th>综合相对表现</th>${TASKS.map(t=>`<th>${NAMES[t]}</th>`).join('')}<th>方向一致性</th><th>费力/疼痛</th><th>检查</th></tr></thead><tbody>${rowHtml}</tbody></table></div><div class="row">${ready?`<button class="primary" data-single-action="adopt" data-cm="${rec.cm}">采用此候选，进入跨游戏换算</button>`:''}<button data-single-action="keep">保留原灵敏度</button><button data-single-action="export">导出备份</button></div>`:'<button data-single-action="resume">继续未完成测试</button>'}
+    <details><summary>四项原始表现（粗筛与复测分列）</summary><div class="tablewrap"><table><thead><tr><th>阶段</th><th>条件</th><th>任务</th><th>命中/秒或跟枪占比</th><th>命中率</th><th>命中/射击</th><th>获取时间</th><th>超时</th><th>RMS</th></tr></thead><tbody>${raw}</tbody></table></div></details>
+    ${full?`<details><summary>各轮变化与冻结规则</summary><p>${esc(rules(s))}</p>${a.rows.map(x=>`<p>${fmt(x.cm,2)} cm/360：${x.rounds.map(r=>`第${r.round}轮 ${fmt(r.relative,3)}×`).join('；')}；范围 ${x.range?x.range.map(y=>fmt(y,3)).join(' ～ '):'不足'}</p>`).join('')}<p>基准状态变化：${esc(driftText(a.drift))}。不据此删除后半程成绩。</p><p>表现接近的已测试候选：${a.near.map(x=>fmt(x.cm,2)).join('、')||'样本不足'}；未测中间值不构成已验证区间。</p></details>`:''}<p class="tiny space">基准保留原测量不确定性。请在烽火地带和全面战场的正常游戏中复核；不强制再完成6天才能使用本次结果。</p></div>`;return true;
+  }
+  function click(e){const b=e.target.closest('[data-single-action]');if(!b||b.disabled)return;const a=b.dataset.singleAction;e.preventDefault();if(a==='start20')start('20min');else if(a==='start10')start('10min');else if(a==='resume')resume();else if(a==='lock')requestLock();else if(a==='rate')rate($('singleEffort').value,$('singlePain').value);else if(a==='extend')extend();else if(a==='close'){if(live)pause('用户暂停');B.closeStage();renderLab();}else if(a==='results'){B.closeStage();renderResults();B.go('results');}else if(a==='settings')B.go('setup');else if(a==='practice')$('practiceBtn').click();else if(a==='export')B.exportJSON();else if(a==='adopt')B.adoptCm(+b.dataset.cm,activeStudy().configSnapshot.dpi);else if(a==='abandon')abandon();else if(a==='abandon-device')abandon('设备、DPI或输入路径已改变');else if(a==='history')selectHistory($('singleHistory').value);else if(a==='keep')B.adoptCm(activeStudy().configSnapshot.baseCm,activeStudy().configSnapshot.dpi);}
+  doc.addEventListener('mousemove',mousemove);B.getArena().addEventListener('mousedown',mousedown);doc.addEventListener('keydown',keydown);doc.addEventListener('click',click);
+  function recoverLoaded(persist=false){
+    const restored=activeStudy();if(restored?.runtime&&!TERMINAL.includes(restored.runtime.phase)){
+      const r=restored.runtime;if(r.phase==='task'&&(r.engaged||r.elapsed>0||r.partial)){restored.attempts.push({groupId:restored.groups[r.groupIndex]?.id,task:restored.groups[r.groupIndex]?.taskOrder[r.taskIndex],valid:false,reason:'网页刷新或导入，当前任务中断',created:iso(),partial:r.partial||null});restored.timing.faultMs+=r.elapsed;r.elapsed=0;r.partial=null;}
+      r.paused=true;r.engaged=false;r.pauseStartedAt??=r.lastActiveAt;restored.segments.push({startedAt:iso(),reason:'刷新或导入后恢复'});if(persist)save();
+    }
+  }
+  function onWorkspaceLoaded(){release();storageFailed=false;recoverLoaded(true);renderLab();renderResults();}
+  recoverLoaded();
+  function dispose(){disposed=true;stopFrame();doc.removeEventListener?.('mousemove',mousemove);B.getArena().removeEventListener?.('mousedown',mousedown);doc.removeEventListener?.('keydown',keydown);doc.removeEventListener?.('click',click);}
+  return{isActive,onLocked,pause,renderLab,renderResults,activeStudy,dispose,start,resume,rate,extend,requestLock,onWorkspaceLoaded,selectHistory,abandon};
+}
+root.SensSessionApp={create};if(typeof module!=='undefined'&&module.exports)module.exports=root.SensSessionApp;
+})(typeof globalThis!=='undefined'?globalThis:window);
+
+</script>
+<script>
+/* SensLab Personal. No remote requests, analytics, or external dependencies. */
+(function(){
+'use strict';
+const ORIGINAL='<!doctype html>\n'+document.documentElement.outerHTML;
+const MULTIFILE=!!document.querySelector('script[src="app.js"]');
+const M=SensMath,$=id=>document.getElementById(id),KEY='senslab.personal.v1';
+const TEST_RESET_REVISION='user-reset-20261017-v102-1';
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(x,n=2)=>Number.isFinite(x)?x.toFixed(n):'—';
+const pct=(x,n=1)=>Number.isFinite(x)?(x*100).toFixed(n)+'%':'—';
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
+const today=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const env=()=>({ua:navigator.userAgent,dpr:devicePixelRatio,w:innerWidth,h:innerHeight,sw:screen.width,sh:screen.height});
+const sameEnv=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+// Viewport and FOV affect task geometry, not the physical input calibration.
+const inputCompatible=(a,b)=>!!a&&!!b&&a.ua===b.ua&&a.dpr===b.dpr;
+const inputChanges=(a,b)=>!a||!b?['缺少输入环境']:['ua','dpr'].filter(k=>a[k]!==b[k]).map(k=>k==='ua'?'浏览器/输入路径':'系统或浏览器缩放');
+let singleApp=null,migrationReady=true,protectedStored=null;
+const MIGRATION_BACKUP=KEY+'.pre-single-v1';
+const defaults=()=>({schema:'senslab-personal/1',settings:null,calibration:null,calibrationDraft:null,studies:[],active:null,singleStudies:[],singleActive:null,storageVersion:2,mappings:[],field:[],testResetRevision:TEST_RESET_REVISION});
+function clearRecordedTests(source){return{...defaults(),settings:source.settings??null,mappings:source.mappings??[]};}
+let data=defaults(),view='home',reportPhase='explore',run=null,calSession=null,rawMode='unknown',lockIntent=null,expectedUnlock=false,restTimer=null,toastTimer=null;
+const arena=$('arena'),ctx=arena.getContext('2d',{alpha:false}),stage=$('stage');
+let canvasW=innerWidth,canvasH=innerHeight,calResult=null,flash=0,flashGood=true;
+let lockEpoch=0,lockPending=null;
+/* SENSLAB_V102_APPLIED */
+(function core(M){
+ const legacy=M.calibration;
+ const EPS=1e-12;
+ M.calibrationSample=function(r){
+  if(!r||r.method!=='net-projection-v2'||!['x','y'].includes(r.axis)||![1,-1].includes(r.dir)||!['slow','fast'].includes(r.speed))return '记录结构无效';
+  if(![r.dx,r.dy,r.cm,r.ms,r.motionEvents].every(Number.isFinite)||r.cm<5||r.cm>30)return '距离或输入数值无效';
+  const net=r.axis==='x'?r.dx:r.dy,other=r.axis==='x'?r.dy:r.dx;
+  if(Math.abs(net)<50||r.motionEvents<2)return '未收到足够的有效移动。按空格开始后，再移动鼠标。';
+  if(net*r.dir<=0)return '移动方向与提示相反。只重做这一条即可。';
+  if(r.ms<40)return '移动记录过短。请自然地滑动，不要瞬间抬起或旋转鼠标。';
+  if(Math.abs(other)>Math.abs(net))return '主要移动到了另一方向。横向用左右标记，纵向用前后标记；鼠标朝向保持不变。';
+  return '';
+ };
+ M.calibration=function(rows){
+  if(!Array.isArray(rows))return{ok:false};
+  if(!rows.some(r=>r?.method==='net-projection-v2'))return legacy.call(this,rows);
+  const issues=[],bad=rows.map((r,i)=>this.calibrationSample(r)?i:-1).filter(i=>i>=0);
+  if(rows.length!==12||bad.length)return{method:'net-projection-v2',ok:false,issues:['有缺失或无效记录。'],bad};
+  const expected=[...Array.from({length:2},()=>[['x',1,'slow'],['x',-1,'slow'],['x',1,'fast'],['x',-1,'fast']]).flat(),['y',1,'slow'],['y',-1,'slow'],['y',1,'fast'],['y',-1,'fast']];
+  if(rows.some((r,i)=>r.axis!==expected[i][0]||r.dir!==expected[i][1]||r.speed!==expected[i][2]||r.cm!==rows[0].cm))return{ok:false,issues:['记录顺序或标记间距不一致。']};
+  const gain=r=>Math.abs(r.axis==='x'?r.dx:r.dy)/r.cm;
+  const x=rows.filter(r=>r.axis==='x'),y=rows.filter(r=>r.axis==='y');
+  const ux=this.median(x.map(gain)),uy=this.median(y.map(gain));
+  const groups=['x','y'].map(axis=>{
+   const a=rows.filter(r=>r.axis===axis),slow=a.filter(r=>r.speed==='slow'),fast=a.filter(r=>r.speed==='fast');
+   return{axis,slowMs:this.median(slow.map(r=>r.ms)),fastMs:this.median(fast.map(r=>r.ms)),cv:this.cv(a.map(gain)),speedError:Math.abs(this.median(fast.map(gain))/this.median(slow.map(gain))-1),speedContrast:this.median(slow.map(r=>r.ms/r.cm))/this.median(fast.map(r=>r.ms/r.cm))};
+  });
+  for(const g of groups){const n=g.axis==='x'?'横向':'纵向';if(g.cv>.05+EPS)issues.push(n+'重复测量差异超过5%，请检查端点距离；表中标出了偏离中位数较大的记录。');if(g.speedError>.05+EPS)issues.push(n+'快慢两组的单位/厘米相差超过5%。可能是端点、鼠标朝向或加速影响，不直接断定原因。');if(g.speedContrast<1.5-EPS)issues.push(n+'快慢速度还不够区分。请核对本轴的慢速和快速耗时；慢速可约2秒，快速约0.5–1秒。只有确实操作有误时才重测对应记录。');}
+  const cv=Math.max(...groups.map(g=>g.cv)),speedError=Math.max(...groups.map(g=>g.speedError)),speedContrast=Math.min(...groups.map(g=>g.speedContrast));
+  return{method:'net-projection-v2',ux,uy,cv,speedError,speedContrast,pathGood:true,groups,issues,bad:[],ok:issues.length===0};
+ };
+})(M);
+function validateBackup(d){
+ const fail=()=>{throw Error('备份结构或数值不合法，请使用本工具导出的完整JSON。')};
+ if(!d||d.schema!=='senslab-personal/1'||!Array.isArray(d.studies)||d.studies.length>40||!Array.isArray(d.field)||d.field.length>5000||!Array.isArray(d.mappings)||d.mappings.length>100)fail();
+ const num=(x,a,b)=>Number.isFinite(x)&&x>=a&&x<=b;
+ const config=c=>c&&num(c.dpi,100,64000)&&num(c.baseCm,8,160)&&num(c.fov,30,150)&&['horizontal','vertical','h43'].includes(c.fovType)&&num(c.swipe,5,100)&&Array.isArray(c.weights)&&c.weights.length===4&&c.weights.every(x=>num(x,.001,1))&&Math.abs(c.weights.reduce((a,b)=>a+b,0)-1)<.0001&&num(c.margin,.01,.1)&&num(c.taskDrop,.01,.3)&&num(c.accDrop,0,.2)&&num(c.maxEffort,1,8);
+ if(d.settings&&!config(d.settings))fail();
+ if(d.storageVersion!==undefined&&d.storageVersion!==2)fail();
+ if(d.singleStudies!==undefined){if(!Array.isArray(d.singleStudies)||d.singleStudies.length>100)fail();for(const s of d.singleStudies){SensSession.validateStudy(s);if(!s.runtime||!s.timing||!s.inputCheck||!config(s.configSnapshot)||!s.calSnapshot?.env||!Array.isArray(s.calSnapshot.rows)||!M.calibration(s.calSnapshot.rows).ok)fail();}}
+ if(d.singleActive&&!d.singleStudies?.some(s=>s.id===d.singleActive))fail();
+ if(d.calibration&&(!num(d.calibration.ux,1,1e6)||!num(d.calibration.uy,1,1e6)||!d.calibration.env||d.calibration.raw!=='requested'||!Array.isArray(d.calibration.rows)||d.calibration.rows.length!==12||!M.calibration(d.calibration.rows).ok))fail();
+ for(const s of d.studies){if(!s||typeof s.id!=='string'||!config(s.config)||!Array.isArray(s.candidates)||s.candidates.length>7||s.candidates.length<3||!Array.isArray(s.sessions)||s.sessions.length>120||!s.cal||!s.cal.env||!num(s.cal.ux,1,1e6)||!num(s.cal.uy,1,1e6)||!num(s.seed,0,4294967295))fail();
+ const ids=s.candidates.map(x=>x.id);if(new Set(ids).size!==ids.length||s.candidates.filter(c=>c.baseline).length!==1)fail();for(const c of s.candidates)if(typeof c.id!=='string'||!/^c[0-9]+$/.test(c.id)||!num(c.cm,5,250))fail();
+ if(s.finalists&&(!Array.isArray(s.finalists)||s.finalists.length>3||s.finalists.length<2||new Set(s.finalists.map(c=>c.id)).size!==s.finalists.length||s.finalists.some(c=>!ids.includes(c.id)||s.candidates.find(k=>k.id===c.id).cm!==c.cm||s.candidates.find(k=>k.id===c.id).baseline!==c.baseline)||!s.finalists.some(c=>c.id===s.candidates.find(k=>k.baseline).id)))fail();
+ for(const x of s.sessions){if(!x||!['explore','confirm'].includes(x.phase)||typeof x.day!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(x.day)||!Array.isArray(x.order)||x.order.length>7||x.order.some(i=>!ids.includes(i))||!Array.isArray(x.taskOrder)||x.taskOrder.length!==4||new Set(x.taskOrder).size!==4||x.taskOrder.some(t=>!M.TASKS.includes(t))||!x.blocks||!x.ratings||!x.warmed)fail();
+ for(const id of Object.keys(x.blocks)){if(!ids.includes(id))fail();for(const t of Object.keys(x.blocks[id])){if(!M.TASKS.includes(t))fail();const b=x.blocks[id][t];if(!b||!num(b.score,0,1000)||!num(b.duration,0,1e7)||!num(b.accuracy,0,1)||!Array.isArray(b.trials)||b.trials.length>100||!Array.isArray(b.trace)||b.trace.length>2000)fail()}}
+ for(const r of Object.values(x.ratings))if(!r||!num(r.effort,0,10)||typeof r.pain!=='boolean'||!(r.lifts===null||num(r.lifts,0,10000)))fail();}
+ }
+ if(d.active&&!d.studies.some(s=>s.id===d.active))fail();
+ for(const p of d.mappings)if(typeof p.name!=='string'||p.name.length>100||!num(p.dpi,100,64000)||!Array.isArray(p.samples)||p.samples.length<3||p.samples.length>100||p.samples.some(x=>!num(x.s,0,1e6)||!num(x.cm,.01,1e5)))fail();
+ for(const f of d.field)if(!f||typeof f.study!=='string'||typeof f.candidate!=='string'||typeof f.mode!=='string'||typeof f.day!=='string'||!num(f.effort,0,10)||!num(f.minutes,10,240)||typeof f.notes!=='string'||f.notes.length>1500||!num(f.limited,0,1000)||!num(f.overshoot,0,1000)||typeof f.pain!=='boolean')fail();
+ return d;
+}
+try{
+ const stored=localStorage.getItem(KEY);
+ protectedStored=stored;
+ if(stored){
+  const previous=validateBackup(JSON.parse(stored));data=previous;
+  if(previous.storageVersion!==2){
+   const migrated={...previous,storageVersion:2,singleStudies:previous.singleStudies||[],singleActive:previous.singleActive||null};
+   try{if(!localStorage.getItem(MIGRATION_BACKUP))localStorage.setItem(MIGRATION_BACKUP,stored);localStorage.setItem(KEY,JSON.stringify(migrated));data=migrated;}
+   catch(e){migrationReady=false;throw Error('升级前备份或保存失败；原工作区保留，请先导出JSON。');}
+  }
+ }
+ data.singleStudies??=[];data.singleActive??=null;
+ protectedStored=null;
+}catch(e){migrationReady=false;console.warn('Local workspace read failed',e);$('storageWarning').style.display='block';$('storageWarning').textContent='未能读取或升级本地记录，已阻止保存覆盖。请点击导出JSON保存原始存储，再检查数据或导入有效备份。'}
+data.singleStudies??=[];data.singleActive??=null;
+function save(){if(!migrationReady){toast('原存储未能读取或安全升级，已阻止覆盖。请导出JSON后检查原始数据或导入有效备份。',true);return false}try{localStorage.setItem(KEY,JSON.stringify(data));$('storageWarning').style.display='none';return true}catch(e){$('storageWarning').style.display='block';toast('本地存储未成功。请立即导出备份。',true);return false}}
+function toast(t,bad=false){$('toast').textContent=t;$('toast').style.display='block';$('toast').style.borderColor=bad?'#995b5b':'#57714a';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.display='none',6500)}
+function download(name,text,type='application/json'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+const study=()=>data.studies.find(s=>s.id===data.active)||null;
+const unfinished=s=>s?.sessions.findLast(x=>!x.complete&&!x.abandoned)||null;
+function calibrationStatus(){
+ const cal=data.calibration,d=data.calibrationDraft;
+ const state=(title,detail,ready=false)=>({title,detail,ready});
+ if(!cal){
+  const rows=Array.isArray(d?.rows)?d.rows:[],count=rows.filter(Boolean).length;
+  if(count===12){const q=M.calibration(rows);return state(q.ok?'12/12 · 待确认保存':'12/12 · 需核对测量',q.ok?'12条测量检查已通过。点击“查看校准报告”，验证输入后沿用这组记录保存，无需再测12条。':'12条记录已收齐，但以下检查未通过：'+(q.issues||['记录无效']).join(' '));}
+  return state('待完成校准',`已保留 ${count}/12 条，请继续未完成的记录。`);
+ }
+ if(!cal.ok||!Array.isArray(cal.rows)||!M.calibration(cal.rows).ok)return state('测量需核对','已有测量尚未通过质量检查，请查看校准报告。');
+ if(cal.raw!=='requested')return state('待验证输入','测量已完成，但原始输入请求未确认。请查看报告并验证输入。');
+ if(!inputCompatible(cal.env,env()))return state('校准保留 · 输入环境变化',`${inputChanges(cal.env,env()).join('、')}与采样时不同，请恢复输入环境或重新校准。窗口大小/FOV本身不要求重测尺子。`);
+ if(cal.deviceNotes!==undefined&&cal.deviceNotes!==(data.settings?.environment||''))return state('校准保留 · 设备说明变化','设备说明已变化，请到设备页确认是否只修改了备注；实际设备或输入路径改变时需重新校准。');
+ if(!data.settings)return state('校准已完成 · 待保存设置',`12/12条校准已通过，校准DPI为 ${cal.dpi}。请填写并保存设备设置，无需重做校准。`);
+ if(cal.dpi!==data.settings.dpi)return state('校准已完成 · DPI不一致',`校准使用 ${cal.dpi} DPI，已保存设置为 ${data.settings.dpi} DPI。若只改了表单但未保存，请保存正确设置；若实际鼠标DPI已变，请重新校准。`);
+ return state('已通过','12/12条输入校准已通过，可以进入正式实验。',true);
+}
+const calibrationReady=()=>calibrationStatus().ready;
+function go(v){if(!$(v)?.classList.contains('view'))return;view=v;document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));render();window.scrollTo({top:0,behavior:'instant'});if(v==='home')drawPreview()}
+function fillSettings(){const c=data.settings;if(!c){$('baseCm').value='75.2';$('swipe').value='20';$('baseVerified').checked=false;$('environment').value='鼠标垫有效范围47.6×39.7cm；右手，鼠标自然略朝左；横向舒适行程约20cm（估计）';return;}['dpi','baseCm','fov','fovType','swipe','environment','margin','taskDrop','accDrop','maxEffort'].forEach(k=>{if($(k))$(k).value=['margin','taskDrop','accDrop'].includes(k)?c[k]*100:c[k]});c.weights.forEach((x,i)=>$('w'+i).value=+(x*100).toFixed(3));$('baseVerified').checked=true;$('swipeEstimated').checked=c.swipeEstimated??c.swipe===20;$('convertDpi').value=c.dpi;$('mappingDpi').value=c.dpi;}
+function readSettings(){
+ if(!$('settingsForm').reportValidity())throw Error('请完整填写并确认实测数据。');
+ const weights=[0,1,2,3].map(i=>+$('w'+i).value);if(weights.some(w=>!Number.isFinite(w)||w<1)||Math.abs(weights.reduce((a,b)=>a+b)-100)>.01)throw Error('四项权重都必须大于零，且总和为100%。');
+ const c={dpi:+$('dpi').value,baseCm:+$('baseCm').value,fov:+$('fov').value,fovType:$('fovType').value,swipe:+$('swipe').value,environment:$('environment').value.trim(),weights:weights.map(w=>w/100),margin:+$('margin').value/100,taskDrop:+$('taskDrop').value/100,accDrop:+$('accDrop').value/100,maxEffort:+$('maxEffort').value};M.candidates(c.baseCm);return c;
+}
+$('confirmDeviceUnchanged').onclick=()=>{if(!data.calibration)return toast('没有可沿用的物理校准。',true);if(!confirm('确认仅修改了文字备注，鼠标、DPI和输入路径均未改变？'))return;data.calibration.deviceNotes=data.settings?.environment||'';if(save()){render();toast(calibrationStatus().detail)}};
+$('settingsForm').addEventListener('submit',e=>{e.preventDefault();$('setupError').textContent='';try{data.settings={...readSettings(),swipeEstimated:$('swipeEstimated').checked};data.parameterSources={dpi:'用户保存',baseCm:'用户确认的游戏测量',swipe:$('swipeEstimated').checked?'估计，仅操作范围提示':'用户保存，仅操作范围提示',updated:new Date().toISOString()};const persisted=save();render();if(persisted)toast('设置已保存，仅用于新实验；正在进行的实验规则不变。'+calibrationStatus().detail)}catch(e){$('setupError').textContent=e.message}});
+$('useMeasurement').onclick=()=>{try{const a=$('measureDistances').value.split(/[,，\s]+/).filter(Boolean).map(Number);if(a.length<3||a.some(x=>!Number.isFinite(x)||x<=0))throw Error('至少填写3个正数距离。');const cv=M.cv(a),cm=M.median(a)*360/+$('measureAngle').value;$('measureResult').textContent=`中位数换算：${fmt(cm,3)} cm/360；重复变异${pct(cv)}。${cv>.05?'差异偏大，请重测。':'请同时核对游戏内转角。'}`;if(cv<=.05)$('baseCm').value=cm.toFixed(3)}catch(e){$('measureResult').textContent=e.message}};
+function render(){
+ const s=study(),a=s?M.analyze(s,s.finalists?'confirm':'explore'):null;
+ $('dpiBadge').textContent=(data.settings?.dpi||1600)+' DPI';
+ $('homeBase').innerHTML=(data.settings?fmt(data.settings.baseCm,2):'—')+' <small>cm / 360°</small>';
+ $('homeBaseNote').textContent=calibrationStatus().detail;
+ $('homeDays').innerHTML=(data.singleStudies||[]).filter(x=>x.status==='completed').length+' <small>已完成单次实验</small>';
+ $('homePhase').textContent='10分钟局部筛选 / 20分钟会话内复测';
+ $('homeRecommendation').textContent='在结果页查看本次已测试候选';
+ $('settingsState').textContent=s?'实验已锁定':data.settings?'设置已保存':'';
+ const cal=data.calibration,status=calibrationStatus();$('calBadge').textContent=status.title;
+ $('calSummary').textContent=(cal?`横向 ${fmt(cal.ux,2)} / 纵向 ${fmt(cal.uy,2)} 单位/cm。`:'')+status.detail;
+ $('archiveCount').textContent=`已归档 ${data.studies.filter(x=>x.archived).length} 个实验（包含在JSON备份中）`;
+ renderLab();if(view==='results')renderResults();if(view==='convert')renderConvert();if(view==='field')renderField();
+}
+function renderLab(){
+ const s=study(),ss=unfinished(s);let done=0,total=20;
+ if(ss){total=ss.order.length*4;done=ss.order.reduce((n,id)=>n+M.TASKS.filter(t=>ss.blocks[id]?.[t]?.valid).length,0)}
+ $('labProgress').style.width=100*done/total+'%';
+ $('phaseBadge').textContent=s?(s.finalists?'确认 / 6日':'探索'):'尚未开始';
+ const a=s?M.analyze(s,s.finalists?'confirm':'explore'):null;
+ $('labTitle').textContent=!s?'建立你的第一轮实验':ss?`会话进行中 · ${done}/${total}任务`:`已完成${a.sessions}次会话 · ${a.days}个测试日`;
+ $('labNext').textContent=ss?nextDescription(s,ss):s?'完整一轮后再查看结果。正式确认阶段同一天只计一次新会话。':(calibrationReady()?'校准已就绪，确认当前设备和身体状态后即可开始。':calibrationStatus().detail);
+ $('runBtn').textContent=!s?'创建并开始实验 →':ss?'继续下一项 →':s.finalists&&a.days>=6?'确认阶段已完成':'开始新会话 →';
+ $('runBtn').disabled=!!(s?.finalists&&a.days>=6&&!ss);
+ if(s)$('labSummary').textContent=`基准与分析规则已冻结。${s.finalists?'候选已锁定；只使用锁定后的新数据。':`本轮以${s.candidates.length}个候选探索；至少3天后才能锁定确认。建议做满${s.candidates.length}天，以平衡条件的出现位置。`}`;
+}
+function nextState(s,ss){for(const id of ss.order){if(!ss.warmed[id])return{type:'warmup',id};for(const t of ss.taskOrder)if(!ss.blocks[id]?.[t]?.valid)return{type:t,id};if(!ss.ratings[id])return{type:'rating',id}}return{type:'complete'}}
+function nextDescription(s,ss){const n=nextState(s,ss);if(n.type==='complete')return'本轮已完成';return`条件 ${ss.order.indexOf(n.id)+1}/${ss.order.length} · ${n.type==='warmup'?'30秒适应（不计分）':n.type==='rating'?'记录操作感受':M.NAMES[n.type]}`}
+function createStudy(){if(!data.settings)throw Error('先保存设备设置。');if(!calibrationReady())throw Error(calibrationStatus().detail);if(data.studies.length>=40)throw Error('实验数量过多。请导出备份后清理工作区。');const s={id:uid(),created:new Date().toISOString(),seed:randomSeed(),config:structuredClone(data.settings),cal:structuredClone(data.calibration),candidates:M.candidates(data.settings.baseCm),finalists:null,sessions:[],invalid:[],archived:false};data.studies.push(s);data.active=s.id;save();return s;}
+function createSession(s){const phase=s.finalists?'confirm':'explore',done=s.sessions.filter(x=>x.complete&&x.phase===phase);if(s.sessions.length>=120)throw Error('当前实验会话数已达上限。请导出、归档后开启新实验。');if(phase==='confirm'&&s.sessions.some(x=>x.phase==='explore'&&x.day===today()))throw Error('今天已进行探索，独立确认从下一个新测试日开始。');if(phase==='confirm'&&new Set(done.map(x=>x.day)).size>=6)throw Error('计划中的6日确认已完成，请进行游戏内复核。');if(phase==='confirm'&&done.some(x=>x.day===today()))throw Error('今天的确认会话已完成。独立确认要求6个不同测试日，今天可做游戏内复核。');const ids=(s.finalists||s.candidates).map(x=>x.id),i=s.sessions.filter(x=>x.phase===phase&&!x.abandoned).length;const ss={id:uid(),phase,day:today(),started:new Date().toISOString(),order:M.order(ids,s.seed+(phase==='confirm'?91:0),i),taskOrder:M.order(M.TASKS,s.seed+113,i),seed:randomSeed(),blocks:{},ratings:{},warmed:{},complete:false,restUntil:0};s.sessions.push(ss);save();return ss;}
+function launchNext(){try{
+ $('labError').textContent='';if(!$('sessionCheck').checked)throw Error('请先确认当前设备和身体状态。');let s=study()||createStudy();if(s.sessions.some(x=>x.day===today()&&Object.values(x.ratings).some(r=>r.pain))||data.field.some(f=>f.day===today()&&f.pain))throw Error('今天已记录疼痛或明显不适，请停止测试，不继续追求成绩。');if(innerWidth<800||matchMedia('(pointer: coarse)').matches)throw Error('正式瞄准实验需要桌面鼠标与至少800px宽的固定窗口。');if(!sameEnv(s.cal.env,env()))throw Error('窗口、缩放或浏览器环境已变化。请恢复原环境；无法恢复时应归档并重新校准。');if(s.cal.dpi!==s.config.dpi||s.cal.raw!=='requested')throw Error('实验校准与DPI不一致。');let ss=unfinished(s);if(ss&&ss.day!==today()){ss.abandoned=true;ss.abandonReason='跨日未完成，保留原记录但不参与分析';save();ss=null}if(!ss)ss=createSession(s);if(Date.now()<ss.restUntil)throw Error(`请再休息${Math.ceil((ss.restUntil-Date.now())/1000)}秒，或稍后继续。`);const n=nextState(s,ss);if(n.type==='complete'){completeSession(s,ss);return}if(n.type==='rating'){showRating(s,ss,n.id);return}openStage();const name=n.type==='warmup'?'条件适应（不计分）':M.NAMES[n.type];const desc=n.type==='track'||n.type==='warmup'?'持续移动鼠标，让中心准星留在运动目标内；不需要按住开火。':'移动鼠标转动视角，瞄准目标后单击左键。未命中可继续修正；超时也计入任务耗时。';lockIntent={kind:'task',s,ss,n};modal(`<div class="eyebrow">条件 ${ss.order.indexOf(n.id)+1} / ${ss.order.length}</div><h2 class="space">${name}</h2><p>${desc}</p><p>ESC退出会使当前任务无效，但保留已完成的其他任务。每个条件具有相同目标规则；当前数值在完整会话结束前隐藏。</p><div class="row"><button class="primary" data-action="acquire">锁定鼠标并开始</button><button data-action="closeStage">稍后继续</button></div>`);renderLab();
+ }catch(e){$('labError').textContent=e.message;toast(e.message,true)}}
+$('runBtn').onclick=launchNext;
+function completeSession(s,ss){ss.complete=true;ss.completed=new Date().toISOString();save();closeStage();reportPhase=ss.phase;toast('整轮已完成，数据已保存。现在可以查看结果。');go('results')}
+$('archiveBtn').onclick=()=>{const s=study();if(!s)return toast('当前没有正在进行的实验。');if(!confirm('归档会保留全部原数据，但停止当前实验。新实验不会混用旧数据。继续？'))return;s.archived=true;data.active=null;save();render();toast('已归档。现在可修改设置、重新校准并创建新实验。')};
+function showRating(s,ss,id){openStage();modal(`<div class="eyebrow">条件 ${ss.order.indexOf(id)+1} / ${ss.order.length}</div><h2 class="space">先记录感受，再看成绩</h2><p>请给整个条件的四项任务评分，不要推测它是高敏还是低敏。抬鼠标次数无法可靠地由网页自动识别，只接受你的观察。</p><div class="formgrid"><label>费力度（0–10）<select id="ratingEffort">${ratingOptions()}</select></label><label>观察到的抬鼠标次数（可留空）<input id="ratingLifts" type="number" min="0" max="10000" placeholder="不确定可留空"></label></div><label class="check"><input id="ratingPain" type="checkbox">出现疼痛或明显不适</label><button class="primary" data-action="saveRating" data-candidate="${esc(id)}">保存此条件记录</button><div id="ratingError" class="inline-error"></div>`)}
+function ratingOptions(){return'<option value="">请选择</option>'+Array.from({length:11},(_,i)=>`<option value="${i}">${i}${i===0?' · 非常轻松':i===10?' · 极费力':''}</option>`).join('')}
+function saveRating(id){const s=study(),ss=unfinished(s);if(!ss)return;const ef=$('ratingEffort').value,lifts=$('ratingLifts').value,pain=$('ratingPain').checked;if(ef===''||(lifts!==''&&(!Number.isInteger(+lifts)||+lifts<0||+lifts>10000))){$('ratingError').textContent='请选择费力度；抬鼠标次数可空，但填写时须为非负整数。';return}ss.ratings[id]={effort:+ef,lifts:lifts===''?null:+lifts,pain};save();if(pain){closeStage();toast('已记录不适。请停止今天的测试。该条件不通过舒适度守门线。',true);render();return}if(nextState(s,ss).type==='complete')completeSession(s,ss);else{closeStage();render();toast('操作感受已保存。可继续下一条件，也可稍后继续。')}}
+function openStage(){stage.classList.add('open');resizeCanvas();$('hudTitle').textContent='SensLab';$('hudDetail').textContent='';$('hudRight').textContent='';$('hudInput').textContent='';$('stageHelp').textContent='';}
+function modal(html){$('modal').innerHTML=html;$('veil').classList.remove('hide');requestAnimationFrame(()=>$('modal').querySelector('button,input,select')?.focus())}
+function hideModal(){$('veil').classList.add('hide')}
+function unlock(){expectedUnlock=true;if(document.pointerLockElement)document.exitPointerLock()}
+function closeStage(){singleApp?.pause('用户返回，已完成小任务保留');lockEpoch++;if(run)abortRun('用户退出，当前任务无效');run=null;calSession=null;lockIntent=null;unlock();stage.classList.remove('open');render()}
+async function acquire(plain=false){
+ if(lockPending)return toast('鼠标锁定请求仍在处理，请稍后再试。');
+ const intent=lockIntent;if(!intent||!stage.classList.contains('open'))return;
+ const token={epoch:++lockEpoch,intent};lockPending=token;
+ const current=()=>token.epoch===lockEpoch&&lockIntent===intent&&stage.classList.contains('open');
+ try{let result=plain?arena.requestPointerLock():arena.requestPointerLock({unadjustedMovement:true});if(result&&typeof result.then==='function'){await result;rawMode=plain?'fallback':'requested'}else{await new Promise(r=>setTimeout(r,150));rawMode='unconfirmed'}
+ if(!current()){unlock();return}
+ if(document.pointerLockElement!==arena)throw Error('浏览器没有允许鼠标锁定。请检查权限后重试。');
+ if(rawMode!=='requested'&&lockIntent?.kind!=='practice'){unlock();throw Error('无法确认原始输入请求。正式校准/测试要求支持unadjustedMovement的桌面浏览器；此环境仅可练习。')}
+ hideModal();if(lockIntent?.kind==='calibration')beginCalibration();else if(lockIntent?.kind==='practice')beginPractice();else if(lockIntent?.kind==='task')beginRun(lockIntent.s,lockIntent.ss,lockIntent.n);else if(lockIntent?.kind==='single')singleApp.onLocked();
+ }catch(e){unlock();if(!current())return;modal(`<h2>鼠标锁定未就绪</h2><p>${esc(e.message)}</p><p>请使用桌面Chrome或Edge，允许鼠标锁定，并直接打开网页而不是嵌入预览。浏览器拒绝后需再次点击按钮，不能自动重试。</p><div class="row"><button data-action="acquire" class="primary">再次请求</button>${lockIntent?.kind==='practice'?'<button data-action="fallbackPractice">普通输入练习</button>':''}<button data-action="closeStage">返回</button></div>`)}
+ finally{if(lockPending===token)lockPending=null}
+}
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===arena){const pending=lockPending&&lockPending.epoch===lockEpoch&&lockPending.intent===lockIntent;if(!stage.classList.contains('open')||(!pending&&!run&&!calSession&&!singleApp?.isActive())){unlock();return}expectedUnlock=false;return}if(expectedUnlock){expectedUnlock=false;return}singleApp?.pause('鼠标锁定丢失，当前小任务中断');if(run)abortRun('鼠标锁定丢失，当前任务无效');if(calSession){calSession=null;modal('<h2>校准已中断</h2><p>当前正在移动的一条未保存；已完成的记录已保留，同一环境可继续。</p><button data-action="closeStage">返回并重试</button>')}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){singleApp?.pause('切换标签页，当前小任务中断');if(run)abortRun('切换标签页，当前任务无效')}});window.addEventListener('blur',()=>{singleApp?.pause('窗口失焦，当前小任务中断');if(run)abortRun('窗口失焦，当前任务无效')});
+window.addEventListener('resize',()=>{singleApp?.pause('窗口尺寸变化：暂停当前任务；目标投影/FOV发生变化，物理校准和已完成数据保留');resizeCanvas();if(run)abortRun('窗口尺寸变化，当前任务无效');if(calSession){calSession=null;unlock();modal('<h2>窗口发生变化</h2><p>记录已保留。恢复原窗口可继续；换新窗口应重新采样。</p><button data-action="closeStage">返回</button>')}if(view==='home')drawPreview()});
+function resizeCanvas(){canvasW=innerWidth;canvasH=innerHeight;const dpr=Math.min(devicePixelRatio,2);arena.width=Math.round(canvasW*dpr);arena.height=Math.round(canvasH*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+const CAL_STEPS=[...Array.from({length:2},()=>[{axis:'x',dir:1,speed:'slow'},{axis:'x',dir:-1,speed:'slow'},{axis:'x',dir:1,speed:'fast'},{axis:'x',dir:-1,speed:'fast'}]).flat(),{axis:'y',dir:1,speed:'slow'},{axis:'y',dir:-1,speed:'slow'},{axis:'y',dir:1,speed:'fast'},{axis:'y',dir:-1,speed:'fast'}];
+$('calibrateBtn').onclick=()=>{if(study()){toast('实验已锁定。请先归档实验再重新校准，或恢复原窗口环境。',true);return}const cm=+$('calDistance').value,dpi=+$('dpi').value;if(!(cm>=5&&cm<=30&&dpi>=100&&dpi<=64000))return toast('请填写有效距离和DPI。',true);openStage();lockIntent={kind:'calibration',cm,dpi,environment:env()};modal(`<div class="eyebrow">PHYSICAL INPUT CALIBRATION</div><h2 class="space">把两条标记相隔 ${fmt(cm,1)} cm</h2><p>把鼠标传感器对齐起点，按空格开始，沿指定方向平移到终点，再按空格结束。每次都从一条标记到另一条标记；不把回程、旋转或抬鼠标算进去。</p><p>慢速匀速移动，快速明显加快；两类耗时需形成差异。共12次。用空格控制，Backspace重做上一条，ESC退出。</p><div class="row"><button class="primary" data-action="acquire">锁定鼠标，进入校准</button><button data-action="closeStage">返回</button></div>`)};
+function beginCalibration(){calSession={index:0,rows:[],active:false,...lockIntent};run=null;calibrationDisplay()}
+function calibrationDisplay(message=''){const c=calSession;if(!c)return;const st=CAL_STEPS[c.index],direction=st.axis==='x'?(st.dir>0?'向右 →':'向左 ←'):(st.dir>0?'向下 ↓':'向上 ↑');$('hudTitle').textContent=`校准 ${c.index+1} / 12`;$('hudDetail').textContent=`${st.axis==='x'?'横向':'纵向'} · ${st.speed==='slow'?'慢速':'快速'} · ${direction}`;$('hudRight').textContent=fmt(c.cm,1)+' cm';$('hudInput').textContent='原始输入已请求 · 等待物理复核';$('stageHelp').textContent=message||`${c.active?'正在记录，到终点后按空格结束':'对齐起点后按空格开始'} · Backspace重做上一条 · ESC退出`;drawScene(ctx,canvasW,canvasH,0,0,M.vec(.15,.08),.025,100);ctx.fillStyle='#eef2f7';ctx.font='600 29px "Segoe UI","Microsoft YaHei",sans-serif';ctx.textAlign='center';ctx.fillText(`${st.speed==='slow'?'慢速':'快速'} ${direction}`,canvasW/2,canvasH/2-70);ctx.font='16px "Segoe UI","Microsoft YaHei",sans-serif';ctx.fillStyle='#c3f17c';ctx.fillText(c.active?'记录中 · 到终点按空格':'准备好后按空格',canvasW/2,canvasH/2+80)}
+function calibrationSpace(){const c=calSession;if(!c)return;if(!inputCompatible(c.environment,env())){calSession=null;unlock();modal('<h2>环境已变化</h2><p>请返回并重新校准。</p><button data-action="closeStage">返回</button>');return}if(!c.active){c.active=true;c.started=performance.now();c.dx=0;c.dy=0;c.pathX=0;c.pathY=0;calibrationDisplay();return}c.active=false;const st=CAL_STEPS[c.index],signed=st.axis==='x'?c.dx:c.dy,units=Math.abs(signed),path=st.axis==='x'?c.pathX:c.pathY,cross=st.axis==='x'?c.pathY:c.pathX,ms=performance.now()-c.started;
+ if(signed*st.dir<=0||units<50||units/path<.97||cross/units>.1||ms<60){calibrationDisplay('本条未通过：检查方向、回程或横向偏移。对齐后按空格重做本条。');return}
+ c.rows.push({...st,cm:c.cm,units,path,cross,ms});c.index++;if(c.index===CAL_STEPS.length){finishCalibration(c);return}calibrationDisplay('上一条已记录。先对齐新的起点，再按空格开始。')}
+function finishCalibration(c){calSession=null;calResult={...M.calibration(c.rows),rows:c.rows,env:c.environment,dpi:c.dpi,raw:rawMode,created:new Date().toISOString()};const ok=calResult.ok&&sameEnv(calResult.env,env())&&rawMode==='requested';unlock();if(ok){data.calibration=calResult;save()}
+ modal(`<div class="eyebrow">INPUT QUALITY REPORT</div><h2 class="space">${ok?'校准通过并已保存':'校准需要重做'}</h2><div class="big">${fmt(calResult.ux,1)} <span class="tiny muted">横向单位/cm</span></div><p>纵向：${fmt(calResult.uy,1)} 单位/cm<br>重复变异：${pct(calResult.cv)}（≤5%）<br>快慢差异：${pct(calResult.speedError)}（≤5%）<br>慢/快耗时比：${fmt(calResult.speedContrast,2)}（≥1.5）</p><p>${ok?'后续保持DPI、窗口、缩放与设备不变。实际游戏还需要独立的cm/360复核。':'请检查距离标记、鼠标旋转、快慢区分以及系统/驱动加速。阈值是工程质检线，不是绝对准确性证明。'}</p><button class="primary" data-action="closeStage">返回设置</button>`);render()}
+document.addEventListener('keydown',e=>{if(!stage.classList.contains('open'))return;if(calSession&&e.code==='Space'){e.preventDefault();if(!e.repeat)calibrationSpace()}if(calSession&&e.code==='Backspace'){e.preventDefault();if(calSession.active){calSession.active=false}else if(calSession.index>0){calSession.index--;calSession.rows.pop()}calibrationDisplay('本条重新开始。对齐起点后按空格。')}if(e.code==='Escape'&&!document.pointerLockElement&&!run&&!calSession)closeStage()});
+function actualHFov(c,w=canvasW,h=canvasH){if(c.fovType==='vertical')return M.deg(2*Math.atan(Math.tan(M.rad(c.fov)/2)*w/h));if(c.fovType==='h43')return M.deg(2*Math.atan(Math.tan(M.rad(c.fov)/2)*(w/h)/(4/3)));return c.fov}
+function beginPractice(){const s=study(),c=s?.config||data.settings||{dpi:1600,baseCm:40,fov:100,fovType:'horizontal'};const cal=s?.cal||data.calibration||{ux:c.dpi/2.54,uy:c.dpi/2.54};beginRun(null,null,{type:'practice',id:'practice'},c,cal)}
+$('practiceBtn').onclick=()=>{openStage();lockIntent={kind:'practice'};modal('<h2>不计分练习</h2><p>体验第一人称跟枪与鼠标锁定。没有校准时只使用名义DPI近似；本轮绝不用于推荐，也不会替代正式输入校准。</p><div class="row"><button class="primary" data-action="acquire">开始练习</button><button data-action="closeStage">返回</button></div>')};
+function beginRun(s,ss,n,practiceConfig,practiceCal){
+ const c=s?.config||practiceConfig,cal=s?.cal||practiceCal,candidate=s?.candidates.find(x=>x.id===n.id)||{cm:c.baseCm};
+ const idx=M.TASKS.indexOf(n.type),r=M.rng((ss?.seed||randomSeed())+(idx+3)*7321),nodes=Array.from({length:80},()=>({y:(r()-.5)*1.65,p:(r()-.5)*.4}));
+ run={s,ss,n,c,cal,cm:candidate.cm,y:0,p:0,rng:r,nodes,target:M.vec(0,0),radius:M.rad(1.1),created:performance.now(),start:null,prev:null,lastTrace:0,trialStart:null,index:0,hits:0,shots:0,trialShots:0,trials:[],trace:[],frames:[],onTime:0,sqTime:0,integrated:0,pathCm:0,longFrames:0,invalid:null,duration:(n.type==='warmup'?30:n.type==='practice'?30:n.type==='track'?25:null),count:n.type==='turn'?12:18,env:env()};
+ $('hudTitle').textContent=n.type==='practice'?'自由练习 · 不计分':n.type==='warmup'?'条件适应 · 不计分':M.NAMES[n.type];$('hudDetail').textContent=n.type==='practice'?'不生成推荐':`数值遮蔽 · 条件 ${(ss.order.indexOf(n.id)+1)}/${ss.order.length}`;$('hudInput').textContent=rawMode==='requested'?'原始输入已请求':'普通输入 · 仅练习';$('stageHelp').textContent='准星固定，移动鼠标转动视角 · ESC退出当前任务';requestAnimationFrame(tick);
+}
+function spawnTarget(r,now){const t=r.n.type,sets=t==='micro'?[2,4,7]:t==='switch'?[15,30,45]:[90,120,160],a=M.rad(sets[r.index%3]);let phi;if(t==='turn')phi=(r.rng()<.5?0:Math.PI)+(r.rng()-.5)*.07;else phi=r.rng()*2*Math.PI;r.radius=M.rad(t==='micro'?(r.index%2?.5:.3):t==='switch'?(r.index%2?1.1:.8):2);r.target=M.relative(r.y,r.p,a,phi);if(Math.abs(r.target[1])>Math.sin(M.rad(65))){phi=r.rng()<.5?0:Math.PI;r.target=M.relative(r.y,r.p,a,phi)}r.trialStart=now;r.trialShots=0;r.targetAmplitude=M.deg(a)}
+function cat(a,b,c,d,t){return.5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
+function trackingTarget(r,sec){const x=sec/1.15,k=Math.floor(x),t=x-k,n=r.nodes,i=k+1;const y=cat(n[k].y,n[i].y,n[i+1].y,n[i+2].y,t),p=cat(n[k].p,n[i].p,n[i+1].p,n[i+2].p,t);return M.vec(y,p)}
+function tick(now){const r=run;if(!r)return;const wait=now-r.created;if(wait<3000){$('hudRight').textContent=String(Math.ceil((3000-wait)/1000));drawScene(ctx,canvasW,canvasH,r.y,r.p,null,.02,actualHFov(r.c));requestAnimationFrame(tick);return}
+ if(!r.start){r.start=now;r.prev=now;r.y=0;r.p=0;if(!r.duration)spawnTarget(r,now)}
+ if(!sameEnv(r.env,env())){abortRun('显示环境变化，当前任务无效');return}
+ const elapsed=now-r.start,dt=now-r.prev;r.prev=now;
+ if(dt>250){abortRun('检测到超过250ms的显示中断，当前任务无效');return}if(dt>0)r.frames.push(dt);if(dt>100)r.longFrames++;
+ if(r.longFrames>=3){abortRun('连续测试存在多次显著卡顿，当前任务无效');return}
+ if(r.duration){r.target=trackingTarget(r,elapsed/1000);const error=M.angle(M.vec(r.y,r.p),r.target),step=Math.max(0,Math.min(dt,r.duration*1000-r.integrated));r.onTime+=(error<=r.radius?step:0);r.sqTime+=error*error*step;r.integrated+=step;if(elapsed-r.lastTrace>=200){r.trace.push([+elapsed.toFixed(1),+M.deg(error).toFixed(4)]);r.lastTrace=elapsed}$('hudRight').textContent=Math.max(0,r.duration-elapsed/1000).toFixed(1)+' s';if(elapsed>=r.duration*1000){finishRun(now);return}}
+ else{const limit=r.n.type==='turn'?5000:4000;if(now-r.trialStart>=limit){endTrial(false,now,limit);if(!run)return}$('hudRight').textContent=`${Math.min(r.index+1,r.count)} / ${r.count}`}
+ drawScene(ctx,canvasW,canvasH,r.y,r.p,r.target,r.radius,actualHFov(r.c));if(flash>now){ctx.strokeStyle=flashGood?'#c3f17c':'#fc9c9c';ctx.lineWidth=2;ctx.strokeRect(canvasW/2-11,canvasH/2-11,22,22)}requestAnimationFrame(tick);
+}
+function endTrial(hit,now,timeout=null){const r=run;if(!r||r.duration)return;const error=M.deg(M.angle(M.vec(r.y,r.p),r.target));r.trials.push({index:r.index,hit,ms:timeout??now-r.trialStart,shots:r.trialShots,errorDeg:error,amplitude:r.targetAmplitude,radiusDeg:M.deg(r.radius)});if(hit)r.hits++;r.index++;if(r.index>=r.count){finishRun(now);return}spawnTarget(r,now)}
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==arena)return;const dx=e.movementX,dy=e.movementY;if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
+ if(calSession?.active){calSession.dx+=dx;calSession.dy+=dy;calSession.pathX+=Math.abs(dx);calSession.pathY+=Math.abs(dy);return}
+ if(run){const r=run;r.y+=dx/r.cal.ux*2*Math.PI/r.cm;r.y=Math.atan2(Math.sin(r.y),Math.cos(r.y));r.p=M.clamp(r.p-dy/r.cal.uy*2*Math.PI/r.cm,-M.rad(85),M.rad(85));if(r.start)r.pathCm+=Math.hypot(dx/r.cal.ux,dy/r.cal.uy)}
+});
+arena.addEventListener('mousedown',e=>{if(e.button!==0||!run||!run.start||run.duration||document.pointerLockElement!==arena)return;e.preventDefault();const r=run,now=performance.now();if(now-r.trialStart<(r.n.type==='micro'?80:100))return;r.shots++;r.trialShots++;const hit=M.angle(M.vec(r.y,r.p),r.target)<=r.radius;flash=now+100;flashGood=hit;if(hit)endTrial(true,now)});arena.addEventListener('contextmenu',e=>e.preventDefault());
+function finishRun(now){const r=run;if(!r)return;run=null;unlock();
+ if(r.n.type==='practice'){modal(`<h2>练习完成</h2><p>这次练习未存入实验，也没有生成推荐值。</p><p>${esc(calibrationStatus().detail)}</p><button class="primary" data-action="closeStage">返回</button>`);return}
+ const fps=1000/M.median(r.frames),frameP95=M.quantile(r.frames,.95);if(!Number.isFinite(fps)||fps<45){invalidate(r,'显示帧率不足45FPS，当前任务无效');return}
+ if(r.n.type==='warmup'){r.ss.warmed[r.n.id]=true;save();modal('<h2>适应完成</h2><p>本轮未计分。下一项将开始正式记录。</p><button class="primary" data-action="nextTask">继续下一项</button><button data-action="closeStage">稍后继续</button>');return}
+ const duration=r.duration?r.integrated:now-r.start,accuracy=r.duration?r.onTime/Math.max(1,r.integrated):r.hits/Math.max(1,r.shots),score=r.duration?accuracy:r.hits/(duration/1000);
+ const b={valid:true,task:r.n.type,created:new Date().toISOString(),duration,score,accuracy,hits:r.hits,shots:r.shots,completed:r.index,timeouts:r.trials.filter(t=>!t.hit).length,meanAcquireMs:r.trials.length?M.mean(r.trials.map(t=>t.ms)):null,rmsDeg:r.duration?M.deg(Math.sqrt(r.sqTime/Math.max(1,r.integrated))):null,pathCm:r.pathCm,frameFps:fps,frameP95,raw:rawMode,trials:r.trials,trace:r.trace,seed:r.ss.seed,env:r.env};
+ (r.ss.blocks[r.n.id]??={})[r.n.type]=b;r.ss.restUntil=Date.now()+20000;save();modal('<div class="eyebrow">SAVED LOCALLY</div><h2 class="space">任务完成，已保存。</h2><p>一整轮结束后统一查看数据，避免中途结果影响操作预期。先放松握持，短暂休息。</p><button class="primary" data-action="nextTask" id="restNext" disabled>休息20秒</button><button data-action="closeStage">稍后继续</button>');clearInterval(restTimer);restTimer=setInterval(()=>{const btn=$('restNext');if(!btn){clearInterval(restTimer);return}const t=Math.max(0,Math.ceil((r.ss.restUntil-Date.now())/1000));btn.textContent=t?`休息${t}秒`:'继续下一项';btn.disabled=t>0;if(!t)clearInterval(restTimer)},500);renderLab();
+}
+function invalidate(r,reason){if(r.s){r.s.invalid??=[];r.s.invalid.push({day:today(),session:r.ss.id,candidate:r.n.id,task:r.n.type,reason,created:new Date().toISOString(),trials:r.trials});save()}modal(`<h2>本任务不计入结果</h2><p>${esc(reason)}</p><p>此前已完成任务仍然保留。恢复环境后重新做当前任务；无效轮次原因记录在JSON备份中。</p><button class="primary" data-action="closeStage">返回检查</button>`);renderLab()}
+function abortRun(reason){const r=run;if(!r)return;run=null;unlock();if(r.n.type==='practice'){modal(`<h2>练习已结束</h2><p>${esc(reason)}</p><button data-action="closeStage">返回</button>`);return}invalidate(r,reason)}
+function project(v,b,w,h,fov){const z=M.dot(v,b.f);if(z<=.015)return null;const f=w/(2*Math.tan(M.rad(fov)/2));return{x:w/2+f*M.dot(v,b.r)/z,y:h/2-f*M.dot(v,b.u)/z,z,f}}
+function drawScene(c,w,h,y,p,target,radius,fov){
+ c.fillStyle='#0c131c';c.fillRect(0,0,w,h);const b=M.basis(y,p);c.strokeStyle='#263743';c.lineWidth=1;
+ function path(vectors){c.beginPath();let last=null;for(const v of vectors){const q=project(v,b,w,h,fov);if(!q||q.x<-w||q.x>2*w||q.y<-h||q.y>2*h){last=null;continue}if(last&&Math.abs(q.x-last.x)<w*.55)c.lineTo(q.x,q.y);else c.moveTo(q.x,q.y);last=q}c.stroke()}
+ for(const lat of[-45,-25,0,25,45])path(Array.from({length:73},(_,i)=>M.vec(M.rad(i*5),M.rad(lat))));
+ for(let a=0;a<360;a+=30)path(Array.from({length:25},(_,i)=>M.vec(M.rad(a),M.rad(-72+i*6))));
+ if(target){const q=project(target,b,w,h,fov);if(q&&q.x>0&&q.x<w&&q.y>0&&q.y<h){const ty=Math.atan2(target[0],target[2]),tp=Math.asin(M.clamp(target[1],-1,1)),tb=M.basis(ty,tp);c.beginPath();let started=false;for(let i=0;i<=32;i++){const a=i/32*2*Math.PI,v=target.map((x,k)=>x*Math.cos(radius)+(tb.r[k]*Math.cos(a)+tb.u[k]*Math.sin(a))*Math.sin(radius)),v2=project(v,b,w,h,fov);if(!v2)continue;if(!started){c.moveTo(v2.x,v2.y);started=true}else c.lineTo(v2.x,v2.y)}c.closePath();c.fillStyle='#88d3df';c.fill();c.strokeStyle='#c9f8ff';c.lineWidth=1;c.stroke();c.beginPath();c.arc(q.x,q.y,2,0,Math.PI*2);c.fillStyle='#345c67';c.fill()}
+ else{const tx=M.dot(target,b.r),ty=-M.dot(target,b.u),ang=Math.atan2(ty,Math.abs(tx)<1e-8?1e-8:tx);const xx=w/2+Math.cos(ang)*w*.4,yy=h/2+Math.sin(ang)*h*.35;c.save();c.translate(xx,yy);c.rotate(ang);c.fillStyle='#88d3df';c.beginPath();c.moveTo(12,0);c.lineTo(-6,-6);c.lineTo(-6,6);c.closePath();c.fill();c.restore();c.fillStyle='#9bb1c4';c.textAlign='center';c.font='12px sans-serif';c.fillText(`${Math.round(M.deg(M.angle(b.f,target)))}°`,xx,yy+24)}}
+ c.strokeStyle='#f0f4f8';c.lineWidth=1.5;c.beginPath();c.moveTo(w/2-8,h/2);c.lineTo(w/2-3,h/2);c.moveTo(w/2+3,h/2);c.lineTo(w/2+8,h/2);c.moveTo(w/2,h/2-8);c.lineTo(w/2,h/2-3);c.moveTo(w/2,h/2+3);c.lineTo(w/2,h/2+8);c.stroke();c.fillStyle='#f0f4f8';c.fillRect(w/2-.7,h/2-.7,1.4,1.4)
+}
+function drawPreview(){const can=$('preview'),w=can.clientWidth,h=can.clientHeight;if(!w||!h)return;can.width=w*2;can.height=h*2;const c=can.getContext('2d');c.scale(2,2);drawScene(c,w,h,-.1,-.04,M.vec(.22,.12),.045,95)}
+
+function signed(x,n=1){return Number.isFinite(x)?`${x>0?'+':''}${(x*100).toFixed(n)}%`:'—'}
+function edgeLeader(s,a){if(!a.leader)return false;const cms=s.candidates.map(c=>c.cm);return a.leader.cm===Math.min(...cms)||a.leader.cm===Math.max(...cms)}
+function chartSVG(rows){const rr=rows.filter(r=>Number.isFinite(r.relative));if(!rr.length)return'';const w=820,h=270,l=60,r=25,t=25,b=55;let xmin=Math.log(Math.min(...rr.map(x=>x.cm))),xmax=Math.log(Math.max(...rr.map(x=>x.cm)));if(xmin===xmax){xmin-=.1;xmax+=.1}let ymin=Math.min(.95,...rr.map(x=>x.ci?1+x.ci[0]:x.relative)),ymax=Math.max(1.05,...rr.map(x=>x.ci?1+x.ci[1]:x.relative));const pad=(ymax-ymin)*.16;ymin=Math.max(0,ymin-pad);ymax+=pad;const X=x=>l+(Math.log(x)-xmin)/(xmax-xmin)*(w-l-r),Y=y=>h-b-(y-ymin)/(ymax-ymin)*(h-b-t);let v=`<svg class="reportchart" viewBox="0 0 ${w} ${h}" role="img" aria-label="已测灵敏度的综合表现及按日重采样区间，不连接未测数值">`;
+ for(let i=0;i<5;i++){const z=ymin+(ymax-ymin)*i/4;v+=`<path d="M${l} ${Y(z)}H${w-r}" stroke="#293642"/><text x="${l-10}" y="${Y(z)+4}" fill="#9dacba" font-size="11" text-anchor="end">${fmt(z,2)}</text>`}
+ v+=`<path d="M${l} ${Y(1)}H${w-r}" stroke="#9ca9b6" stroke-dasharray="5 5"/>`;
+ for(const z of rr){const x=X(z.cm),y=Y(z.relative),color=z.gates?'#c3f17c':'#efb36f';if(z.ci)v+=`<path d="M${x} ${Y(1+z.ci[0])}V${Y(1+z.ci[1])} M${x-5} ${Y(1+z.ci[0])}h10 M${x-5} ${Y(1+z.ci[1])}h10" stroke="${color}" stroke-width="1.5"/>`;v+=`<circle cx="${x}" cy="${y}" r="5" fill="${color}"/><text x="${x}" y="${h-b+22}" fill="#c7d1db" font-size="11" text-anchor="middle">${fmt(z.cm,1)}${z.baseline?'*':''}</text>`}
+ return v+`<text x="${w/2}" y="${h-8}" text-anchor="middle" font-size="11" fill="#9dacba">cm / 360°（对数横轴） · * 原基准 · 仅离散实测点</text></svg>`;
+}
+function renderResults(){const s=study();if(!s){$('resultsBody').innerHTML='<div class="empty"><h3>尚无个人实验数据</h3><p>你的1600 DPI只是设备设置，不足以计算最佳灵敏度。</p><button class="primary space" data-go="setup">先测量与校准 →</button></div>';return}const phase=reportPhase,a=M.analyze(s,phase);$('showExplore').classList.toggle('primary',phase==='explore');$('showConfirm').classList.toggle('primary',phase==='confirm');
+ if(phase==='confirm'&&!s.finalists){$('resultsBody').innerHTML='<div class="empty"><h3>确认阶段尚未开始</h3><p>至少完成3个不同测试日的探索，再锁定包含原基准的候选。建议探索5日以平衡位置。</p><button class="space" data-action="showExplore">查看探索结果</button></div>';return}
+ const partial=s.sessions.filter(x=>x.phase===phase&&!x.complete).length;
+ if(!a.sessions){$('resultsBody').innerHTML=`<div class="empty"><h3>${phase==='confirm'?'等待锁定后的新测试日':'尚无完整会话'}</h3><p>已保存${partial}次未完成或中断会话，不进入选优统计。完成所有条件、四项任务及感受评分后才计入。</p><button class="primary space" data-go="lab">进入实验 →</button></div>`;return}
+ const minDays=phase==='confirm'?6:3,adequate=a.rows.length&&a.rows.every(r=>r.days>=minDays),edge=edgeLeader(s,a);let headline,explain;
+ if(!adequate){headline=`证据积累中 · ${a.days}/${minDays} 日`;explain='下表仅为当前描述。数据不足、零基准表现或缺少配对日期时，不给出确认结论。'}
+ else if(!a.leader){headline='没有候选通过全部守门条件';explain='请先检查舒适度、精度损失和任务难度。不要从未通过的候选中强行选择“最高分”。'}
+ else if(phase==='explore'){headline=`探索领先：${fmt(a.leader.cm,2)} cm/360`;explain=edge?'领先条件处于搜索边缘，应先扩展范围。当前不能宣称找到全局最优。':'这是用于选择确认候选的探索性结果，不能作为独立验证。'}
+ else{const improved=a.rows.filter(r=>!r.baseline&&r.gates&&r.ci&&r.ci[0]>s.config.margin).sort((x,y)=>y.relative-x.relative);if(improved.length){headline=`确认支持候选：${fmt(improved[0].cm,2)} cm/360`;explain=`在本次四项任务和已测条件内，相对基准的调整区间下限超过预设${pct(s.config.margin)}改善线。仍需三角洲两种模式的游戏内复核。`}else{headline='尚无充分证据要求替换原基准';explain='新数据没有证明其他候选相对基准超过预设实用改善线。这不等于候选完全等效，也不排除游戏内舒适度上的差别。'}}
+ let html=`<div class="card space"><div class="eyebrow">${phase==='explore'?'EXPLORATORY RESULTS':'INDEPENDENT CONFIRMATION'}</div><h2 class="space">${headline}</h2><p class="sub">${explain}</p><div class="legend"><span>${a.sessions} 次完整会话 / ${a.days} 个不同日期</span><span>${partial} 次不完整会话被排除</span><span>${s.invalid?.length||0} 次无效任务已记录</span></div>${chartSVG(a.rows)}</div>`;
+ html+=`<div class="tablewrap"><table><thead><tr><th>cm/360</th><th>综合比值</th><th>对基准的调整区间</th>${M.TASKS.map(t=>`<th>${M.NAMES[t]}比值</th>`).join('')}<th>微调命中率差</th><th>费力度</th><th>守门条件</th></tr></thead><tbody>`;
+ for(const r of a.rows){let reason=[];if(r.pains)reason.push('疼痛/不适');if(r.effort>s.config.maxEffort)reason.push('费力');if(r.accDiff< -s.config.accDrop)reason.push('精度');if(r.taskRatios.some(x=>x<1-s.config.taskDrop))reason.push('单项退步');if(r.relative===null)reason.push('无有效配对');html+=`<tr class="${r.gates?'good':''}"><td>${fmt(r.cm,3)}${r.baseline?' · 基准':''}</td><td>${fmt(r.relative,3)}</td><td>${r.baseline?'参照 = 0%':r.ci?`${signed(r.ci[0])} ～ ${signed(r.ci[1])}`:'少于3日 / 未计算'}</td>${r.taskRatios.map(v=>`<td>${fmt(v,3)}</td>`).join('')}<td>${Number.isFinite(r.accDiff)?(r.accDiff*100).toFixed(1)+' 个百分点':'—'}</td><td>${fmt(r.effort,1)}/10</td><td>${r.gates?'通过':esc(reason.join('、')||'无数据')}</td></tr>`}
+ html+='</tbody></table></div><p class="tiny muted">区间在log比值空间按日重采样，非基准比较使用Bonferroni调整；小样本区间仍不稳定，不是严格等效检验。基准某任务为零时该配对不估计比值；候选为零时使用计算下限并由单项守门线排除。</p>';
+ if(a.near.length&&adequate){html+=`<div class="card space"><h3>已测近优候选（不是连续“最优区间”）</h3><p class="sub">${a.near.map(r=>fmt(r.cm,2)).join('、')} cm/360。它们的点估计距领先值不超过${pct(s.config.margin)}，但尚未证明统计等效。${a.anchor?`按“靠近原基准优先”的预声明规则，保守锚点为${fmt(a.anchor.cm,2)}。`:''}</p><div class="row">${a.near.map(r=>`<button data-action="adoptCm" data-cm="${r.cm}">${fmt(r.cm,2)} → 换算</button>`).join('')}</div></div>`}
+ if(phase==='explore'&&!s.finalists){html+=`<div class="card space"><h3>下一步：${edge?'扩展边界，或继续收集数据':'冻结候选，开始新数据确认'}</h3><p class="sub">原基准必须保留；另外选出最多2个通过守门条件的探索领先值。确认需要6个不同的新测试日，不把今天的探索再作为确认。冻结后不按中途结果改变候选或提前宣告成功。</p><div class="row"><button class="primary" data-action="lockConfirm" ${!adequate||!a.leader||edge?'disabled':''}>锁定候选，转入6日确认</button>${edge&&adequate?'<button data-action="expandSearch">以边缘领先值扩展新实验</button>':''}${!edge&&adequate&&a.leader&&!s.refinedFrom?'<button data-action="refineSearch">先细化领先区域（建议）</button>':''}</div></div>`}
+ if(phase==='confirm'&&adequate)html+='<div class="notice">确认阶段的计划数据已完成。不要因结果不满意反复增加同阶段样本；需要更多数据时另建实验并预先声明新计划。下一步在游戏里按相同时段复核。</div><button class="primary" data-go="field">记录游戏内复核 →</button>';
+ html+=`<details class="space"><summary>展开每个完整会话的原始摘要</summary><div class="tablewrap"><table><thead><tr><th>日期 / 条件</th><th>任务</th><th>有效命中/秒 或 跟枪占比</th><th>命中率/占比</th><th>超时</th><th>平均获取ms</th><th>跟踪RMS°</th><th>显示FPS</th></tr></thead><tbody>${s.sessions.filter(x=>x.phase===phase&&x.complete).map(ss=>ss.order.map(id=>M.TASKS.map(t=>{const b=ss.blocks[id][t],c=s.candidates.find(c=>c.id===id);return`<tr><td>${esc(ss.day)} / ${fmt(c.cm,2)}</td><td>${M.NAMES[t]}</td><td>${fmt(b.score,3)}</td><td>${pct(b.accuracy)}</td><td>${b.timeouts||0}</td><td>${fmt(b.meanAcquireMs,0)}</td><td>${fmt(b.rmsDeg,2)}</td><td>${fmt(b.frameFps,1)}</td></tr>`}).join('')).join('')).join('')}</tbody></table></div></details>`;
+ $('resultsBody').innerHTML=html;
+}
+function lockConfirm(){const s=study();if(!s||s.finalists)return;const a=M.analyze(s,'explore'),base=a.rows.find(r=>r.baseline);if(unfinished(s))return toast('请先完成当前会话；不能在尚未完成的条件之间挑选候选。',true);if(a.rows.some(r=>r.days<3)||edgeLeader(s,a)||!base?.gates)return toast('需要至少3日有效配对、非边缘领先，并且基准没有不适/费力问题。',true);const others=a.rows.filter(r=>!r.baseline&&r.gates).sort((x,y)=>y.relative-x.relative).slice(0,2);if(!others.length)return toast('没有其他候选通过守门线。请保留基准或归档后重新设计范围。',true);if(!confirm(`冻结 ${[base,...others].map(r=>fmt(r.cm,2)).join(' / ')} cm/360。随后收集6个不同日期的新数据，今天的探索不再当确认。继续？`))return;s.finalists=[base,...others].map(({id,cm,baseline})=>({id,cm,baseline}));s.lockedAt=new Date().toISOString();s.lockedDay=today();save();reportPhase='confirm';go('results');toast('候选已冻结。下一个新测试日开始独立确认。')}
+function refineSearch(){const s=study(),a=s&&M.analyze(s,'explore');if(!s||!a.leader||a.rows.some(r=>r.days<3)||s.finalists)return;if(unfinished(s))return toast('请先完成当前会话。',true);if(!confirm('将当前实验归档，在领先值附近用约5%间隔重新探索，并继续保留原基准。新数据与旧数据分开。继续？'))return;if(data.studies.length>=40)return toast('实验数达到上限。',true);const cms=[...new Set([.9,.95,1,1.05,1.1].map(k=>+(a.leader.cm*k).toFixed(3)).concat(s.config.baseCm))].filter(x=>x>=5&&x<=250).sort((a,b)=>a-b);s.archived=true;const n={id:uid(),created:new Date().toISOString(),seed:randomSeed(),config:structuredClone(s.config),cal:structuredClone(s.cal),candidates:cms.map((cm,i)=>({id:'c'+i,cm,baseline:cm===s.config.baseCm})),sessions:[],finalists:null,archived:false,refinedFrom:s.id};data.studies.push(n);data.active=n.id;save();reportPhase='explore';go('lab');toast('细化探索已创建，旧数据保留。')};
+function expandSearch(){const s=study(),a=s&&M.analyze(s,'explore');if(!s||!a.leader||!edgeLeader(s,a))return;const center=a.leader.cm,base=s.config.baseCm,cms=[...new Set([center*.64,center*.8,center,center*1.25,center*1.5625,base].filter(x=>x>=5&&x<=250).map(x=>+x.toFixed(3)))].sort((a,b)=>a-b);if(!confirm('扩展会保留并归档当前实验，创建完全独立的新探索数据集；原基准继续保留。继续？'))return;if(data.studies.length>=40)return toast('实验数达到上限，请导出后另开工作区。',true);s.archived=true;const n={id:uid(),created:new Date().toISOString(),config:structuredClone(s.config),cal:structuredClone(s.cal),seed:randomSeed(),candidates:cms.map((cm,i)=>({id:'c'+i,cm,baseline:Math.abs(cm-base)<.001})),sessions:[],finalists:null,archived:false,expandedFrom:s.id};data.studies.push(n);data.active=n.id;save();reportPhase='explore';go('lab');toast('已创建扩展范围；旧数据不会混入新实验。')}
+$('showExplore').onclick=()=>{reportPhase='explore';renderResults()};$('showConfirm').onclick=()=>{reportPhase='confirm';renderResults()};
+const PRESETS=[{name:'三角洲行动 · Delta Force',yaw:.03,note:'KovaaK参考yaw 0.03；必须核对游戏版本与基础灵敏度，再用尺子验证。开镜单独标定。'},{name:'无畏契约 · Valorant',yaw:.06996,note:'KovaaK官方换算器参考标度；应用后实测复核'},{name:'Apex Legends',yaw:.022,note:'默认yaw、腰射；不自动匹配ADS'},{name:'CS2',yaw:.022,note:'默认m_yaw；非默认yaw请用自定义项'},{name:'Overwatch 2',yaw:.0066,note:'腰射参考标度；英雄开镜另行标定'},{name:'Source / Quake 默认标度',yaw:.022,note:'仅适用于确实使用此yaw的游戏配置'}];
+function renderConvert(){const cm=+$('convertCm').value,dpi=+$('convertDpi').value,ok=cm>0&&dpi>=100&&dpi<=64000;let html='<table><thead><tr><th>游戏 / 配置</th><th>游戏内灵敏度</th><th>适用条件</th></tr></thead><tbody>';for(const p of PRESETS)html+=`<tr><td>${p.name}</td><td class="accent">${ok?fmt(M.sensitivity(cm,dpi,p.yaw),6):'先填写目标cm/360'}</td><td class="wrap muted">${p.note}</td></tr>`;html+='<tr><td>Aimlabs</td><td>选择对应游戏配置</td><td class="wrap muted">选择上述同一游戏配置和DPI后填换算值；不要把不同配置的数字直接比较。</td></tr><tr><td>任何预设不匹配 / 其他游戏</td><td>使用下方实测映射</td><td class="wrap muted">实测优先，不把参考yaw当作每个版本或倍率的保证。</td></tr></tbody></table><p class="tiny muted">参考：<a href="https://kovaaks.com/kovaaks/sens-converter" target="_blank" rel="noopener noreferrer">KovaaK官方换算器</a>、<a href="https://kovaaks.com/kovaaks/sens-converter/valorant-to-delta-force" target="_blank" rel="noopener noreferrer">三角洲参考标度</a>。这些是训练工具开发者的参考数据，不是每个游戏版本的官方保证。</p>';$('convertTable').innerHTML=html;
+ $('customMaps').innerHTML=data.mappings.length?data.mappings.map(p=>{let result='填写目标距离后换算',err=false;if(ok)try{result=fmt(M.mapping(p.samples,cm,dpi,p.dpi),6)}catch(e){result=e.message;err=true}return`<div class="logcard"><div class="row"><h3>${esc(p.name)}</h3><span class="chip">${p.dpi} DPI测量 · ${p.samples.length}点</span><button class="ghost tiny danger" data-action="deleteMap" data-id="${esc(p.id)}">删除</button></div><p class="${err?'warn':'accent'} space">目标游戏内数值：${result}</p><p class="tiny muted">仅在实测范围内插值；FOV、瞄具和其他倍率须保持与配置名记载一致。</p></div>`}).join(''):'<p class="tiny muted space">尚无实测映射。示例仅是输入格式，不是三角洲参数。</p>';
+ const yaw=+$('customYaw').value;try{$('yawResult').value=ok&&yaw>0?fmt(M.sensitivity(cm,dpi,yaw),7):'—'}catch(e){$('yawResult').value=e.message}
+ try{$('adsResult').value=ok?fmt(M.focalCm(cm,+$('hipFov').value,+$('adsFov').value,+$('monitorPoint').value),3)+' cm/360':'—'}catch(e){$('adsResult').value=e.message}
+ const measured=+$('verifyCm').value;$('verifyOutput').value=ok&&measured>0?`${pct(Math.abs(measured/cm-1),2)} · ${Math.abs(measured/cm-1)<=.03?'通过工程距离复核；仍需实战验证':'超过3%，请复测或补充映射点'}`:'—';
+}
+['convertCm','convertDpi','customYaw','hipFov','adsFov','monitorPoint','verifyCm'].forEach(id=>$(id).addEventListener('input',renderConvert));
+$('saveMapping').onclick=()=>{try{$('mappingError').textContent='';const name=$('gameName').value.trim(),dpi=+$('mappingDpi').value;const lines=$('mappingSamples').value.trim().split(/\n+/),samples=lines.map(line=>{const a=line.trim().split(/[,，\s]+/).map(Number);if(a.length!==2)throw Error('每行恰好填写两个数：游戏内灵敏度, cm/360。');return{s:a[0],cm:a[1]}});if(!name||name.length>100||!(dpi>=100&&dpi<=64000)||samples.length<3||samples.length>100||samples.some(x=>!Number.isFinite(x.s)||!Number.isFinite(x.cm)||x.s<0||x.s>1e6||x.cm<=0||x.cm>1e5))throw Error('请填写配置名称、有效DPI和至少3个有效实测点。');M.mapping(samples,M.median(samples.map(x=>x.cm)),dpi,dpi);if(data.mappings.length>=100)throw Error('映射数已达上限，请导出并整理。');data.mappings.push({id:uid(),name,dpi,samples,created:new Date().toISOString()});save();renderConvert();toast('实测映射已保存。请到游戏中重新测量换算误差。')}catch(e){$('mappingError').textContent=e.message}};
+const MODES={operations:'三角洲 · 烽火地带',warfare:'三角洲 · 全面战场',apex:'Apex Legends',valorant:'无畏契约',other:'其他游戏'};
+const observationStudy=()=>{const current=singleApp?.activeStudy();return current?(['done','stopped','abandoned'].includes(current.runtime.phase)?current:null):study();};
+function fieldCoverage(s){if(s?.protocolVersion===SensSession.VERSION)return '<div class="notice">本次单次实验仅建议在真实游戏中复核；无需额外连续测试6天。以下观察独立保存，不回填或改变本次网页复测结果。</div>';if(!s?.finalists)return'<div class="notice">先锁定候选。当前可以记实战观察，但探索期观察不能代替锁定后的对照复核。</div>';let h='<div class="tablewrap"><table><thead><tr><th>候选</th><th>烽火地带</th><th>全面战场</th></tr></thead><tbody>';for(const c of s.finalists){h+=`<tr><td>${fmt(c.cm,2)}${c.baseline?' 基准':''}</td>`;for(const mode of['operations','warfare']){const logs=data.field.filter(f=>f.study===s.id&&f.candidate===c.id&&f.mode===mode&&f.created>=s.lockedAt),days=new Set(logs.map(x=>x.day)).size,byLength=new Map();for(const f of logs){const k=String(f.minutes);if(!byLength.has(k))byLength.set(k,new Set());byLength.get(k).add(f.day)}const covered=[...byLength.values()].some(v=>v.size>=2),pain=logs.some(x=>x.pain);h+=`<td class="${pain?'bad':covered?'accent':'muted'}">${logs.length}时段 / ${days}天${pain?' · 存在不适':covered?' · 覆盖✓':' · 待补齐'}</td>`}h+='</tr>'}return h+'</tbody></table></div><p class="tiny muted">覆盖✓要求同一条件/模式在至少2天各有相同时长时段。不同条件之间还需人工核对时长、装备与场景；覆盖完整不自动证明某条件更好。</p>'}
+function renderField(){const s=observationStudy(),val=$('fieldCandidate').value,candidates=s?(s.finalists||s.candidates):[];$('fieldCandidate').innerHTML='<option value="">请选择实验条件</option>'+candidates.map(c=>`<option value="${esc(c.id)}">${fmt(c.cm,3)} cm/360${c.baseline?' · 原基准':''}</option>`).join('');if(candidates.some(c=>c.id===val))$('fieldCandidate').value=val;$('fieldCoverage').innerHTML=s?fieldCoverage(s):singleApp?.activeStudy()?'本次单次测试尚未结束，暂不显示条件数值或绑定游戏复核。完成后再记录真实游戏表现。':'尚无实验。请先完成设备校准并创建实验。';const logs=data.field.filter(f=>!s||f.study===s.id).slice().reverse();$('fieldLog').innerHTML=logs.length?logs.slice(0,100).map(f=>`<div class="logcard"><div class="row"><h3>${esc(f.day)} · ${esc(MODES[f.mode]||f.mode)}</h3><span class="chip">${fmt(f.cm,2)} cm/360 · ${f.minutes}分钟</span></div><p class="space">费力${f.effort}/10 · 行程受限${f.limited}次 · 微调/过冲困难${f.overshoot}次${f.pain?' · <span class="bad">存在不适</span>':''}</p><p>${esc(f.notes||'未填写补充观察')}</p></div>`).join(''):'<div class="empty">尚无游戏内真实记录。不会自动用网页成绩填充。</div>'}
+$('fieldForm').onsubmit=e=>{e.preventDefault();try{$('fieldError').textContent='';if(!$('fieldForm').reportValidity())return;const s=observationStudy(),id=$('fieldCandidate').value,c=s?.candidates.find(x=>x.id===id);if(!c)throw Error('请选择当前实验中的真实条件。');const f={id:uid(),study:s.id,candidate:id,cm:c.cm,protocolVersion:s.protocolVersion||'legacy-multiday-v1',phase:s.protocolVersion?'single-session':s.finalists?'confirm':'explore',mode:$('fieldMode').value,minutes:+$('fieldMinutes').value,effort:+$('fieldEffort').value,limited:+$('fieldLimited').value,overshoot:+$('fieldOvershoot').value,notes:$('fieldNotes').value.trim(),pain:$('fieldPain').checked,day:today(),created:new Date().toISOString()};if(!Number.isInteger(f.limited)||!Number.isInteger(f.overshoot))throw Error('观察次数应为整数。');if(data.field.length>=5000)throw Error('记录数达到上限，请先导出归档。');data.field.push(f);save();$('fieldNotes').value='';$('fieldPain').checked=false;renderField();toast(f.pain?'已记录不适，请停止当前测试；记录不等于诊断。':'真实观察已保存。',f.pain)}catch(e){$('fieldError').textContent=e.message}};
+function exportJSON(){if(!migrationReady&&protectedStored!==null){download(`senslab-original-storage-${today()}.json`,protectedStored);return}download(`senslab-backup-${today()}.json`,JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2))}
+function csvCell(x){let v=x===null||x===undefined?'':String(x);if(/^[=+@\-\t\r]/.test(v)&&!Number.isFinite(x))v="'"+v;return'"'+v.replace(/"/g,'""')+'"'}
+function exportCSV(){const lines=[['study','phase','day','session','session_complete','candidate_cm360','baseline','task','valid','score','accuracy','duration_ms','hits','shots','timeouts','acquire_ms','rms_deg','path_cm','display_fps','display_frame_p95_ms','effort','lifts','pain']];for(const s of data.studies)for(const ss of s.sessions)for(const id of Object.keys(ss.blocks))for(const t of M.TASKS){const b=ss.blocks[id][t];if(!b)continue;const c=s.candidates.find(x=>x.id===id),r=ss.ratings[id]||{};lines.push([s.id,ss.phase,ss.day,ss.id,!!ss.complete,c.cm,c.baseline,t,b.valid,b.score,b.accuracy,b.duration,b.hits,b.shots,b.timeouts,b.meanAcquireMs,b.rmsDeg,b.pathCm,b.frameFps,b.frameP95,r.effort,r.lifts,r.pain])}lines[0].unshift('protocolVersion','mode');lines[0].push('round','target_seed','adaptation_seconds','group_planned_seconds','attempt_count','interruption_reasons');for(let i=1;i<lines.length;i++){lines[i].unshift('legacy-multiday-v1','multiday');lines[i].push('','','','','','');}
+ for(const st of data.singleStudies||[])for(const group of st.groups||[]){const result=st.results?.[group.id];if(!result)continue;const c=st.candidates.find(c=>c.id===group.candidateId);for(const [task,b] of Object.entries(result.tasks||{}))lines.push([st.protocolVersion,st.mode,st.id,group.stage,'',group.id,!!result.rating,c?.cm,c?.baseline,task,b.valid,b.score,b.accuracy,b.duration,b.hits,b.shots,b.timeouts,b.meanAcquireMs,b.rmsDeg,b.pathCm,b.frameFps,b.frameP95,result.rating?.effort,null,result.rating?.pain,group.round,group.seed,group.adaptSeconds,group.plannedSeconds,(st.attempts||[]).filter(a=>a.groupId===group.id).length,(st.attempts||[]).filter(a=>a.groupId===group.id&&a.reason).map(a=>a.reason).join(' | ')]);}
+ download(`senslab-blocks-${today()}.csv`,'\ufeff'+lines.map(row=>row.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');toast('已导出任务级原始CSV；逐次点击、跟踪采样和无效任务原因见JSON。')}
+$('exportBtn').onclick=exportJSON;$('csvBtn').onclick=exportCSV;$('printBtn').onclick=()=>window.print();$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>15*1024*1024)throw Error('备份超过15MiB，请检查文件。');const d=validateBackup(JSON.parse(await f.text()));if(!confirm('导入将替换当前工作区。确认已导出当前数据并继续？'))return;const restored={...d,storageVersion:2,singleStudies:d.singleStudies||[],singleActive:d.singleActive||null,testResetRevision:TEST_RESET_REVISION};singleApp?.pause('导入工作区');const current=localStorage.getItem(KEY);if(current)localStorage.setItem(KEY+'.pre-import',current);localStorage.setItem(KEY,JSON.stringify(restored));data=restored;migrationReady=true;protectedStored=null;singleApp?.onWorkspaceLoaded?.();fillSettings();reportPhase='explore';render();toast('备份已导入，旧协议与单次实验分别保留。'+calibrationStatus().detail)}catch(e){toast('导入失败：'+e.message,true)}finally{$('importFile').value=''}};
+$('sourceBtn').onclick=()=>{if(!MULTIFILE)download('SensLab-Personal.html',ORIGINAL,'text/html;charset=utf-8');else toast('当前是多文件开发版。运行 python build.py 后使用生成的 SensLab-Personal.html。',true)};
+$('resetBtn').onclick=()=>{if(!confirm('清空此浏览器工作区？所有实验、映射和记录将移除，且不能撤销。请先导出JSON。'))return;singleApp?.pause('用户确认清空工作区');const fresh=defaults();try{localStorage.setItem(KEY,JSON.stringify(fresh))}catch(e){toast('清空未能保存，原记录仍保留。',true);return}data=fresh;migrationReady=true;protectedStored=null;singleApp?.onWorkspaceLoaded?.();closeStage();$('settingsForm').reset();$('convertCm').value='';render();go('home');toast('本机数据已清空。')};
+$('fullscreenBtn').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();toast('窗口已变化，当前任务已暂停。物理校准保留；同一比较轮应保持视口和FOV一致。')}catch(e){toast('全屏未获允许；也可固定最大化窗口进行测试。',true)}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-view],[data-go],[data-action]');if(!b||b.disabled)return;if(b.dataset.view||b.dataset.go){go(b.dataset.view||b.dataset.go);return}const action=b.dataset.action;if(action==='acquire')acquire();else if(action==='fallbackPractice')acquire(true);else if(action==='closeStage')closeStage();else if(action==='nextTask'){closeStage();launchNext()}else if(action==='saveRating')saveRating(b.dataset.candidate);else if(action==='showExplore'){reportPhase='explore';renderResults()}else if(action==='lockConfirm')lockConfirm();else if(action==='expandSearch')expandSearch();else if(action==='refineSearch')refineSearch();else if(action==='adoptCm'){$('convertCm').value=b.dataset.cm;$('convertDpi').value=study()?.config.dpi||1600;go('convert')}else if(action==='deleteMap'){if(confirm('删除这条实测映射？')){data.mappings=data.mappings.filter(x=>x.id!==b.dataset.id);save();renderConvert()}}});
+if(location.hostname.endsWith('githack.com')){$('hostingNote').classList.remove('hide');$('hostingNote').textContent='当前是第三方共享域名的临时在线入口，不是独立GitHub Pages。请定期导出JSON，勿填写隐私信息；长期建议使用离线网页或部署到自己的域名。'}
+(function ui(){
+ // Runs inside the original application's lexical scope after its handlers exist.
+ const VERSION='net-projection-v2';
+ function validDraft(d){return d&&d.method===VERSION&&Array.isArray(d.rows)&&d.rows.length===12&&d.rows.every(r=>r===null||!M.calibrationSample(r))&&d.env&&Number.isFinite(d.dpi)&&Number.isFinite(d.cm);}
+ function draftFrom(c){return{method:VERSION,cm:c.cm,dpi:c.dpi,env:c.environment,raw:c.raw||rawMode,rows:structuredClone(c.rows),attempts:(c.attempts||[]).slice(-200),updated:new Date().toISOString()};}
+ function keep(c){data.calibrationDraft=draftFrom(c);return save();}
+ function label(i){const s=CAL_STEPS[i];return`${i+1}. ${s.axis==='x'?(s.dir>0?'向右':'向左'):(s.dir>0?'向后（靠近身体）':'向前（远离身体）')} / ${s.speed==='slow'?'慢速':'快速'}`;}
+ const oldPractice=beginPractice;beginPractice=function(){stage.classList.remove('cal-v2-active');oldPractice();};
+ const oldClose=closeStage;closeStage=function(){stage.classList.remove('cal-v2-active');oldClose();};
+ function startCalibration(redoIndex,verify=false){
+  if(!Number.isInteger(redoIndex)&&!verify&&(data.calibration||validDraft(data.calibrationDraft)&&data.calibrationDraft.rows.every(Boolean))){showSavedCalibration();return;}
+  if(study())return toast('实验已锁定。请先导出备份并归档，再重新校准。',true);
+  const storedDraft=data.calibrationDraft;
+  if(verify&&(!validDraft(storedDraft)||!storedDraft.rows.every(Boolean)||!inputCompatible(storedDraft.env,env())))return toast('请恢复这组记录采样时的窗口与缩放，再验证输入；12条记录仍保留。',true);
+  const useDraft=verify||Number.isInteger(redoIndex)&&validDraft(storedDraft);
+  const cm=useDraft?storedDraft.cm:+$('calDistance').value,dpi=useDraft?storedDraft.dpi:+$('dpi').value;
+  if(!(cm>=5&&cm<=30&&dpi>=100&&dpi<=64000))return toast('请填5–30cm的标记间距和有效DPI。',true);
+  const d=data.calibrationDraft,same=validDraft(d)&&d.cm===cm&&d.dpi===dpi&&inputCompatible(d.env,env());
+  if(d&&!same&&!confirm('标记间距、DPI或窗口已变化，旧草稿不能混入。本次将重新采样；已有实验记录保留。继续？'))return;
+  const rows=same?structuredClone(d.rows):Array(12).fill(null),attempts=same?(d.attempts||[]).slice(-200):[];
+  data.calibration=null;data.calibrationDraft={method:VERSION,cm,dpi,env:env(),rows,attempts};save();
+  openStage();lockIntent={kind:'calibration',cm,dpi,environment:env(),rows,attempts,redoIndex:Number.isInteger(redoIndex)?redoIndex:null};
+  const count=rows.filter(Boolean).length;
+  modal(`<div class="eyebrow">容错校准 / v1.0.2</div><h2>量两条线的间距，不考验直线手法</h2><p>准备两条相距 <strong>${fmt(cm,1)} cm</strong> 的平行标记。左右移动时，量左右两线的间距；前后移动时，量前后两线的间距。保持鼠标朝向基本不变，尺子尽量沿鼠标本身的左右/前后方向放置。可在外壳贴一个参照点，起终点都看同一点，不必盯着底部传感器。</p><p><strong>允许轻微斜移、手抖和小幅回调。</strong>计算指定方向的净位移，不累计小抖动，不要求100%水平或垂直。仍要从正确起点到正确终点，不要抬鼠标回中或扭转鼠标。</p><p>对齐起点 → 空格开始 → 滑到终点并停稳 → 空格结束。${count?`已保留 ${count}/12 条记录。`:''}${Number.isInteger(redoIndex)?`这次只重测第 ${redoIndex+1} 条。`:''}快慢只需有区别，不用用力甩。</p><div class="row"><button class="primary" data-action="acquire">${count?'继续 / 重测指定记录':'锁定鼠标，开始校准'}</button><button data-action="closeStage">稍后继续</button></div>`);
+ }
+ function restartAllTests(){
+   if(!confirm('全部重测将删除校准记录和草稿、所有实验成绩（含归档）及游戏复核记录。保留DPI、设备设置和跨游戏换算配置，并从第1条校准重新开始。确定继续？'))return;
+   singleApp?.pause('用户确认全部重测');
+   const fresh=clearRecordedTests(data);
+   try{localStorage.setItem(KEY,JSON.stringify(fresh))}
+   catch(e){toast('未能保存清除操作，旧记录仍保留。请检查浏览器存储后重试。',true);return}
+   // Clear both persisted results and in-flight owners before any redraw.
+   data=fresh;migrationReady=true;protectedStored=null;singleApp?.onWorkspaceLoaded?.();lockEpoch++;run=null;calSession=null;calResult=null;lockIntent=null;
+   clearInterval(restTimer);restTimer=null;flash=0;reportPhase='explore';
+   closeStage();$('modal').innerHTML='';$('sessionCheck').checked=false;
+   $('labError').textContent='';$('setupError').textContent='';$('convertCm').value='';
+   $('fieldNotes').value='';$('fieldPain').checked=false;
+   $('storageWarning').style.display='none';
+   renderResults();renderField();renderConvert();go('setup');
+   toast('旧测试记录已清除。保留设备设置，从第1条校准重新开始。');
+   startCalibration();
+  }
+  $('calibrateBtn').onclick=()=>startCalibration();
+  document.addEventListener('click',e=>{if(e.target.closest('[data-restart-all]')){e.preventDefault();restartAllTests();}});
+ beginCalibration=function(){
+  const rows=lockIntent.rows||Array(12).fill(null);const missing=rows.findIndex(r=>!r);
+  calSession={...lockIntent,raw:rawMode,rows,index:Number.isInteger(lockIntent.redoIndex)?lockIntent.redoIndex:missing,active:false};run=null;stage.classList.add('cal-v2-active');
+  if(calSession.index<0){finishCalibration(calSession);return;}calibrationDisplay();
+ };
+ calibrationDisplay=function(message=''){
+  const c=calSession;if(!c)return;
+  $('hudTitle').textContent=`校准 ${c.index+1} / 12`;$('hudDetail').textContent=label(c.index);$('hudRight').textContent=fmt(c.cm,1)+' cm';$('hudInput').textContent=`${c.rows.filter(Boolean).length} 条已保留 · 允许轻微斜移`;
+  $('stageHelp').textContent=message||'空格开始/结束 · Backspace重做本条或上一条 · Esc暂停并保留已完成记录';
+  ctx.fillStyle='#10151b';ctx.fillRect(0,0,canvasW,canvasH);ctx.textAlign='center';
+  ctx.fillStyle='#d6eac7';ctx.font='600 30px system-ui';ctx.fillText(label(c.index),canvasW/2,canvasH/2-90);
+  ctx.fillStyle='#edf2f7';ctx.font='22px system-ui';ctx.fillText(c.active?'正在记录：到终点后停稳，再按空格':'对齐桌面起点后，按空格开始',canvasW/2,canvasH/2-20);
+  ctx.fillStyle='#aeb9c6';ctx.font='16px system-ui';ctx.fillText('不用瞄准屏幕；看桌面两条标记，保持鼠标朝向不变。',canvasW/2,canvasH/2+40);
+  ctx.fillText('中途有轻微抖动没关系。系统不再用轨迹是否笔直判失败。',canvasW/2,canvasH/2+78);
+ };
+ calibrationSpace=function(){
+  const c=calSession;if(!c)return;
+  if(!inputCompatible(c.environment,env())){keep(c);calSession=null;unlock();modal('<h2>窗口已变化</h2><p>记录已保留。请恢复原窗口后继续，或在新环境重新采样。</p><button data-action="closeStage">返回</button>');return;}
+  if(!c.active){c.active=true;c.started=performance.now();c.dx=0;c.dy=0;c.pathX=0;c.pathY=0;c.motionStart=null;c.motionEnd=null;c.motionEvents=0;c.axisMotionEvents=0;calibrationDisplay();return;}
+  c.active=false;const st=CAL_STEPS[c.index],row={...st,method:VERSION,cm:c.cm,dx:c.dx,dy:c.dy,units:Math.abs(st.axis==='x'?c.dx:c.dy),path:st.axis==='x'?c.pathX:c.pathY,cross:st.axis==='x'?c.pathY:c.pathX,ms:c.axisMotionEvents>=2?c.motionEnd-c.motionStart:0,motionEvents:c.motionEvents,axisMotionEvents:c.axisMotionEvents,timingMethod:'primary-axis-v1',elapsedMs:performance.now()-c.started};
+  const reason=M.calibrationSample(row);c.attempts=(c.attempts||[]).concat([{index:c.index,row,accepted:!reason,reason,time:new Date().toISOString()}]).slice(-200);
+  if(reason){keep(c);calibrationDisplay(reason+' 其他记录不受影响。');return;}
+  c.rows[c.index]=row;keep(c);c.index=c.rows.findIndex(r=>!r);
+  if(c.index<0){finishCalibration(c);return;}calibrationDisplay('已记录。结束后才把鼠标放到下一条的起点；准备好按空格。');
+ };
+ function showCalibrationReport(c,result,{saved=false,saveFailed=false}={}){
+  const quality=result.ok,environmentOK=inputCompatible(c.environment,env());
+  const problems=[...(result.issues||[])];
+  if(!environmentOK)problems.push('测量记录保留，但窗口、缩放或浏览器与采样时不同。请恢复采样环境后再使用。');
+  if(saveFailed)problems.push('浏览器存储写入失败。本页仍保留测量，请立即导出备份；不能当作已经保存。');
+  const title=saveFailed?'测量已完成 · 尚未保存':saved?'校准通过，已保存':quality?'12/12 条测量通过 · 待确认保存':'12/12 条已完成 · 有检查未通过';
+  const groups=result.groups||[];
+  const groupTable=groups.length?`<div class="tablewrap"><table><thead><tr><th>检查</th><th>横向</th><th>纵向</th><th>要求</th></tr></thead><tbody>${[
+   ['重复变异',g=>pct(g.cv,3),'≤5%'],['快慢差异',g=>pct(g.speedError,3),'≤5%'],['慢速耗时中位数',g=>fmt(g.slowMs/1000,3)+'s','参考'],['快速耗时中位数',g=>fmt(g.fastMs/1000,3)+'s','参考'],['慢/快耗时比',g=>fmt(g.speedContrast,3),'≥1.5']
+  ].map(([name,format,limit])=>`<tr><td>${name}</td>${groups.map(g=>`<td>${format(g)}</td>`).join('')}<td>${limit}</td></tr>`).join('')}</tbody></table></div>`:'';
+  const oldTiming=c.rows.some(r=>r&&r.method===VERSION&&r.timingMethod!=='primary-axis-v1');
+  const settingsNote=saved?`<p class="${calibrationReady()?'accent':'warn'}">${esc(calibrationStatus().detail)}</p>`:'';
+  modal(`<div class="eyebrow">输入测量报告 / 12 条记录已保留</div><h2>${title}</h2><p>横向 ${fmt(result.ux,1)} / 纵向 ${fmt(result.uy,1)} 单位/cm。完成12条是采样完成；下面逐项显示质量检查结果。</p>${groupTable}${problems.map(x=>`<p class="warn">${esc(x)}</p>`).join('')}${settingsNote}
+  ${oldTiming?'<p class="tiny">这组含旧版计时记录：垂直于指定方向的微抖可能被算进耗时。旧记录没有完整事件轨迹，无法事后改算；若只因耗时比不达标，请核对操作后只重测受影响记录。</p>':''}
+  <div class="tablewrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>记录</th><th>单位/cm</th><th>偏离本轴中位数</th><th>移动耗时</th>${saved?'':'<th>操作</th>'}</tr></thead><tbody>${c.rows.map((r,i)=>{if(!r)return'';const v=r.method===VERSION?Math.abs(r.axis==='x'?r.dx:r.dy)/r.cm:r.units/r.cm,base=r.axis==='x'?result.ux:result.uy,dev=Math.abs(v/base-1);return`<tr><td>${label(i)}</td><td>${fmt(v,1)}</td><td class="${dev>.05+1e-12?'warn':''}">${pct(dev,2)}</td><td>${fmt(r.ms/1000,3)}s</td>${saved?'':`<td><button data-cal-redo="${i}">只重测此条</button></td>`}</tr>`}).join('')}</tbody></table></div>
+  <p class="tiny">不因完成12条就跳过质量检查。重复变异≤5%、快慢差异≤5%、耗时比≥1.5；仅重测确有操作问题的记录，历史尝试保留。</p>
+  <div class="row"><button class="primary" data-action="closeStage">${saved?'返回设置 / 开始实验':'返回设置，保留全部记录'}</button>${quality&&environmentOK&&!saved?'<button class="primary" data-cal-verify>验证输入并保存这12条（无需重测）</button>':''}${saved?'<button data-cal-new>重新校准（保留实验记录）</button>':''}<button data-cal-export>导出备份</button><button class="danger" data-restart-all>全部重测</button></div>`);
+ }
+ function showSavedCalibration(){
+  const saved=data.calibration,d=saved||data.calibrationDraft;if(!d||!Array.isArray(d.rows)||!d.rows.every(Boolean))return;
+  const c={rows:d.rows,attempts:d.attempts||[],environment:d.env,dpi:d.dpi,cm:d.cm||d.rows[0]?.cm,raw:d.raw};
+  const result={...M.calibration(d.rows),raw:d.raw||'unknown'};
+  openStage();lockIntent=null;showCalibrationReport(c,result,{saved:!!saved});
+ }
+ finishCalibration=function(c){
+  calSession=null;stage.classList.remove('cal-v2-active');
+  calResult={...M.calibration(c.rows),rows:structuredClone(c.rows),attempts:(c.attempts||[]).slice(-200),env:c.environment,dpi:c.dpi,raw:rawMode,deviceNotes:data.settings?.environment||'',created:new Date().toISOString()};
+  const ok=calResult.ok&&inputCompatible(c.environment,env())&&rawMode==='requested';
+  let saved=false,saveFailed=false;
+  if(ok){
+   const next={...data,calibration:calResult,calibrationDraft:null};
+   try{localStorage.setItem(KEY,JSON.stringify(next));data=next;saved=true;$('storageWarning').style.display='none'}
+   catch(e){data.calibrationDraft=draftFrom(c);saveFailed=true;$('storageWarning').style.display='block';}
+  }else saveFailed=!keep(c);
+  unlock();render();showCalibrationReport(c,calResult,{saved,saveFailed});
+ };
+ // Time only the instructed axis. Perpendicular jitter must not extend a completed stroke.
+ document.addEventListener('mousemove',e=>{const c=calSession;if(!c?.active||document.pointerLockElement!==arena||!Number.isFinite(e.movementX)||!Number.isFinite(e.movementY)||(!e.movementX&&!e.movementY))return;c.motionEvents++;const st=CAL_STEPS[c.index],movement=st.axis==='x'?e.movementX:e.movementY;if(!movement)return;const t=performance.now();if(c.motionStart===null)c.motionStart=t;c.motionEnd=t;c.axisMotionEvents++;},true);
+ // Capture prevents the old handler from removing all saved samples on Backspace.
+ document.addEventListener('keydown',e=>{if(!calSession||!stage.classList.contains('open')||!['Space','Backspace'].includes(e.code))return;e.preventDefault();e.stopImmediatePropagation();if(e.repeat)return;const c=calSession;if(e.code==='Space'){calibrationSpace();return;}if(c.active)c.active=false;else c.index=Math.max(0,c.index-1);calibrationDisplay('重新对齐起点。下一条新记录会替换该条，旧尝试仍保存在备份里。');},true);
+ document.addEventListener('click',e=>{if(e.target.closest('[data-cal-verify]')){e.preventDefault();startCalibration(undefined,true);return;}if(e.target.closest('[data-cal-new]')){e.preventDefault();startCalibration(0);return;}if(e.target.closest('[data-cal-export]')){e.preventDefault();exportJSON();return;}const b=e.target.closest('[data-cal-redo]');if(b){e.preventDefault();startCalibration(Number(b.dataset.calRedo));}});
+ const oldRender=render;render=function(){oldRender();const d=data.calibrationDraft;
+  $('calibrateBtn').textContent=data.calibration||validDraft(d)&&d.rows.every(Boolean)?'查看校准报告 →':validDraft(d)?'继续未完成的校准 →':'开始容错校准 →';
+  if(!study())$('labSummary').textContent='完成校准并保存设备设置后，以当前值为基准建立新实验。';
+ };
+ function initHelp(){
+  const style=document.createElement('style');style.textContent='#modal:has([data-cal-export]){width:min(880px,94vw);max-width:880px}.cal-v2-active #uxReticle,.cal-v2-active #uxCenterTag{display:none!important}.cm-explain{border:1px solid var(--line,#35404c);border-radius:14px;padding:20px;margin:18px 0;background:var(--panel,#151c24)}.cm-explain h3{margin-bottom:12px}.cm-comparison{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.cm-comparison>div{flex:1;min-width:120px;padding:12px;border-radius:9px;background:rgba(150,170,160,.09)}.cm-explain small{display:block;line-height:1.8;color:var(--muted,#afbcc9)}';document.head.append(style);
+  const box=document.createElement('div');box.className='cm-explain';box.id='cmMeaning';box.innerHTML='<h3>cm/360 是什么？就是“转一圈要推多远”。</h3><p><strong>游戏视角转一整圈，鼠标在桌面上平移的距离，单位是厘米。</strong>转的是游戏视角，不是拿鼠标在桌面上画圆。DPI 1600 单独不能说明这个距离，还要结合游戏内灵敏度。</p><div class="cm-comparison"><div><strong>20 cm/360</strong><small>推20厘米转一圈<br>相对更快</small></div><div><strong>40 cm/360</strong><small>推40厘米转一圈<br>转半圈需20厘米</small></div><div><strong>80 cm/360</strong><small>推80厘米转一圈<br>相对更慢</small></div></div><small>这些是解释单位的例子，不是给你的推荐值。数值越小，灵敏度越高。</small><p><strong>游戏转圈测量</strong>回答“当前游戏有多快”；<strong>浏览器尺子校准</strong>回答“网页收到多少输入等于桌面1厘米”。这是两个不同步骤，不要把两者混在一起。</p><button type="button" id="skipCmPractice">还没弄懂？先跳过，体验30秒练习（不计分）</button><p class="tiny">跳过只进入练习，使用示例初始值，不冒充你当前的灵敏度；正式对照实验仍需填写实测值。</p>';
+  $('setup').insertBefore(box,$('setup').querySelector('.split'));
+  $('skipCmPractice').onclick=()=>{go('lab');$('practiceBtn').click();};
+  $('baseCm').parentNode.firstChild.textContent='游戏转一圈所需距离（cm / 360°）';$('baseCm').placeholder='例如测得40厘米就填40；不是填1600';
+  const sub=$('setup').querySelector('.sub');sub.textContent='不用像机械导轨一样笔直。理解转圈距离后，再用端点净位移校准网页输入。';
+  const calCard=$('calibrateBtn').closest('.card');calCard.querySelector('h3').textContent='浏览器尺子校准 · 允许轻微斜移';
+  calCard.querySelector('p').textContent='两条平行标记相距10cm。记录指定方向的净位移，允许小抖动和回调；保持鼠标朝向基本不变，不抬起回中。左右量左右间距，前后量前后间距。';
+  if(!data.calibration&&!validDraft(data.calibrationDraft))$('calSummary').textContent='保留12条快慢、左右、前后测量，但不再检查轨迹必须笔直。错误只重测对应条目；Esc暂停后，已完成记录保留。';
+  const rail=document.querySelector('.railfoot');if(rail)rail.innerHTML=rail.innerHTML.replace(/v1\.0\.[01](?: · 教程版)?/g,'v1.1.0 · 单次灵敏度比较');
+  const guide=$('guide');if(guide){
+   const intro=box.cloneNode(true);intro.removeAttribute('id');intro.querySelector('button').remove();guide.insertBefore(intro,guide.querySelector('.split'));intro.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+   const n=[...guide.querySelectorAll('h3 .number')].find(e=>e.textContent==='04');
+   if(n)n.closest('.card').innerHTML='<h3><span class="number">04</span>容错校准：看起点和终点，不追求完美直线</h3><p>先固定窗口/全屏模式。在桌面放两条相隔10cm的平行标记，左右与前后分别准备。保持鼠标朝向基本不变，尺子尽量与鼠标自身方向对齐。允许轻微斜移、手抖和小幅回调。</p><p><strong>对齐起点 → 空格开始 → 滑到终点并停稳 → 空格结束。</strong>结束之后再挪到下一条起点。不要把鼠标抬起来回中，也不要扭转鼠标。不是要求鼠标沿一根细线滑动。</p><p>保留12条记录用于比较两轴和快慢输入。快慢按自己自然的动作区分，不用用力甩。程序用指定方向第一到最后一次移动之间的耗时，垂直方向微抖和按键等待不延长耗时。慢速可约2秒、快速约0.5–1秒，仅为操作示例。</p><p><strong>失败不整组清零：</strong>无输入或方向明显错误只重做本条；总体差异大时，报告会列出全部记录和原因，可以点“只重测此条”。不要反复挑选通过的数值；全部历史尝试保留在JSON中。</p><p><strong>Esc暂停：</strong>保留已完成记录；同一浏览器、网址、DPI、标记距离和窗口下点击校准可继续。DPI、设备或输入路径改变时需重新采样；仅窗口大小改变会暂停当前任务。微抖不再作为失败理由，但端点距离、朝向和原始输入仍需认真核对。</p>';
+  }
+  const p=document.createElement('div');p.className='notice';p.innerHTML='<strong>v1.0.2 校准修正：</strong>指定方向净位移除以两条平行线的间距。累计横向抖动和路径曲折度只作诊断，不再判失败；快慢耗时由移动事件估计。仍检查重复性与速度相关差异。<a href="https://www.w3.org/TR/pointerlock/" target="_blank" rel="noopener">W3C 相对移动定义</a> / <a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/movementX" target="_blank" rel="noopener">MDN 输入单位限制</a>。本方法是工程实现，尚未经独立硬件实验验证。';$('methods').append(p);
+  render();
+ }
+ document.addEventListener('DOMContentLoaded',initHelp,{once:true});
+})();
+singleApp=SensSessionApp.create({getData:()=>data,save,calibrationStatus,getEnv:env,inputCompatible,inputChanges,getRawMode:()=>rawMode,getArena:()=>arena,ctx,stage,openStage,closeStage,modal,hideModal,toast,
+ requestLock:()=>{lockIntent={kind:'single'};return acquire();},releaseLock:unlock,drawScene,actualHFov,M,go,fmt,pct,esc,uid,exportJSON,exportCSV,
+ adoptCm:(cm,dpi)=>{$('convertCm').value=cm;$('convertDpi').value=dpi;go('convert');}
+});
+const renderLegacyLab=renderLab;renderLab=function(){renderLegacyLab();singleApp.renderLab();};
+const renderLegacyResults=renderResults;renderResults=function(){renderLegacyResults();singleApp.renderResults();};
+$('fieldEffort').innerHTML=ratingOptions();fillSettings();render();drawPreview();go('lab');
+document.addEventListener('DOMContentLoaded',()=>{singleApp.renderLab();singleApp.renderResults();},{once:true});
+
+})();
+
+</script></body></html>

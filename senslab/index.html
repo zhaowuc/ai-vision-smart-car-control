@@ -1,32 +1,29 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal 1.0.2 · 容错校准</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH / 1.0.2</small><h1>SensLab Personal</h1><p id="status">正在载入容错校准版：允许轻微斜移、逐条重测，并解释cm/360。</p><div class="bar"></div><p>无需账号。记录保存在当前浏览器，请导出JSON备份。正式测试请使用桌面Chrome或Edge，并独立打开网页。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="https://github.com/zhaowuc/ai-vision-smart-car-control/tree/senslab-personal-20261017/senslab" target="_blank" rel="noopener noreferrer">GitHub 源码与备份说明 ↗</a></p><noscript>需要启用JavaScript才能执行测试。</noscript></main>
-<script src="upgrade-v102.js" integrity="sha256-uSiPQKTKeLAWhaEhy+C8/pVOU7Bpl2H1i6DTRQ9veuo=" crossorigin="anonymous"></script>
-<script>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal 1.1.0 · 单次灵敏度比较</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH / 1.1.0</small><h1>SensLab Personal</h1><p id="status">正在载入并校验单次灵敏度比较程序。</p><div class="bar"></div><p>无需账号。记录保存在当前浏览器，请定期导出 JSON 备份。正式测试请使用独立的桌面 Chrome 或 Edge 标签页。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="SensLab-Personal.html">打开完整离线版</a> · <a href="README.md">源码与运行说明</a></p><noscript>需要启用 JavaScript 才能执行测试。</noscript></main><script>
 (async()=>{
+ const expected='2cbe8af95ea48272fd66bc7b790fc61a7a39a8223b7c9e62b2aa941ca75d5d55';
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);
- const hex=a=>Array.from(new Uint8Array(a),x=>x.toString(16).padStart(2,'0')).join('');
  try{
-  if(!window.DecompressionStream||!crypto.subtle)throw Error('浏览器缺少所需的安全解压/校验功能，请用近期桌面Chrome或Edge，或完整离线HTML。');
-  if(!window.SensLabUpgradeV102)throw Error('1.0.2优化组件未能载入或未通过完整性校验，请刷新。不会退回旧校准逻辑。');
+  if(!window.DecompressionStream||!window.crypto?.subtle)throw new Error('浏览器缺少安全解压或校验功能。请使用 HTTPS / localhost 地址与近期桌面 Chrome 或 Edge，或打开完整离线 HTML。');
   const chunks=await Promise.all(Array.from({length:8},async(_,i)=>{
-   const name='app-'+String(i+1).padStart(2,'0')+'.bin',r=await fetch(new URL(name,location.href),{signal:controller.signal,credentials:'omit'});
-   if(!r.ok)throw Error(name+'载入失败：HTTP '+r.status);return new Uint8Array(await r.arrayBuffer());
+   const name='app-'+String(i+1).padStart(2,'0')+'.bin';
+   const response=await fetch(new URL(name,location.href),{signal:controller.signal,credentials:'omit',cache:'no-store'});
+   if(!response.ok)throw new Error(name+' 载入失败：HTTP '+response.status);
+   return new Uint8Array(await response.arrayBuffer());
   }));
   const packed=new Uint8Array(chunks.reduce((n,a)=>n+a.length,0));let offset=0;
-  for(const a of chunks){packed.set(a,offset);offset+=a.length;}
+  for(const chunk of chunks){packed.set(chunk,offset);offset+=chunk.length;}
   const bytes=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-  if(hex(await crypto.subtle.digest('SHA-256',bytes))!=='052589b7c129e767245e6849d12f18345b21b6eb94f3279836f304f6aa75e6c2')throw Error('基础程序完整性校验失败。');
-  let html=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
-  const r=await fetch(new URL('ux.js',location.href),{signal:controller.signal,credentials:'omit'});
-  if(!r.ok)throw Error('教程组件载入失败：HTTP '+r.status);const addonBytes=await r.arrayBuffer();
-  if(hex(await crypto.subtle.digest('SHA-256',addonBytes))!=='f450c5cfbff1a10ac78f5f0dc839095bde60bbd777245272648eb958a69fe849')throw Error('教程组件完整性校验失败。');
-  const addon=new TextDecoder('utf-8',{fatal:true}).decode(addonBytes);
-  if(addon.toLowerCase().includes('<'+'/script'))throw Error('教程组件包含不安全的结束标记。');
-  html=html.replace('<script>','<script>document.addEventListener("DOMContentLoaded",function(){\n'+addon+'\n},{once:true});</scr'+'ipt><script>');
-  html=SensLabUpgradeV102.patch(html);
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const actual=Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('');
+  if(actual!==expected)throw new Error('完整程序 SHA-256 校验失败，未执行测试。请重新载入或使用完整离线版。');
+  const html=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
   clearTimeout(timeout);document.open();document.write(html);document.close();
- }catch(e){
-  clearTimeout(timeout);document.getElementById('status').textContent='未能完成载入，未执行测试。';document.getElementById('error').textContent=e.name==='AbortError'?'网络超时，可重新载入或使用完整离线HTML。':String(e.message||e);document.getElementById('retry').hidden=false;
+ }catch(error){
+  controller.abort();clearTimeout(timeout);
+  document.getElementById('status').textContent='未能完成载入，未执行测试。';
+  document.getElementById('error').textContent=error.name==='AbortError'?'网络超时，可重新载入或使用完整离线 HTML。':String(error.message||error);
+  document.getElementById('retry').hidden=false;
  }
 })();
 </script></body></html>
