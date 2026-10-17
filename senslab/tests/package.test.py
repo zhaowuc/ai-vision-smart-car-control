@@ -81,6 +81,7 @@ class PackageTests(unittest.TestCase):
 
     def test_loader_and_restore_pin_final_html_hash(self):
         self.assertEqual(re.findall(r"const expected='([0-9a-f]{64})'", self.loader), [digest(self.raw)])
+        self.assertEqual(re.findall(r"const packedBlob='([0-9a-f]{40})'", self.loader), [hashlib.sha1(f'blob {len(self.packed)}\0'.encode('ascii') + self.packed).hexdigest()])
         self.assertEqual(re.findall(r"EXPECTED_HTML_SHA256 = '([0-9a-f]{64})'", self.restore), [digest(self.raw)])
         self.assertNotRegex(self.loader, r'<script\b[^>]*\bsrc\s*=')
         for historical in ('SensLabUpgradeV102', 'upgrade-v102.js', 'ux.js'):
@@ -88,8 +89,11 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_matches_all_chunks(self):
         manifest = json.loads((ROOT / 'transport-manifest.json').read_text(encoding='utf-8'))
-        self.assertEqual([entry['file'] for entry in manifest], CHUNKS)
-        for entry, part in zip(manifest, self.parts):
+        self.assertEqual(manifest['version'], '1.2.0')
+        self.assertEqual(manifest['html_sha256'], digest(self.raw))
+        self.assertEqual(manifest['gzip_git_blob_sha'], hashlib.sha1(f'blob {len(self.packed)}\0'.encode('ascii') + self.packed).hexdigest())
+        self.assertEqual([entry['file'] for entry in manifest['chunks']], CHUNKS)
+        for entry, part in zip(manifest['chunks'], self.parts):
             with self.subTest(file=entry['file']):
                 self.assertEqual(entry['bytes'], len(part))
                 self.assertEqual(entry['sha256'], digest(part))
@@ -107,9 +111,13 @@ class PackageTests(unittest.TestCase):
 
     def test_deployment_is_current_and_explicitly_local(self):
         data = json.loads((ROOT / 'deployment.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['version'], '1.1.0')
+        self.assertEqual(data['version'], '1.2.0')
+        self.assertEqual(data['source']['base_commit'], '86f29a743e5656c4e4c1d437e26d115b635da4d3')
+        self.assertIn('SensLab Personal 1.2.0', self.loader)
+        self.assertIn('120分钟深度实验', self.loader)
         self.assertEqual(data['html_sha256'], digest(self.raw))
         self.assertEqual(data['gzip_sha256'], digest(self.packed))
+        self.assertEqual(data['gzip_git_blob_sha'], hashlib.sha1(f'blob {len(self.packed)}\0'.encode('ascii') + self.packed).hexdigest())
         self.assertEqual(data['build_status'], 'local-only')
         self.assertEqual(data['publication_status'], 'not published by this build')
 

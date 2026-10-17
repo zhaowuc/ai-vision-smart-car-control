@@ -1,18 +1,44 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal 1.1.0 · 单次灵敏度比较</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH / 1.1.0</small><h1>SensLab Personal</h1><p id="status">正在载入并校验单次灵敏度比较程序。</p><div class="bar"></div><p>无需账号。记录保存在当前浏览器，请定期导出 JSON 备份。正式测试请使用独立的桌面 Chrome 或 Edge 标签页。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="SensLab-Personal.html">打开完整离线版</a> · <a href="README.md">源码与运行说明</a></p><noscript>需要启用 JavaScript 才能执行测试。</noscript></main><script>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SensLab Personal 1.2.0 · 120分钟深度实验</title><style>body{margin:0;background:#0d1013;color:#edf2f1;font:16px/1.8 system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{max-width:620px;padding:42px}small{color:#91a59b;letter-spacing:.18em}h1{font-size:36px;line-height:1.3}p{color:#a5b2ad}a{color:#b5e8ca}button{padding:12px 24px;border:0;border-radius:10px;background:#c7f6da;color:#14271b;font:inherit;cursor:pointer}#error{white-space:pre-wrap;color:#f2c79f}.bar{height:3px;background:#c7f6da;border-radius:2px;width:100%;margin:28px 0}</style></head><body><main><small>PERSONAL AIM RESEARCH / 1.2.0</small><h1>SensLab Personal</h1><p id="status">正在载入并校验单次灵敏度比较程序。</p><div class="bar"></div><p>无需账号。记录保存在当前浏览器，请定期导出 JSON 备份。正式测试请使用独立的桌面 Chrome 或 Edge 标签页。</p><pre id="error"></pre><button id="retry" hidden onclick="location.reload()">重新载入</button><p><a href="SensLab-Personal.html">打开完整离线版</a> · <a href="README.md">源码与运行说明</a></p><noscript>需要启用 JavaScript 才能执行测试。</noscript></main><script>
 (async()=>{
- const expected='2cbe8af95ea48272fd66bc7b790fc61a7a39a8223b7c9e62b2aa941ca75d5d55';
- const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);
- try{
-  if(!window.DecompressionStream||!window.crypto?.subtle)throw new Error('浏览器缺少安全解压或校验功能。请使用 HTTPS / localhost 地址与近期桌面 Chrome 或 Edge，或打开完整离线 HTML。');
+ const expected='1369570a4e21c8209401fa474c4a158beae35599e30f6141b87c801e23edfc13';
+ const packedBlob='b4f250236af98026088f0bf6496715cdbc4c1e78';
+ let controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);
+ async function directPacked(){
   const chunks=await Promise.all(Array.from({length:8},async(_,i)=>{
    const name='app-'+String(i+1).padStart(2,'0')+'.bin';
-   const response=await fetch(new URL(name,location.href),{signal:controller.signal,credentials:'omit',cache:'no-store'});
+   const url=new URL(name,location.href);url.searchParams.set('v',expected);
+   const response=await fetch(url,{signal:controller.signal,credentials:'omit',cache:'no-store'});
    if(!response.ok)throw new Error(name+' 载入失败：HTTP '+response.status);
    return new Uint8Array(await response.arrayBuffer());
   }));
   const packed=new Uint8Array(chunks.reduce((n,a)=>n+a.length,0));let offset=0;
   for(const chunk of chunks){packed.set(chunk,offset);offset+=chunk.length;}
+  return packed;
+ }
+ async function officialPacked(){
+  const response=await fetch('https://api.github.com/repos/zhaowuc/ai-vision-smart-car-control/git/blobs/'+packedBlob,{signal:controller.signal,credentials:'omit',headers:{Accept:'application/vnd.github+json'}});
+  if(!response.ok)throw new Error('官方备用源载入失败：HTTP '+response.status);
+  const data=await response.json();
+  if(data.sha!==packedBlob||data.encoding!=='base64'||typeof data.content!=='string'||!Number.isInteger(data.size)||data.size<1||data.size>2097152)throw new Error('官方备用源格式或版本无效');
+  const encoded=data.content.replace(/\s/g,'');
+  if(encoded.length>2796204||! /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))throw new Error('官方备用源 base64 格式无效');
+  const packed=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
+  if(packed.length!==data.size)throw new Error('官方备用源大小不符');
+  const header=new TextEncoder().encode('blob '+packed.length+'\0'),blob=new Uint8Array(header.length+packed.length);blob.set(header);blob.set(packed,header.length);
+  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-1',blob)),x=>x.toString(16).padStart(2,'0')).join('');
+  if(hash!==packedBlob)throw new Error('官方备用源 Git blob 校验失败');
+  return packed;
+ }
+ try{
+  if(!window.DecompressionStream||!window.crypto?.subtle)throw new Error('浏览器缺少安全解压或校验功能。请使用 HTTPS / localhost 地址与近期桌面 Chrome 或 Edge，或打开完整离线 HTML。');
+  let packed;
+  try{packed=await directPacked();}
+  catch(directError){
+   controller.abort();clearTimeout(timeout);controller=new AbortController();timeout=setTimeout(()=>controller.abort(),30000);
+   document.getElementById('status').textContent='分片暂不可用，正在从官方仓库备用源载入并校验。';
+   try{packed=await officialPacked();}catch(fallbackError){throw new Error(String(directError.message||directError)+'\n'+String(fallbackError.message||fallbackError));}
+  }
   const bytes=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   const digest=await crypto.subtle.digest('SHA-256',bytes);
   const actual=Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('');

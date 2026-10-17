@@ -22,6 +22,7 @@ REPO = ROOT.parent
 ARTIFACTS = ROOT / 'tests' / 'artifacts'
 KEY = 'senslab.personal.v1'
 BACKUP = KEY + '.pre-single-v1'
+DEEP_BACKUP = KEY + '.pre-deep-v2'
 EDGE = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
 
 
@@ -80,6 +81,18 @@ def download_text(page, selector):
     return Path(result.value.path()).read_text(encoding='utf-8-sig')
 
 
+def click_mode(page, mode):
+    """Use the visible mode button, opening an optional short-mode details UI."""
+    action = {'120min': 'start120', '20min': 'start20', '10min': 'start10'}[mode]
+    button = page.locator(f'#singleLabRoot [data-single-action="{action}"]')
+    ancestors = button.locator('xpath=ancestor::details')
+    for index in range(ancestors.count()):
+        details = ancestors.nth(index)
+        if not details.evaluate('(element)=>element.open'):
+            details.locator(':scope > summary').click()
+    button.click()
+
+
 LEGACY_FIXTURE = r"""() => {
  const M=SensMath,rows=[];
  const steps=[...Array.from({length:2},()=>[['x',1,'slow'],['x',-1,'slow'],['x',1,'fast'],['x',-1,'fast']]).flat(),['y',1,'slow'],['y',-1,'slow'],['y',1,'fast'],['y',-1,'fast']];
@@ -106,6 +119,18 @@ COMPLETE_FIXTURE = r"""({original,mode}) => {
  return {...structuredClone(original),storageVersion:2,singleStudies:[s],singleActive:s.id};
 }"""
 
+DEEP_COMPLETE_FIXTURE = r"""({original,eligible=2}) => {
+ const S=SensSession,base=original.settings.baseCm,now=Date.now(),created=new Date(now-6300000).toISOString();
+ const s=S.createStudy({mode:'120min',config:original.settings,calibration:original.calibration,seed:454545,id:'SYNTHETIC-DEEP-'+eligible,now:created,provenance:{testOnly:true,description:'Synthetic complete report for DOM validation; not real player evidence'}});
+ function fill(g){const c=s.candidates.find(c=>c.id===g.candidateId),factor=c.cm/base,best=Math.abs(factor-.8)<.00001,second=factor>1&&factor<1.3,qualified=c.baseline||(eligible>=1&&best)||(eligible>=2&&second),scale=g.taskSeconds/12,hits=Math.round((c.baseline?12:best?15:second?13:10)*scale),shots=hits+Math.round(3*scale),track=c.baseline?.65:best?.75:second?.68:.60,meta=S.recordMeta(s,g),duration=g.taskSeconds*1000;
+ const tasks={};for(const t of S.TASKS)tasks[t]={...meta,valid:true,task:t,seed:g.seed,duration,actualDuration:duration,score:t==='track'?track:hits/g.taskSeconds,accuracy:t==='track'?track:hits/shots,hits:t==='track'?0:hits,shots:t==='track'?0:shots,timeouts:0,meanAcquireMs:t==='track'?null:600,rmsDeg:t==='track'?1:null,pathCm:60,frameFps:120,frameP95:9,raw:'requested',trials:[],trace:[],...(t==='track'?{coveredMs:duration*track,integratedMs:duration}:{}),testOnly:true};
+ s.results[g.id]={...meta,tasks,rating:{...meta,effort:qualified?3:8,pain:false},completedAt:new Date(now-1000).toISOString()};}
+ s.groups.forEach(fill);S.freezeRetest(s,{now:new Date(now-500).toISOString()});s.groups.filter(g=>g.stage==='retest').forEach(fill);
+ s.status=s.retest.noComparison?'insufficient':'completed';s.completedAt=new Date(now).toISOString();s.runtime={phase:'done',groupIndex:s.groups.length,taskIndex:0,elapsed:0,extraAdapt:0,paused:false,engaged:false,createdWall:Date.parse(created),lastActiveAt:now};
+ s.timing={plannedElapsedMs:s.measurementSeconds*1000,activeMs:s.measurementSeconds*1000,extraAdaptMs:0,ratingExtraMs:0,pauseMs:0,faultMs:0,waitMs:0,extraRestMs:0};s.inputCheck={events:120,dx:6000,dy:4000};s.segments=[{startedAt:created,reason:'SYNTHETIC TEST ONLY complete report fixture',sessionId:s.sessionId,sessionSegment:1}];s.interruptions=[{...S.recordMeta(s,s.groups[0]),runtimePhase:'adapt',type:'user',reason:'SYNTHETIC TEST ONLY adaptation pause',elapsed:4000,created:new Date(now-60000).toISOString()}];S.validateStudy(s);
+ return {...structuredClone(original),storageVersion:3,singleStudies:[s],singleActive:s.id};
+}"""
+
 SIMULATED_LOCK = r"""(() => {
  let locked=null;window.__syntheticLockRequests=0;
  Object.defineProperty(document,'pointerLockElement',{configurable:true,get:()=>locked});
@@ -122,8 +147,13 @@ def main():
     report = {'syntheticFixtures': True, 'realMouseMeasured': False, 'hardwarePointerLockRequested': False, 'simulatedPointerLockTest': True, 'checks': [], 'pageErrors': [], 'consoleErrors': []}
     failures = []
     with local_server() as url, sync_playwright() as playwright:
-        executable = os.environ.get('CHROMIUM_EXECUTABLE_PATH', EDGE)
-        browser = playwright.chromium.launch(headless=True, executable_path=executable)
+        options = {'headless': True}
+        executable = os.environ.get('CHROMIUM_EXECUTABLE_PATH')
+        if executable:
+            options['executable_path'] = str(Path(executable).expanduser())
+        elif Path(EDGE).is_file():
+            options['executable_path'] = EDGE
+        browser = playwright.chromium.launch(**options)
         report['browserVersion'] = browser.version
         context = browser.new_context(viewport={'width': 1366, 'height': 900}, accept_downloads=True)
         page = context.new_page()
@@ -151,16 +181,18 @@ def main():
 
         def empty_workspace():
             assert page.locator('#lab').is_visible()
-            assert page.locator('[data-single-action="start20"]').is_visible()
-            assert page.locator('[data-single-action="start10"]').is_visible()
-            assert page.locator('#singleLabRoot details').count() == 1
-            assert not page.locator('#singleLabRoot details').evaluate('(e)=>e.open')
+            assert page.locator('[data-single-action="start120"]').is_visible()
+            assert page.locator('[data-single-action="start120"]').inner_text() == '开始深度实验'
+            assert page.locator('[data-single-action="start20"]').count() == 1
+            assert page.locator('[data-single-action="start10"]').count() == 1
+            assert page.locator('#singleLabRoot details').count() >= 1
+            assert all(not page.locator('#singleLabRoot details').nth(i).evaluate('(e)=>e.open') for i in range(page.locator('#singleLabRoot details').count()))
             assert page.locator('#baseCm').input_value() == '75.2'
             assert page.locator('#swipe').input_value() == '20'
             assert not page.locator('#baseVerified').is_checked()
             current = workspace(page)
             assert current is None or current.get('calibration') is None
-            page.locator('[data-single-action="start20"]').click()
+            click_mode(page, '120min')
             assert not page.locator('#stage').is_visible()
             assert not (workspace(page) or {}).get('singleStudies')
             screenshot(page, 'empty-lab-1366x900.png')
@@ -173,8 +205,9 @@ def main():
 
         def migration():
             assert storage(page, BACKUP) == original_raw
+            assert storage(page, DEEP_BACKUP) == original_raw
             migrated = workspace(page)
-            assert migrated['storageVersion'] == 2
+            assert migrated['storageVersion'] == 3
             for name in ('settings', 'calibration', 'studies', 'active', 'mappings', 'field'):
                 assert migrated[name] == original[name], name
             assert migrated['singleStudies'] == []
@@ -191,7 +224,7 @@ def main():
         check('legacy migration backs up exact JSON and retains saved settings/calibration/history; viewport differences reuse calibration', migration)
 
         def start_new():
-            page.locator('[data-single-action="start20"]').click()
+            click_mode(page, '20min')
             page.locator('[data-single-action="lock"]').wait_for(state='visible')
             assert '尺子' not in page.locator('#modal').inner_text()
             assert '系统箭头会隐藏' in page.locator('#modal').inner_text()
@@ -262,7 +295,7 @@ def main():
             assert page.locator('#lab').is_visible()
             assert page.locator('#singleLabRoot [data-single-action="resume"]').is_visible()
             assert '可以进入正式实验' in page.locator('#singleLabRoot').inner_text()
-            page.locator('[data-single-action="start10"]').click()
+            click_mode(page, '10min')
             assert len(workspace(page)['singleStudies']) == 1
             assert workspace(page)['singleStudies'][0]['mode'] == '20min'
             assert workspace(page)['singleStudies'][0]['results'] == before['singleStudies'][0]['results']
@@ -283,7 +316,7 @@ def main():
                 quick.goto(url, wait_until='load')
                 quick.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
                 quick.reload(wait_until='load')
-                quick.locator('[data-single-action="start10"]').click()
+                click_mode(quick, '10min')
                 quick.locator('[data-single-action="lock"]').wait_for(state='visible')
                 quick_data = workspace(quick)
                 assert len(quick_data['singleStudies']) == 1
@@ -301,30 +334,31 @@ def main():
         check('10-minute mode also reuses saved calibration and opens the input-check gate with its 600-second plan', quick_mode)
 
         def failed_migration_backup():
-            blocked_context = browser.new_context(viewport={'width': 1366, 'height': 900})
-            try:
-                blocked = blocked_context.new_page()
-                blocked.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
-                blocked.goto(url, wait_until='load')
-                blocked.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
-                # Explicit fault injection checks error handling only, not native
-                # storage quota or browser permission behavior.
-                blocked.add_init_script('''(() => {
-                    const original = Storage.prototype.setItem;
-                    Storage.prototype.setItem = function(key, value) {
-                        if(key === 'senslab.personal.v1.pre-single-v1') throw new DOMException('TEST ONLY backup write fault', 'QuotaExceededError');
-                        return original.call(this, key, value);
-                    };
-                })();''')
-                blocked.reload(wait_until='load')
-                assert storage(blocked) == original_raw
-                assert storage(blocked, BACKUP) is None
-                assert blocked.locator('#storageWarning').is_visible()
-                blocked.locator('[data-single-action="start20"]').click()
-                assert storage(blocked) == original_raw
-                assert blocked.evaluate('document.pointerLockElement === null')
-            finally:
-                blocked_context.close()
+            for blocked_key in (BACKUP, DEEP_BACKUP):
+                blocked_context = browser.new_context(viewport={'width': 1366, 'height': 900})
+                try:
+                    blocked = blocked_context.new_page()
+                    blocked.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
+                    blocked.goto(url, wait_until='load')
+                    blocked.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
+                    # Fault injection exercises both migration writes; this is
+                    # not a claim about native storage quota or permissions.
+                    blocked.add_init_script('''(() => {
+                        const original = Storage.prototype.setItem;
+                        Storage.prototype.setItem = function(key, value) {
+                            if(key === BLOCKED_KEY) throw new DOMException('TEST ONLY backup write fault', 'QuotaExceededError');
+                            return original.call(this, key, value);
+                        };
+                    })();'''.replace('BLOCKED_KEY', json.dumps(blocked_key)))
+                    blocked.reload(wait_until='load')
+                    assert storage(blocked) == original_raw
+                    assert storage(blocked, blocked_key) is None
+                    assert blocked.locator('#storageWarning').is_visible()
+                    click_mode(blocked, '120min')
+                    assert storage(blocked) == original_raw
+                    assert blocked.evaluate('document.pointerLockElement === null')
+                finally:
+                    blocked_context.close()
 
         check('simulated migration-backup write failure preserves the original stored workspace', failed_migration_backup)
 
@@ -374,7 +408,7 @@ def main():
                 scene.goto(url, wait_until='load')
                 scene.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
                 scene.reload(wait_until='load')
-                scene.locator('[data-single-action="start20"]').click()
+                click_mode(scene, '20min')
                 scene.locator('[data-single-action="lock"]').click()
                 scene.wait_for_function('document.getElementById("veil").classList.contains("hide") && !document.getElementById("uxReticle").classList.contains("hide")')
                 assert scene.locator('#stage').is_visible()
@@ -468,7 +502,7 @@ def main():
                     reset.goto(url, wait_until='load')
                     reset.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
                     reset.reload(wait_until='load')
-                    reset.locator('[data-single-action="start20"]').click()
+                    click_mode(reset, '20min')
                     reset.locator('[data-single-action="lock"]').click()
                     reset.wait_for_function('document.getElementById("veil").classList.contains("hide")')
                     # Release only the test stub; then use visible UI controls.
@@ -537,7 +571,7 @@ def main():
                 guarded.locator('#dpi').fill('1600')
                 guarded.locator('#settingsForm button[type="submit"]').click()
                 guarded.locator('[data-view="lab"]').click()
-                guarded.locator('[data-single-action="start10"]').click()
+                click_mode(guarded, '10min')
                 guarded.locator('[data-single-action="lock"]').wait_for(state='visible')
                 current = workspace(guarded)
                 assert len(current['singleStudies']) == 2
@@ -552,6 +586,188 @@ def main():
                 guarded_context.close()
 
         check('changed DPI blocks resuming frozen calibration; explicit abandon keeps completed data and permits a later new study', changed_dpi_and_abandon)
+
+        def deep_preflight():
+            deep_context = browser.new_context(viewport={'width': 1366, 'height': 900})
+            try:
+                deep_context.add_init_script(SIMULATED_LOCK)
+                deep_page = deep_context.new_page()
+                deep_page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
+                deep_page.on('console', lambda message: report['consoleErrors'].append(message.text) if message.type == 'error' else None)
+                deep_page.goto(url, wait_until='load')
+                deep_page.evaluate('([key,value])=>localStorage.setItem(key,value)', [KEY, original_raw])
+                deep_page.reload(wait_until='load')
+                click_mode(deep_page, '120min')
+                assert deep_page.locator('#singleHardwareSame').is_visible()
+                assert not deep_page.locator('#singleHardwareSame').is_checked()
+                deep_page.locator('[data-single-action="preflight"]').click()
+                assert '请明确确认' in deep_page.locator('#singlePreflightError').inner_text()
+                before = workspace(deep_page)['singleStudies'][0]
+                assert before['protocolVersion'] == 'senslab-session/2'
+                assert before['mode'] == '120min'
+                assert before['plannedSeconds'] == 7200
+                assert before['measurementSeconds'] == 6300
+                assert before['reportReserveSeconds'] == 900
+                assert before['runtime']['phase'] == 'preflight'
+                assert before['calSnapshot'] == original['calibration']
+                assert before['configSnapshot'] == original['settings']
+                assert not before['results']
+                assert deep_page.evaluate('window.__syntheticLockRequests') == 0
+                screenshot(deep_page, 'deep-preflight-1366x900.png')
+                deep_page.locator('#singleHardwareSame').check()
+                deep_page.locator('[data-single-action="preflight"]').click()
+                confirmed = workspace(deep_page)['singleStudies'][0]
+                assert confirmed['runtime']['phase'] == 'tutorial'
+                assert 0 < confirmed['preflightSavedSeconds'] <= 120
+                assert confirmed['plannedSeconds'] == 7200, 'Early confirmation must not rewrite the frozen task schedule'
+                assert confirmed['preflight']['hardwareUnchanged'] is True
+                assert confirmed['preflight']['ruleSnapshot'] == original['settings']
+                deep_page.locator('[data-single-action="lock"]').click()
+                deep_page.wait_for_function('document.getElementById("veil").classList.contains("hide")')
+                assert deep_page.locator('#uxReticle').is_visible()
+                assert '教程' in deep_page.locator('#hudTitle').inner_text()
+                assert deep_page.evaluate('window.__syntheticLockRequests') == 1
+                assert not workspace(deep_page)['singleStudies'][0]['results']
+                screenshot(deep_page, 'deep-simulated-tutorial-1366x900.png')
+                deep_page.evaluate('document.exitPointerLock()')
+                interrupted = workspace(deep_page)['singleStudies'][0]
+                assert any(row['phase'] == 'screen' and row.get('runtimePhase') == 'tutorial' and row['type'] == 'technical' for row in interrupted['interruptions'])
+                deep_page.locator('[data-single-action="close"]').click()
+                deep_page.locator('[data-view="results"]').click()
+                assert '测试结束前不展示条件成绩' in deep_page.locator('#singleResultsRoot').inner_text()
+                assert deep_page.locator('#singleResultsRoot table').count() == 0
+                deep_page.locator('[data-view="field"]').click()
+                assert deep_page.locator('#fieldCandidate option').count() == 1
+                deep_page.locator('[data-view="lab"]').click()
+                deep_page.set_viewport_size({'width': 900, 'height': 800})
+                assert deep_page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+                screenshot(deep_page, 'deep-pending-900x800.png')
+            finally:
+                deep_context.close()
+
+        check('120-minute mode reuses calibration, requires explicit hardware/rule confirmation, reduces only the estimate, and SIMULATED lock shows an unscored tutorial', deep_preflight)
+
+        def storage_v2_compatibility():
+            migration_context = browser.new_context(viewport={'width': 1366, 'height': 900})
+            try:
+                migrated_page = migration_context.new_page()
+                migrated_page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
+                migrated_page.on('console', lambda message: report['consoleErrors'].append(message.text) if message.type == 'error' else None)
+                migrated_page.goto(url, wait_until='load')
+                v2 = migrated_page.evaluate(COMPLETE_FIXTURE, {'original': original, 'mode': '20min'})
+                v2_raw = json.dumps(v2, ensure_ascii=False, separators=(',', ':'))
+                old_backup = 'SYNTHETIC TEST ONLY pre-existing v1 migration backup'
+                migrated_page.evaluate('([key,raw,backup,prior])=>{localStorage.setItem(key,raw);localStorage.setItem(backup,prior)}', [KEY, v2_raw, BACKUP, old_backup])
+                migrated_page.reload(wait_until='load')
+                assert storage(migrated_page, BACKUP) == old_backup
+                assert storage(migrated_page, DEEP_BACKUP) == v2_raw
+                current = workspace(migrated_page)
+                assert current['storageVersion'] == 3
+                assert current['singleStudies'] == v2['singleStudies'], 'Migration changed a completed v1 study'
+                assert current['studies'] == v2['studies']
+                migrated_page.reload(wait_until='load')
+                assert storage(migrated_page, DEEP_BACKUP) == v2_raw
+                assert workspace(migrated_page)['singleStudies'] == v2['singleStudies']
+                click_mode(migrated_page, '120min')
+                started = workspace(migrated_page)
+                assert len(started['singleStudies']) == 2
+                assert started['singleStudies'][0] == v2['singleStudies'][0]
+                assert started['singleStudies'][1]['protocolVersion'] == 'senslab-session/2'
+            finally:
+                migration_context.close()
+
+        check('storage v2 upgrades through an exact pre-deep backup while preserving prior backup, completed v1 study and legacy records', storage_v2_compatibility)
+
+        def deep_complete_reports():
+            completed_context = browser.new_context(viewport={'width': 1366, 'height': 900}, accept_downloads=True)
+            try:
+                completed_page = completed_context.new_page()
+                completed_page.on('dialog', lambda dialog: dialog.accept())
+                completed_page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
+                completed_page.on('console', lambda message: report['consoleErrors'].append(message.text) if message.type == 'error' else None)
+                completed_page.goto(url, wait_until='load')
+                old_v1 = completed_page.evaluate(COMPLETE_FIXTURE, {'original': original, 'mode': '20min'})['singleStudies'][0]
+                for eligible, rounds, total, measured in [(2, 3, 7200, 6300), (1, 4, 6900, 6000), (0, 0, 3900, 3000)]:
+                    completed = completed_page.evaluate(DEEP_COMPLETE_FIXTURE, {'original': original, 'eligible': eligible})
+                    completed['singleStudies'].insert(0, old_v1)
+                    imported(completed_page, completed)
+                    completed_page.wait_for_function('document.getElementById("importFile").value === ""')
+                    assert '备份已导入' in completed_page.locator('#toast').inner_text()
+                    deep = workspace(completed_page)['singleStudies'][-1]
+                    assert deep['retest']['rounds'] == rounds
+                    assert len(deep['retest']['candidateIds']) == eligible + 1
+                    assert deep['plannedSeconds'] == total
+                    assert deep['measurementSeconds'] == measured
+                    assert deep['reportReserveSeconds'] == 900
+                    assert workspace(completed_page)['singleStudies'][0] == old_v1
+                    completed_page.locator('[data-view="results"]').click()
+                    visible = completed_page.locator('#singleResultsRoot').inner_text()
+                    assert f'已完成配对轮 {rounds}/{rounds}' in visible
+                    assert '120分钟深度实验' in visible
+                    assert not completed_page.locator('#legacyResults').evaluate('(e)=>e.open')
+                    assert completed_page.locator('#singleResultsRoot [data-single-action="report"]').is_visible()
+                    assert not completed_page.locator('#stage').is_visible()
+                    if eligible:
+                        for label in ['相对角增益', '微调', '切换', '跟枪', '转向', '方向一致性', '费力/疼痛', '1.250×（25.0%）']:
+                            assert label in visible, label
+                        assert completed_page.locator('#singleResultsRoot [data-single-action="adopt"]').is_visible()
+                    else:
+                        assert '没有进行伪造的基准自比较' in visible
+                        assert deep['status'] == 'insufficient'
+                        assert not any(group['stage'] == 'retest' for group in deep['groups'])
+                        assert completed_page.locator('#singleResultsRoot [data-single-action="adopt"]').count() == 0
+                    assert '中位表现' in completed_page.locator('#singleResultsRoot').text_content()
+                    assert '观察范围（不是置信区间）' in completed_page.locator('#singleResultsRoot').text_content()
+                    assert completed_page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+                    screenshot(completed_page, f'deep-complete-{eligible+1}conditions-1366x900.png')
+                    report_html = download_text(completed_page, '#singleResultsRoot [data-single-action="report"]')
+                    assert deep['id'] in report_html
+                    assert 'senslab-session/2' in report_html
+                    assert 'LEGACY-STUDY-TEST' not in report_html
+                    assert old_v1['id'] not in report_html
+                    assert 'SYNTHETIC TEST ONLY field record' not in report_html
+                    completed_page.locator('#legacyResults > summary').click()
+                    rows = list(csv.DictReader(io.StringIO(download_text(completed_page, '#csvBtn'))))
+                    assert all(None not in row and None not in row.values() for row in rows), 'CSV header and rows differ'
+                    assert {'legacy-multiday-v1', 'senslab-session/1', 'senslab-session/2'} == {row['protocolVersion'] for row in rows}
+                    deep_rows = [row for row in rows if row['protocolVersion'] == 'senslab-session/2']
+                    assert len(deep_rows) == len(deep['groups']) * 4
+                    by_id = {group['id']: group for group in deep['groups']}
+                    for row in deep_rows:
+                        group = by_id[row['session']]
+                        assert row['mode'] == '120min'
+                        assert row['sessionId'] == deep['sessionId']
+                        assert row['sessionSegment'] == '1'
+                        assert row['phase'] == group['stage']
+                        assert row['round'] == str(group['round'])
+                        assert row['conditionId'] == group['candidateId']
+                        assert row['adaptation_seed'] == str(group['adaptSeed'])
+                        assert row['actual_task_ms'] == str(group['taskSeconds'] * 1000)
+                        assert row['protocol_planned_seconds'] == str(total)
+                        assert row['measurement_planned_seconds'] == str(measured)
+                        assert row['report_reserve_seconds'] == '900'
+                        assert row['interruption_types'] == ('user' if group['id'] == deep['groups'][0]['id'] else '')
+                        if row['task'] == 'track':
+                            assert float(row['tracking_covered_ms']) > 0
+                    assert all(row['sessionSegment'] == '' for row in rows if row['protocolVersion'] != 'senslab-session/2')
+                    completed_page.locator('#legacyResults > summary').click()
+                    if eligible == 2:
+                        completed_page.set_viewport_size({'width': 900, 'height': 800})
+                        assert completed_page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+                        screenshot(completed_page, 'deep-complete-3conditions-900x800.png')
+                        completed_page.set_viewport_size({'width': 1366, 'height': 900})
+                        before = storage(completed_page)
+                        bad = copy.deepcopy(completed)
+                        first = bad['singleStudies'][-1]
+                        first['results'][first['groups'][0]['id']]['tasks']['micro']['sessionId'] = 'FORGED-OTHER-SESSION'
+                        imported(completed_page, bad)
+                        completed_page.wait_for_function('document.getElementById("importFile").value === ""')
+                        assert storage(completed_page) == before
+                        assert '导入失败' in completed_page.locator('#toast').inner_text()
+            finally:
+                completed_context.close()
+
+        check('SYNTHETIC deep reports cover 3x3, 2x4 and no-comparison branches; current-only HTML, metadata CSV and v1 history remain correct', deep_complete_reports)
 
         def browser_errors():
             assert not report['pageErrors'], report['pageErrors']

@@ -1,7 +1,7 @@
 /* SensLab Personal 1.0 — pure, dependency-free experimental math. */
 (function(root){
 'use strict';
-const C={VERSION:'1.1.0', TASKS:['micro','switch','track','turn'],
+const C={VERSION:'1.2.0', TASKS:['micro','switch','track','turn'],
  NAMES:{micro:'微调精度',switch:'目标切换',track:'连续跟枪',turn:'大角度转向'},
  rad:d=>d*Math.PI/180,deg:r=>r*180/Math.PI,
  clamp:(x,a,b)=>Math.min(b,Math.max(a,x)),

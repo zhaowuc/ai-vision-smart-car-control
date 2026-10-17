@@ -5,7 +5,7 @@ import gzip
 import hashlib
 
 ROOT = Path(__file__).resolve().parent
-EXPECTED_HTML_SHA256 = '2cbe8af95ea48272fd66bc7b790fc61a7a39a8223b7c9e62b2aa941ca75d5d55'
+EXPECTED_HTML_SHA256 = '1369570a4e21c8209401fa474c4a158beae35599e30f6141b87c801e23edfc13'
 
 
 def main():

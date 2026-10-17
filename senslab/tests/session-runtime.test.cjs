@@ -5,8 +5,8 @@ const S=require('../src/session-core.js');
 const M=require('../src/core.js');
 const UI=require('../src/session-ui.js');
 
-function harness(restored){
-  let ms=0,id=0,saves=0,saveOK=true,raw='requested',ready=true,draw=null,modal='',closed=0;
+function harness(restored,initialMs=0){
+  let ms=initialMs,id=0,saves=0,saveOK=true,raw='requested',ready=true,draw=null,modal='',closed=0;
   const rafs=new Map(),nodes=new Map(),listeners=new Map(),validatedPhases=new Set();
   function element(){const events={};return {textContent:'',innerHTML:'',value:'',events,dataset:{},classList:{add(){},remove(){},contains(){return true}},addEventListener(k,f){(events[k]??=[]).push(f);},removeEventListener(k,f){events[k]=events[k]?.filter(x=>x!==f);},fire(k,e={}){for(const f of events[k]||[])f({preventDefault(){},...e});},click(){}};}
   const doc={pointerLockElement:null,getElementById(k){if(!nodes.has(k))nodes.set(k,element());return nodes.get(k);},addEventListener(k,f){if(!listeners.has(k))listeners.set(k,[]);listeners.get(k).push(f);},removeEventListener(k,f){listeners.set(k,listeners.get(k).filter(x=>x!==f));}};
@@ -15,9 +15,10 @@ function harness(restored){
   let app;
   const bridge={S,M,document:doc,getData:()=>data,clock:{now:()=>ms,wall:()=>1760000000000+ms,raf:f=>{rafs.set(++id,f);return id;},caf:i=>rafs.delete(i)},save(){saves++;const current=data.singleStudies.find(s=>s.id===data.singleActive);if(current&&!validatedPhases.has(current.runtime.phase)){S.validateStudy(JSON.parse(JSON.stringify(current)));validatedPhases.add(current.runtime.phase);}return saveOK;},calibrationStatus:()=>({ready,title:ready?'可用':'缺少校准'}),getEnv:()=>({...env}),inputCompatible:(a,b)=>a.ua===b.ua&&a.dpr===b.dpr,getRawMode:()=>raw,getArena:()=>arena,ctx:{},stage:element(),openStage(){},closeStage(){closed++;app.pause('用户返回');},modal:s=>{modal=s;},hideModal(){modal='';},toast(){},requestLock(){doc.pointerLockElement=arena;app.onLocked();},releaseLock(){doc.pointerLockElement=null;},drawScene(ctx,w,h,y,p,target,radius){draw={y,p,target,radius};},actualHFov:()=>100,go(){},fmt:(x,n=2)=>Number.isFinite(x)?x.toFixed(n):'—',esc:String,uid:()=>`test-${id}`,exportJSON(){},adoptCm(){}};
   app=UI.create(bridge);
-  const h={app,data,doc,arena,env,nodes,bridge,get modal(){return modal;},get saves(){return saves;},get closed(){return closed;},get draw(){return draw;},set saveOK(v){saveOK=v;},set raw(v){raw=v;},set ready(v){ready=v;},validatedPhases,get pending(){return rafs.size;},get callbacks(){return [...rafs.values()];},get ms(){return ms;},get s(){return app.activeStudy();},move(dx,dy){for(const f of listeners.get('mousemove')||[])f({movementX:dx,movementY:dy});},step(dt=50){ms+=dt;const batch=[...rafs];rafs.clear();for(const [,f]of batch)f(ms);},jump(dt){ms+=dt;},start(mode='20min'){assert.equal(app.start(mode),true);app.requestLock();},aim(){if(!draw?.target||!app.isActive())return;const s=app.activeStudy(),r=s.runtime,g=s.groups[r.groupIndex],cm=r.phase==='familiar'?s.configSnapshot.baseCm:s.candidates.find(c=>c.id===g.candidateId).cm;const ty=Math.atan2(draw.target[0],draw.target[2]),tp=Math.asin(draw.target[1]);let dy=ty-draw.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));h.move(dy*s.calSnapshot.ux*cm/(2*Math.PI),(draw.p-tp)*s.calSnapshot.uy*cm/(2*Math.PI));arena.fire('mousedown',{button:0});},until(predicate,max=200000){let n=0;while(!predicate()){if(n++>max)throw Error('condition not reached: '+JSON.stringify(h.s?.runtime));h.step();h.aim();}},drive(){let n=0;while(!['done','stopped'].includes(h.s.runtime.phase)){if(n++>50000)throw Error('session did not finish');const r=h.s.runtime;if(r.phase==='rating'){assert.equal(app.rate('3','no'),true);}else if(r.paused){app.resume();app.requestLock();}h.step();h.aim();}return h.s;}};
+  const h={app,data,doc,arena,env,nodes,bridge,get modal(){return modal;},get saves(){return saves;},get closed(){return closed;},get draw(){return draw;},set saveOK(v){saveOK=v;},set raw(v){raw=v;},set ready(v){ready=v;},validatedPhases,get pending(){return rafs.size;},get callbacks(){return [...rafs.values()];},up(){for(const f of listeners.get('mouseup')||[])f({button:0});},get ms(){return ms;},get s(){return app.activeStudy();},move(dx,dy){for(const f of listeners.get('mousemove')||[])f({movementX:dx,movementY:dy});},step(dt=50){ms+=dt;const batch=[...rafs];rafs.clear();for(const [,f]of batch)f(ms);},jump(dt){ms+=dt;},start(mode='20min'){assert.equal(app.start(mode),true);app.requestLock();},aim(){if(!draw?.target||!app.isActive())return;const s=app.activeStudy(),r=s.runtime,g=s.groups[r.groupIndex],cm=['familiar','tutorial','warmup'].includes(r.phase)?s.configSnapshot.baseCm:s.candidates.find(c=>c.id===g.candidateId).cm;const ty=Math.atan2(draw.target[0],draw.target[2]),tp=Math.asin(draw.target[1]);let dy=ty-draw.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));h.move(dy*s.calSnapshot.ux*cm/(2*Math.PI),(draw.p-tp)*s.calSnapshot.uy*cm/(2*Math.PI));arena.fire('mousedown',{button:0});for(const f of listeners.get('mouseup')||[])f({button:0});},until(predicate,max=200000){let n=0;while(!predicate()){if(n++>max)throw Error('condition not reached: '+JSON.stringify(h.s?.runtime));h.step();h.aim();}},startDeep(readMs=120000){assert.equal(app.start('120min'),true);h.jump(readMs);doc.getElementById('singleHardwareSame').checked=true;assert.equal(app.confirmPreflight(),true);app.requestLock();},drive(){let n=0;while(!['done','stopped'].includes(h.s.runtime.phase)){if(n++>200000)throw Error('session did not finish');const r=h.s.runtime;if(r.phase==='rating'){assert.equal(app.rate('3','no'),true);}else if(r.paused){app.resume();app.requestLock();}h.step();h.aim();}return h.s;}};
   return h;
 }
+function driveUntil(h,predicate,rating){let count=0;while(!predicate()){if(count++>250000)throw Error('deep driver limit '+h.s.runtime.phase);const r=h.s.runtime,g=h.s.groups[r.groupIndex];if(r.phase==='rating')h.app.rate(String(rating?rating(h.s,g):3),'no');else if(r.paused){h.app.resume();if(!['initialRest','screenRest','postRest','stageRest','ratingRest','rating','preflight'].includes(r.phase))h.app.requestLock();}h.step();h.aim();}return h.s;}
 
 for(const [mode,seconds,groups]of [['20min',1200,14],['10min',600,7]])test(`${mode}: actual runtime completes exact planned budget and all fixed 12s tasks`,()=>{
   const h=harness();h.start(mode);const s=h.drive();
@@ -151,7 +152,7 @@ test('restored rating pause does not count offline time as rating overtime',()=>
 });
 
 test('all rapid formal clicks count as shots even when too early to be accepted as hits',()=>{
-  const h=harness();h.start('10min');h.until(()=>h.s.runtime.phase==='task'&&h.s.groups[0].taskOrder[h.s.runtime.taskIndex]!=='track');const g=h.s.groups[0],t=g.taskOrder[h.s.runtime.taskIndex];for(let i=0;i<7;i++)h.arena.fire('mousedown',{button:0});h.until(()=>!!h.s.results[g.id].tasks[t]);const b=h.s.results[g.id].tasks[t];assert.ok(b.shots>=b.hits+7);assert.ok(b.accuracy<1);
+  const h=harness();h.start('10min');h.until(()=>h.s.runtime.phase==='task'&&h.s.groups[0].taskOrder[h.s.runtime.taskIndex]!=='track');const g=h.s.groups[0],t=g.taskOrder[h.s.runtime.taskIndex];for(let i=0;i<7;i++){h.arena.fire('mousedown',{button:0});h.up();}h.until(()=>!!h.s.results[g.id].tasks[t]);const b=h.s.results[g.id].tasks[t];assert.ok(b.shots>=b.hits+7);assert.ok(b.accuracy<1);
 });
 
 test('legacy day field takes precedence over old study creation date for same-day pain protection',()=>{
@@ -160,4 +161,57 @@ test('legacy day field takes precedence over old study creation date for same-da
 
 test('opening an abandoned record after a long gap never restarts or deletes its comparison round',()=>{
   const h=harness();h.start('10min');h.until(()=>h.s.runtime.phase==='task'&&h.s.runtime.taskIndex===1);h.bridge.confirm=()=>true;h.app.abandon();const previous=structuredClone(h.s);h.jump(400000);h.app.resume();assert.deepEqual(h.s,previous);assert.equal(h.pending,0);assert.doesNotThrow(()=>S.validateStudy(h.s));
+});
+
+test('deep full runtime completes 6300 seconds of measurement/rest and immediately exposes report',t=>{
+  const h=harness();h.startDeep();const s=h.drive();assert.equal(s.mode,'120min');assert.equal(s.plannedSeconds,7200);assert.equal(s.measurementSeconds,6300);assert.equal(s.timing.plannedElapsedMs,6300000);assert.equal(s.groups.length,13);assert.equal(s.runtime.phase,'done');assert.equal(h.pending,0);assert.equal(s.discardedRounds.length,0);assert.equal(s.preflightSavedSeconds,0);
+  for(const g of s.groups)for(const b of Object.values(s.results[g.id].tasks)){assert.equal(b.duration,g.taskSeconds*1000);assert.equal(b.sessionId,s.id);assert.equal(b.phase,g.stage);assert.equal(b.conditionId,g.candidateId);assert.equal(b.round,g.round);assert.ok(b.trace.length<=g.taskSeconds*5+1);if(b.task==='track'){assert.equal(b.integratedMs,b.duration);assert.ok(b.coveredMs>0);}}
+  assert.equal(s.familiarization.length,8);assert.doesNotThrow(()=>S.validateStudy(s));assert.match(h.nodes.get('singleResultsRoot').innerHTML,/导出本次报告/);assert.match(h.nodes.get('singleResultsRoot').innerHTML,/中位表现/);assert.match(h.nodes.get('singleResultsRoot').innerHTML,/保存为 1 个会话片段/);const json=JSON.stringify(h.data);assert.ok(Buffer.byteLength(json,'utf8')<2*1024*1024,'full synthetic record stays below 2 MiB');assert.ok(json.length*2<4.5*1024*1024);t.diagnostic(`Synthetic 10-hit/s stress record: ${Buffer.byteLength(json,'utf8')} UTF-8 bytes; ${json.length*2} UTF-16 bytes. No per-frame arrays persisted.`);
+});
+
+test('default deep preflight requires hardware confirmation and early completion reduces expected time',()=>{
+  const h=harness();assert.equal(h.app.start(),true);assert.equal(h.s.mode,'120min');assert.equal(h.app.confirmPreflight(),false);assert.match(h.modal,/网页无法自动检测硬件/);assert.match(h.modal,/99%/);h.jump(30000);h.doc.getElementById('singleHardwareSame').checked=true;h.app.confirmPreflight();assert.equal(h.s.preflightSavedSeconds,90);assert.equal(h.s.timing.plannedElapsedMs,30000);assert.equal(h.s.runtime.phase,'tutorial');assert.equal(h.doc.pointerLockElement,null);assert.match(h.nodes.get('singleLabRoot').innerHTML,/118.5/);
+});
+
+test('all four tutorial and warmup tasks operate at baseline without producing formal scores',()=>{
+  const h=harness();h.startDeep(0);h.step();h.aim();h.step();const first=h.draw.target;h.aim();h.step();h.aim();h.step();assert.notDeepEqual(h.draw.target,first,'practice left click advances targets');assert.equal(Object.keys(h.s.results).length,0);h.until(()=>h.s.runtime.phase==='initialRest');
+  assert.deepEqual(h.s.familiarization.map(x=>[x.phase,x.task]),S.TASKS.flatMap(t=>[['tutorial',t],['warmup',t]]));for(const x of h.s.familiarization){assert.equal(x.conditionId,h.s.candidates.find(c=>c.baseline).id);assert.equal(x.seed,h.s.practiceSeed);}assert.equal(Object.keys(h.s.results).length,0);assert.equal(h.doc.pointerLockElement,null);
+});
+
+test('three-minute adaptation covers every task and does not leak scores into results',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='adapt'&&h.app.isActive());const seen=new Set();while(h.s.runtime.phase==='adapt'){h.step();h.aim();seen.add(h.nodes.get('hudTitle').textContent.split(' · ')[0]);}for(const name of ['微调精度','目标切换','连续跟枪','大角度转向'])assert.ok(seen.has(name));assert.equal(Object.keys(h.s.results[h.s.groups[0].id].tasks).length,0);
+});
+
+test('deep two-condition branch is eight retest blocks and 6000 seconds of measurement/rest',()=>{
+  const h=harness();h.startDeep();const allowed=h.s.candidates.find(c=>!c.baseline).id;const s=driveUntil(h,()=>h.s.runtime.phase==='done',(s,g)=>g.stage==='screen'&&!s.candidates.find(c=>c.id===g.candidateId).baseline&&g.candidateId!==allowed?6:3);
+  assert.equal(s.retest.candidateIds.length,2);assert.equal(s.retest.rounds,4);assert.equal(s.groups.length,12);assert.equal(s.measurementSeconds,6000);assert.equal(s.plannedSeconds,6900);assert.equal(s.timing.plannedElapsedMs,6000000);assert.doesNotThrow(()=>S.validateStudy(s));
+});
+
+test('deep no-challenger branch reports insufficient evidence without fake baseline comparisons',()=>{
+  const h=harness();h.startDeep();const s=driveUntil(h,()=>h.s.runtime.phase==='done',(s,g)=>s.candidates.find(c=>c.id===g.candidateId).baseline?3:6);
+  assert.equal(s.retest.noComparison,true);assert.equal(s.retest.rounds,0);assert.equal(s.groups.length,4);assert.equal(s.measurementSeconds,3000);assert.equal(s.timing.plannedElapsedMs,3000000);assert.equal(h.pending,0);assert.match(h.nodes.get('singleResultsRoot').innerHTML,/没有进行伪造的基准自比较/);assert.doesNotThrow(()=>S.validateStudy(s));
+});
+
+test('planned ten-minute rest survives hidden-tab RAF throttling without counting a fault or restarting a round',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='stageRest');const before=structuredClone(h.s.results),segments=h.s.segments.length;h.app.pause('窗口失焦，当前小任务中断');h.app.pause('切换标签页，当前小任务中断');assert.equal(h.s.runtime.paused,false);h.jump(599950);h.step();assert.equal(h.s.runtime.phase,'adapt');assert.equal(h.s.runtime.paused,true);assert.equal(h.doc.pointerLockElement,null);assert.deepEqual(h.s.results,before);assert.equal(h.s.discardedRounds.length,0);assert.equal(h.s.segments.length,segments);assert.equal(h.s.timing.plannedElapsedMs,3600000);
+});
+
+test('rest extensions are explicit extra time and retest rating overtime never cancels its 30-second post-rest',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='stageRest');assert.equal(h.app.extendRest(),true);h.jump(600000);h.step();assert.equal(h.s.runtime.phase,'stageRest');h.jump(60000);h.step();assert.equal(h.s.runtime.phase,'adapt');assert.equal(h.s.timing.extraRestMs,60000);h.app.requestLock();driveUntil(h,()=>h.s.runtime.phase==='rating');h.jump(20000);h.app.rate('3','no');assert.equal(h.s.runtime.phase,'postRest');assert.equal(h.s.runtime.restPlannedMs,30000);assert.equal(h.s.timing.ratingExtraMs,5000);assert.equal(h.doc.pointerLockElement,null);
+});
+
+test('refresh during a legitimate long rest preserves remaining time and records the new segment',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='stageRest');const snapshot=structuredClone(h.data),at=h.ms;h.app.dispose();const r=harness(snapshot,at+240000);assert.equal(r.s.runtime.elapsed,240000);r.app.resume();r.jump(359950);r.step();assert.equal(r.s.runtime.phase,'adapt');assert.equal(r.s.discardedRounds.length,0);assert.equal(r.s.sessionSegment,2);assert.equal(r.s.timing.plannedElapsedMs,3600000);assert.doesNotThrow(()=>S.validateStudy(r.s));
+});
+
+for(const restore of [false,true,'delayed'])test(`post-rest excess absence (${restore==='delayed'?'refresh then delayed resume':restore?'refresh':'background RAF'}) retains old round and restarts only affected pair`,()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='postRest');const at=h.ms,snapshot=structuredClone(h.data);let r=h;if(restore){h.app.dispose();r=harness(snapshot,at+(restore==='delayed'?1000:1200000));if(restore==='delayed')r.jump(1199000);r.app.resume();}else r.jump(1200000);r.step();assert.equal(r.s.runtime.phase,'adapt');assert.equal(r.s.runtime.groupIndex,4);assert.equal(r.s.discardedRounds.length,1);assert.equal(r.s.discardedRounds[0].stage,'retest');assert.ok(r.s.timing.waitMs>=1170000);assert.ok(r.s.sessionSegment>=2);assert.equal(r.doc.pointerLockElement,null);assert.doesNotThrow(()=>S.validateStudy(r.s));
+});
+
+test('sixty-second tracking refresh retains partial metadata but restarts scoring from zero',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='task'&&h.s.groups[h.s.runtime.groupIndex].taskOrder[h.s.runtime.taskIndex]==='track'&&h.s.runtime.elapsed>=30000);const old=structuredClone(h.data),at=h.ms;h.app.dispose();const r=harness(old,at+1000);const a=r.s.attempts.at(-1);assert.equal(a.type,'technical');assert.equal(a.phase,'screen');assert.equal(a.sessionId,r.s.id);assert.equal(a.partial.task,'track');assert.equal(r.s.runtime.elapsed,0);r.app.resume();r.app.requestLock();r.until(()=>r.s.runtime.phase!=='task');const b=r.s.results[r.s.groups[0].id].tasks.track;assert.equal(b.duration,60000);assert.equal(b.integratedMs,60000);assert.equal(b.sessionSegment,2);assert.doesNotThrow(()=>S.validateStudy(r.s));
+});
+
+test('deep ongoing report hides condition scores and held or untrusted clicks provide no repeated presses',()=>{
+  const h=harness();h.startDeep();driveUntil(h,()=>h.s.runtime.phase==='task'&&h.s.groups[0].taskOrder[h.s.runtime.taskIndex]!=='track');h.up();for(let i=0;i<10;i++)h.arena.fire('mousedown',{button:0});h.up();h.arena.fire('mousedown',{button:0,isTrusted:false});assert.equal(h.s.inputCheck.ignoredRepeatedClicks,10);h.app.pause('用户主动暂停');assert.equal(h.s.interruptions.at(-1).phase,'screen');assert.equal(h.s.interruptions.at(-1).runtimePhase,'task');assert.doesNotThrow(()=>S.validateStudy(h.s));h.app.renderResults();const html=h.nodes.get('singleResultsRoot').innerHTML;assert.match(html,/测试结束前不展示条件成绩/);assert.doesNotMatch(html,/四项原始表现|命中\/秒|综合相对表现|<table/);
 });

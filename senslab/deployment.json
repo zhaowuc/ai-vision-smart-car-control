@@ -1,14 +1,15 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "build_status": "local-only",
   "publication_status": "not published by this build",
   "online_verification": "not verified by build; no public deployment claimed",
-  "html_sha256": "2cbe8af95ea48272fd66bc7b790fc61a7a39a8223b7c9e62b2aa941ca75d5d55",
-  "gzip_sha256": "7e5f984ea3e6857c2c67a5474a2bd06625c079c033d41deaccc18ef5df59b03e",
+  "html_sha256": "1369570a4e21c8209401fa474c4a158beae35599e30f6141b87c801e23edfc13",
+  "gzip_sha256": "6802f6c3b9f48ea4acacf983a4d8d167f404384294af38ac2e258cf0713fbc5b",
+  "gzip_git_blob_sha": "b4f250236af98026088f0bf6496715cdbc4c1e78",
   "source": {
     "repo": "zhaowuc/ai-vision-smart-car-control",
     "branch": "senslab-personal-20261017",
-    "base_commit": "b17ee236834f369982b41c153e4b076480b8081b",
+    "base_commit": "86f29a743e5656c4e4c1d437e26d115b635da4d3",
     "note": "Original repository state; local changes are not represented by this commit."
   }
 }

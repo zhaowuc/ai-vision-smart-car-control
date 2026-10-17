@@ -7,7 +7,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / 'src'
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 REQUIRED_SCRIPTS = ['onboarding.js', 'core.js', 'session-core.js', 'session-ui.js', 'app.js']
 CHUNK_NAMES = [f'app-{i:02}.bin' for i in range(1, 9)]
 
@@ -66,10 +66,16 @@ def main():
     raw = build_html()
     packed = gzip.compress(raw, compresslevel=9, mtime=0)
     digest = hashlib.sha256(raw).hexdigest()
+    packed_blob = hashlib.sha1(f'blob {len(packed)}\0'.encode('ascii') + packed).hexdigest()
     loader = (ROOT / 'index.html').read_text(encoding='utf-8')
+    loader = re.sub(r'<title>SensLab Personal[^<]*</title>', f'<title>SensLab Personal {VERSION} · 120分钟深度实验</title>', loader)
+    loader = re.sub(r'PERSONAL AIM RESEARCH / [0-9.]+', f'PERSONAL AIM RESEARCH / {VERSION}', loader)
     loader, count = re.subn(r"const expected='[0-9a-f]{64}'", f"const expected='{digest}'", loader)
     if count != 1:
         raise ValueError('Expected one integrity hash in index.html')
+    loader, count = re.subn(r"const packedBlob='[0-9a-f]{40}'", f"const packedBlob='{packed_blob}'", loader)
+    if count != 1:
+        raise ValueError('Expected one packed Git blob hash in index.html')
     if 'upgrade-v102.js' in loader or 'ux.js' in loader or 'SensLabUpgradeV102' in loader:
         raise ValueError('Loader must not apply historical runtime patches')
     restore = (ROOT / 'restore.py').read_text(encoding='utf-8')
@@ -85,15 +91,17 @@ def main():
         manifest.append({'file': name, 'bytes': len(chunk),
                          'sha256': hashlib.sha256(chunk).hexdigest(),
                          'git_blob_sha': hashlib.sha1(f'blob {len(chunk)}\0'.encode('ascii') + chunk).hexdigest()})
-    artifacts['transport-manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode('utf-8')
+    artifacts['transport-manifest.json'] = (json.dumps({'version': VERSION, 'html_sha256': digest,
+        'gzip_git_blob_sha': packed_blob, 'chunks': manifest}, indent=2) + '\n').encode('utf-8')
     deployment = {
         'version': VERSION, 'build_status': 'local-only',
         'publication_status': 'not published by this build',
         'online_verification': 'not verified by build; no public deployment claimed',
         'html_sha256': digest, 'gzip_sha256': hashlib.sha256(packed).hexdigest(),
+        'gzip_git_blob_sha': packed_blob,
         'source': {'repo': 'zhaowuc/ai-vision-smart-car-control',
                    'branch': 'senslab-personal-20261017',
-                   'base_commit': 'b17ee236834f369982b41c153e4b076480b8081b',
+                   'base_commit': '86f29a743e5656c4e4c1d437e26d115b635da4d3',
                    'note': 'Original repository state; local changes are not represented by this commit.'},
     }
     artifacts['deployment.json'] = (json.dumps(deployment, indent=2) + '\n').encode('utf-8')

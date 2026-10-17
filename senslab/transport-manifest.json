@@ -1,50 +1,55 @@
-[
-  {
-    "file": "app-01.bin",
-    "bytes": 9901,
-    "sha256": "1e0a9f614075d230dad763a247e2db5ce70e7054f8985a5c59962497007a4221",
-    "git_blob_sha": "dc8fee4b6006cc1ea04bc753e4b402721ad4303b"
-  },
-  {
-    "file": "app-02.bin",
-    "bytes": 9901,
-    "sha256": "112456d77632ea1b99ee9b21acab4c9d06cb1f9828bcde1be8e6b5558857be04",
-    "git_blob_sha": "1f13210b58df3d40e9e969ff09ba7ab551ea7ed1"
-  },
-  {
-    "file": "app-03.bin",
-    "bytes": 9901,
-    "sha256": "f68cf4c98bf72d39919b75223022f7b516307a1bc3b9f28aca652d62069a11dd",
-    "git_blob_sha": "54eed7c008e272a16f35d65ea48fcde8f27a57ed"
-  },
-  {
-    "file": "app-04.bin",
-    "bytes": 9902,
-    "sha256": "84ceaccbc15ba0e7fa0ef3e8c82e91cae11899165f49a54f4103a285d7f21e4e",
-    "git_blob_sha": "589369f4cafd9554a45ba31ecd3e4723edaba53b"
-  },
-  {
-    "file": "app-05.bin",
-    "bytes": 9901,
-    "sha256": "eb9b35b730f4e497c4abc89838e992ebaf5029ab5a7c80ee1b9281783bf544c9",
-    "git_blob_sha": "6608da5b100efabf40eca3018ca07e1fc9b277cd"
-  },
-  {
-    "file": "app-06.bin",
-    "bytes": 9901,
-    "sha256": "c242526437d4121cfe8a09adff1db5ac346a9e779508e2d32beb7929f33f1d02",
-    "git_blob_sha": "34815125c057698341460b632096b195414f410a"
-  },
-  {
-    "file": "app-07.bin",
-    "bytes": 9901,
-    "sha256": "c51600dc96267c8e5f99da5fbecc108e45a3783f87c3e251506a6016418cf6a0",
-    "git_blob_sha": "fe237396db8fe81df58152bfc6e9b0c0150a9805"
-  },
-  {
-    "file": "app-08.bin",
-    "bytes": 9902,
-    "sha256": "7db28b5dbadca0f7e4b19757a09d79f97a14ecdcb23f8e56f1a4d9b33b800d2e",
-    "git_blob_sha": "bb1840da9eb46e8dbc8a456741edc1f58c99a362"
-  }
-]
+{
+  "version": "1.2.0",
+  "html_sha256": "1369570a4e21c8209401fa474c4a158beae35599e30f6141b87c801e23edfc13",
+  "gzip_git_blob_sha": "b4f250236af98026088f0bf6496715cdbc4c1e78",
+  "chunks": [
+    {
+      "file": "app-01.bin",
+      "bytes": 11164,
+      "sha256": "f8d97417c32e04405e1bb503acd1d4105b94834bda04789e1a1739e2b497d7df",
+      "git_blob_sha": "5160e65a6bd0bb2fb0621173574785d3bd05c946"
+    },
+    {
+      "file": "app-02.bin",
+      "bytes": 11165,
+      "sha256": "925ed64e899ffd61a2b78973cf327d5b00b9a0b26bd62031fb5a5131c218c25b",
+      "git_blob_sha": "f4896881773c06af8e0585c45f70cb5db3e72a5b"
+    },
+    {
+      "file": "app-03.bin",
+      "bytes": 11164,
+      "sha256": "fa228669d0e877b39a100f8f83abdbd9a4bdaefcd8937c0e101212211e8ebf3a",
+      "git_blob_sha": "c9004f8ac027fcc27bb4eadb7e70eb971f06e60b"
+    },
+    {
+      "file": "app-04.bin",
+      "bytes": 11165,
+      "sha256": "7f507b323730eb57ede360147ad6dfad15fb0435e15861640b83479d2a33fb71",
+      "git_blob_sha": "3de15d35301586babfc791a8f00fc49f0102b10c"
+    },
+    {
+      "file": "app-05.bin",
+      "bytes": 11164,
+      "sha256": "419f49c17abc3683c426b79597ba12fa32d98c5f7119e89a248797175030a1f4",
+      "git_blob_sha": "b8000467521d50710a09ca866b7a1dc2823286b0"
+    },
+    {
+      "file": "app-06.bin",
+      "bytes": 11165,
+      "sha256": "5460887813913f97f7e945928b2d2355bc366e95959113458cb6aeec3f01e421",
+      "git_blob_sha": "41ff80c0d9f63825efe2088988e8f6a462b61013"
+    },
+    {
+      "file": "app-07.bin",
+      "bytes": 11164,
+      "sha256": "891bc19e6cd9b4743cb5c951067b3b1bed8a2ca45441517c5febac0abbe7aa03",
+      "git_blob_sha": "afb82bedd68f722c2bec791a2457cee38f4b5061"
+    },
+    {
+      "file": "app-08.bin",
+      "bytes": 11165,
+      "sha256": "5656000bb4b44c915e20db5c2b3177f611e7459a03e5af0931bcac7d24b19718",
+      "git_blob_sha": "e6b13d52ce89bf0eb7a6d227089f16ad782e9fff"
+    }
+  ]
+}

@@ -8,9 +8,9 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const near=(a,b,e=1e-8)=>assert.ok(Math.abs(a-b)<=e,`${a} != ${b}`);
 const create=mode=>S.createStudy({mode:mode||'20min',config,calibration:cal,seed:1776,now:'2026-10-17T08:00:00Z',id:'synthetic',provenance:{swipe:'estimated'}});
 function complete(study,group,factor=1,options={}){
-  const tasks={};
-  for(const task of S.TASKS){const hits=Math.round(12*factor),shots=Math.ceil(hits/.8),track=task==='track';tasks[task]={valid:true,score:track?.4*factor:hits/12,accuracy:track?.4*factor:(shots?hits/shots:0),duration:12000,hits:track?0:hits,shots:track?0:shots,timeouts:0,meanAcquireMs:track?null:800/factor,rmsDeg:track?1:null,raw:'requested',trials:[],trace:[]};}
-  study.results[group.id]={tasks,rating:{effort:options.effort??3,pain:options.pain??false},completedAt:'2026-10-17T08:01:00Z'};
+  const tasks={},deep=study.mode==='120min',seconds=group.taskSeconds,meta=deep?S.recordMeta(study,group):{};
+  for(const task of S.TASKS){const hits=Math.round(seconds*factor),shots=Math.ceil(hits/.8),track=task==='track';tasks[task]={...meta,...(deep?{task,seed:group.seed,coveredMs:track?.4*factor*seconds*1000:0,integratedMs:track?seconds*1000:0}:{}),valid:true,score:track?.4*factor:hits/seconds,accuracy:track?.4*factor:(shots?hits/shots:0),duration:seconds*1000,hits:track?0:hits,shots:track?0:shots,timeouts:0,meanAcquireMs:track?null:800/factor,rmsDeg:track?1:null,raw:'requested',trials:[],trace:[]};}
+  study.results[group.id]={...meta,tasks,rating:{...meta,effort:options.effort??3,pain:options.pain??false},completedAt:'2026-10-17T08:01:00Z'};
 }
 function screened(mode){const study=create(mode),base=study.candidates.find(c=>c.baseline),others=study.candidates.filter(c=>!c.baseline);for(const group of study.groups){const factor=group.candidateId===base.id?1:group.candidateId===others[0].id?1.25:group.candidateId===others[1]?.id?1.1:1;complete(study,group,factor)}return study;}
 function retested(mode,factor=1.25){const study=screened(mode);S.freezeRetest(study,{now:'2026-10-17T08:08:00Z'});for(const group of study.groups.filter(g=>g.stage==='retest'))complete(study,group,study.candidates.find(c=>c.id===group.candidateId).baseline?1:factor);return study;}
@@ -177,4 +177,108 @@ test('voluntary end requires a matching phase, explicit reason and valid end tim
 
 test('ending during final short rest does not turn complete raw scores into a recommendation',()=>{
   const study=abandonedFixture(retested()),records=clone(study.results);S.validateStudy(study);const analysis=S.analyze(study);assert.equal(analysis.status,'abandoned');assert.equal(analysis.recommendation.action,'insufficient');assert.match(analysis.recommendation.reason,/主动结束/);assert.equal(analysis.pairedRounds,3);assert.deepEqual(study.results,records);
+});
+
+function deepScreen(challengers=2){
+  const study=screened('120min'),allowed=study.candidates.filter(c=>!c.baseline).slice(0,challengers).map(c=>c.id);
+  for(const group of study.groups)if(!study.candidates.find(c=>c.id===group.candidateId).baseline&&!allowed.includes(group.candidateId))study.results[group.id].rating.effort=9;
+  return study;
+}
+function deepRetest(challengers=2,factor=1.2){const study=deepScreen(challengers);S.freezeRetest(study,{now:'2026-10-17T08:50:00Z'});for(const g of study.groups.filter(g=>g.stage==='retest'))complete(study,g,study.candidates.find(c=>c.id===g.candidateId).baseline?1:factor);return study;}
+function deepRuntime(study=create('120min')){runtimeFixture(study);study.runtime.phase='preflight';study.runtime.preflightStartedAt=study.runtime.createdWall;study.runtime.practiceIndex=0;study.timing.extraRestMs=0;return study;}
+
+test('deep protocol reserves 120 minutes but unlocks the report after 105 minutes of measurement and rest',()=>{
+  const p=S.plan('120min'),study=create('120min');assert.equal(p.totalSeconds,7200);assert.equal(p.measurementSeconds,6300);assert.equal(p.reportReserveSeconds,900);assert.equal(study.plannedSeconds,7200);assert.equal(study.measurementSeconds,6300);assert.equal(study.protocolVersion,S.DEEP_VERSION);
+  assert.equal(p.preflightSeconds+4*(p.tutorialSecondsEach+p.warmupSecondsEach)+p.initialRestSeconds,900);assert.equal(p.screenSeconds,2100);assert.equal(p.breakSeconds,600);assert.equal(p.retestSeconds,2700);
+});
+
+test('deep group steps account for every transition and mandatory rest exactly once',()=>{
+  const study=deepRetest(),screen=study.groups.filter(g=>g.stage==='screen'),retest=study.groups.filter(g=>g.stage==='retest');
+  assert.equal(screen.reduce((sum,g)=>sum+g.plannedSeconds+g.betweenRestSeconds,0),2100);assert.deepEqual(screen.map(g=>g.betweenRestSeconds),[60,60,60,0]);assert.equal(retest.reduce((sum,g)=>sum+g.plannedSeconds,0),2700);
+  for(const g of study.groups){assert.equal(S.groupSteps(g).reduce((sum,s)=>sum+s.seconds,0),g.plannedSeconds);assert.equal(g.taskSeconds,g.stage==='screen'?60:45);assert.equal(S.groupSteps(g).filter(s=>s.kind==='transition').length,3);assert.equal(g.postRestSeconds,g.stage==='screen'?0:30);}
+});
+
+test('deep candidates use the live base, preserve it and disclose software bounds without duplicates',()=>{
+  assert.deepEqual(S.candidates(75.2,'120min',1).map(c=>c.cm),[94,75.2,60.16,48.128]);assert.deepEqual(S.candidates(50,'120min',1).map(c=>c.cm),[62.5,50,40,32]);
+  for(const baseCm of [5,250]){const s=S.createStudy({mode:'120min',config:{...config,baseCm,swipe:5},calibration:cal,seed:1});assert.ok(s.candidates.some(c=>c.baseline&&c.cm===baseCm));assert.equal(new Set(s.candidates.map(c=>c.cm)).size,s.candidates.length);assert.ok(s.candidateWarnings.length);assert.ok(s.plannedSeconds<7200);S.validateStudy(s);}
+});
+
+test('old v1 studies keep their version, budgets, candidates and minimum data rules',()=>{
+  for(const mode of ['10min','20min']){const study=retested(mode);assert.equal(study.protocolVersion,S.VERSION);assert.equal(study.plannedSeconds,mode==='10min'?600:1200);assert.equal(S.qualityFor(study,study.groups[0]).minimumDurationMs,11900);assert.equal(S.validateStudy(study),study);assert.equal(S.analyze(study).recommendation.action,'try-candidate');}
+  const wrong=create('120min');wrong.protocolVersion=S.VERSION;assert.throws(()=>S.validateStudy(wrong));const old=create();old.protocolVersion=S.DEEP_VERSION;assert.throws(()=>S.validateStudy(old));
+});
+
+test('deep labels, order, task order and all separate seeds reproduce from the saved design seed',()=>{
+  const first=deepRetest(),second=deepRetest();assert.deepEqual(first.candidates,second.candidates);assert.deepEqual(first.groups,second.groups);
+  const formal=[...new Set(first.groups.map(g=>g.seed))];assert.equal(formal.length,4);assert.ok(!formal.includes(first.practiceSeed));
+  for(const round of [0,1,2,3]){const rows=first.groups.filter(g=>g.round===round);assert.equal(new Set(rows.map(g=>g.seed)).size,1);assert.equal(new Set(rows.map(g=>g.adaptSeed)).size,1);assert.equal(new Set(rows.map(g=>g.taskOrder.join(','))).size,1);assert.ok(!formal.includes(rows[0].adaptSeed));assert.notEqual(rows[0].adaptSeed,first.practiceSeed);}
+});
+
+test('three-condition deep retest uses three complete Latin rounds',()=>{
+  const study=deepRetest(),rounds=[1,2,3].map(r=>study.groups.filter(g=>g.stage==='retest'&&g.round===r).map(g=>g.candidateId));assert.equal(study.retest.rounds,3);assert.equal(study.retest.candidateIds.length,3);for(const id of rounds[0])assert.equal(new Set(rounds.map(r=>r.indexOf(id))).size,3);S.validateStudy(study);
+});
+
+test('one challenger produces four balanced paired rounds and a 115-minute total budget',()=>{
+  const study=deepRetest(1),rounds=[1,2,3,4].map(r=>study.groups.filter(g=>g.stage==='retest'&&g.round===r).map(g=>g.candidateId));assert.equal(study.retest.rounds,4);assert.equal(study.groups.filter(g=>g.stage==='retest').length,8);assert.deepEqual(rounds[0],rounds[3]);assert.deepEqual(rounds[1],rounds[2]);assert.deepEqual(rounds[0].slice().reverse(),rounds[1]);assert.equal(study.measurementSeconds,6000);assert.equal(study.plannedSeconds,6900);assert.equal(S.analyze(study).requiredRounds,4);S.validateStudy(study);
+});
+
+test('no challenger ends honestly after screening without a fake baseline comparison or stage break',()=>{
+  const study=deepRetest(0),a=S.analyze(study);assert.equal(study.retest.rounds,0);assert.equal(study.retest.noComparison,true);assert.equal(study.groups.length,4);assert.equal(study.status,'insufficient');assert.equal(study.measurementSeconds,3000);assert.equal(study.plannedSeconds,3900);assert.equal(a.status,'no-comparison');assert.equal(a.recommendation.action,'insufficient');assert.equal(a.pairedRounds,0);assert.match(a.recommendation.reason,/没有进行伪造/);S.validateStudy(study);
+});
+
+test('deep final analysis excludes screen records and reports median and observed range without CIs',()=>{
+  const study=deepRetest(),before=S.analyze(study);for(const g of study.groups.filter(g=>g.stage==='screen'))complete(study,g,.5);const after=S.analyze(study);assert.deepEqual(after.rows.map(x=>x.relative),before.rows.map(x=>x.relative));assert.equal(after.ci,null);assert.equal(after.confidence,null);assert.ok(after.rows.every(x=>x.medianRelative!==null&&x.observedRange.length===2&&x.ci===null));assert.ok(after.rows.every(x=>x.raw.micro.scoreMedian!==null));
+});
+
+test('deep observed median is distinct from its geometric recommendation score',()=>{
+  const study=deepRetest();for(const g of study.groups.filter(g=>g.stage==='retest'&&!study.candidates.find(c=>c.id===g.candidateId).baseline))complete(study,g,[1,1.2,1.4][g.round-1]);const row=S.analyze(study).rows.find(r=>!r.baseline);near(row.medianRelative,1.2);near(row.observedRange[0],1);near(row.observedRange[1],1.4);assert.notEqual(row.relative,row.medianRelative);
+});
+
+test('deep quality applies 99 percent of the actual 60- and 45-second task budgets',()=>{
+  const study=deepRetest(),screen=study.groups[0],retest=study.groups.find(g=>g.stage==='retest');assert.equal(S.qualityFor(study,screen).minimumDurationMs,59400);assert.equal(S.qualityFor(study,retest).minimumDurationMs,44550);
+  study.results[retest.id].tasks.micro.duration=44550;assert.notEqual(S.analyze(study).recommendation.action,'insufficient');study.results[retest.id].tasks.micro.duration=44549;assert.equal(S.analyze(study).recommendation.action,'insufficient');study.results[retest.id].tasks.micro.duration=12000;assert.equal(S.analyze(study).recommendation.action,'insufficient');
+});
+
+test('deep zero scores, low samples, missing data and one-round precision losses cannot produce a winner',()=>{
+  for(const mutate of [b=>{b.score=0;b.hits=0},b=>{b.hits=2;b.shots=5},b=>{b.hits=3;b.shots=4},b=>{b.raw='fallback'}]){const s=deepRetest(),g=s.groups.find(g=>g.stage==='retest');mutate(s.results[g.id].tasks.micro);assert.equal(S.analyze(s).recommendation.action,'insufficient');}
+  const s=deepRetest();for(const g of s.groups.filter(g=>g.stage==='retest'&&g.round===2&&!s.candidates.find(c=>c.id===g.candidateId).baseline))s.results[g.id].tasks.micro.accuracy=.1;assert.equal(S.analyze(s).recommendation.action,'keep-baseline');
+});
+
+test('deep inconsistent rounds disclose uncertainty and preserve later low scores',()=>{
+  const s=deepRetest(),before=Object.keys(s.results).length;for(const g of s.groups.filter(g=>g.stage==='retest'&&g.round===3&&!s.candidates.find(c=>c.id===g.candidateId).baseline))complete(s,g,.95);const a=S.analyze(s);assert.equal(a.recommendation.action,'keep-baseline');assert.equal(a.inconsistent,true);assert.match(a.recommendation.reason,/尚未稳定区分/);assert.equal(Object.keys(s.results).length,before);
+});
+
+test('deep saved metadata prevents results from being relabeled as another round, condition or session',()=>{
+  for(const mutate of [s=>{s.sessionId='another'},s=>{s.results[s.groups[0].id].sessionSegment=2},s=>{s.results[s.groups[0].id].tasks.micro.round=9},s=>{s.results[s.groups[0].id].tasks.micro.conditionId='fake'},s=>{s.results[s.groups[0].id].rating.phase='retest'},s=>{s.results[s.groups[0].id].tasks.micro.seed++}]){const s=deepRetest();mutate(s);assert.throws(()=>S.validateStudy(s));}
+});
+
+test('deep backup validation rejects changed frozen rules, budgets, order and reused adaptation seeds',()=>{
+  for(const mutate of [s=>{s.protocolConfig.stageRestSeconds=0},s=>{s.qualityRules.minimumHits=0},s=>{s.retest.rounds=2},s=>{s.groups[0].betweenRestSeconds=0},s=>{s.groups[0].adaptSeed=s.groups[0].seed},s=>{s.groups[4].postRestSeconds=0},s=>{s.measurementSeconds=7200},s=>{s.retest.qualityRules.minimumShots=0}]){const s=deepRetest();mutate(s);assert.throws(()=>S.validateStudy(s));}
+  const s=deepRetest(1),second=s.groups.filter(g=>g.round===2);[second[0].candidateId,second[1].candidateId]=[second[1].candidateId,second[0].candidateId];assert.throws(()=>S.validateStudy(s));
+});
+
+test('long-task trace data validate within 60 seconds and reject invalid time or coverage',()=>{
+  const s=deepRetest(),g=s.groups[0],b=s.results[g.id].tasks.track;b.trace=Array.from({length:300},(_,i)=>[(i+1)*200,1]);S.validateStudy(s);b.trace.push([60200,1]);S.validateStudy(s);b.trace.push([60400,1]);assert.throws(()=>S.validateStudy(s));
+  const d=deepRetest(),t=d.results[d.groups[0].id].tasks.track;t.coveredMs=t.duration+1;assert.throws(()=>S.validateStudy(d));
+});
+
+test('deep UI phases, early preflight savings and no-comparison completion restore without erasing data',()=>{
+  for(const phase of ['preflight','tutorial','warmup','initialRest','screenRest']){const s=deepRuntime();s.runtime.phase=phase;s.preflightSavedSeconds=100;if(['initialRest','screenRest'].includes(phase)){s.runtime.restPlannedMs=phase==='initialRest'?180000:60000;s.runtime.extraRest=0;s.runtime.restNext='adapt';}assert.equal(S.validateStudy(s),s);}
+  const s=deepRuntime(deepRetest(0));s.runtime.phase='done';s.runtime.groupIndex=s.groups.length;s.runtime.paused=false;s.completedAt='2026-10-17T09:00:00Z';S.validateStudy(s);assert.equal(S.analyze(s).recommendation.action,'insufficient');
+  for(const mutate of [s=>{s.runtime.practiceIndex=4},s=>{s.preflightSavedSeconds=121},s=>{s.timing.extraRestMs=-1},s=>{s.runtime.restNext='fake'},s=>{delete s.runtime.preflightStartedAt},s=>{s.runtime.phase='initialRest'}]){const d=deepRuntime();mutate(d);assert.throws(()=>S.validateStudy(d));}
+});
+
+test('deep audit stores interruption category and segment without altering saved scores',()=>{
+  const s=deepRuntime(deepRetest()),g=s.groups[0],saved=clone(s.results);s.sessionSegment=2;s.interruptions=[{type:'technical',reason:'窗口变化',created:'2026-10-17T09:00:00Z',phase:'task',sessionSegment:2,elapsed:2000}];s.attempts.push({...S.recordMeta(s,g),groupId:g.id,task:'micro',reason:'锁定丢失',created:'2026-10-17T09:00:00Z',valid:false,partial:null});S.validateStudy(s);assert.deepEqual(s.results,saved);s.interruptions[0].type='best-score-retry';assert.throws(()=>S.validateStudy(s));
+});
+
+test('deep near candidates, boundary leaders, gain arithmetic and drift remain descriptive',()=>{
+  const equal=S.analyze(deepRetest(2,1));assert.equal(equal.recommendation.action,'keep-baseline');assert.ok(equal.near.length>1);
+  const s=deepRetest(),a=S.analyze(s);assert.equal(a.boundary,true);near(a.rows.find(r=>r.cm===94).angleGain,.8);near(a.rows.find(r=>r.cm===60.16).angleGain,1.25);
+  const baseline=s.candidates.find(c=>c.baseline);for(const g of s.groups.filter(g=>g.stage==='retest'&&g.round===3&&g.candidateId===baseline.id))complete(s,g,.7);const before=clone(s.results),drift=S.analyze(s).drift;assert.equal(drift.flagged,true);assert.ok(drift.roundChange<0);assert.deepEqual(s.results,before);
+});
+
+test('deep pain blocks selection and final recommendation without discarding records',()=>{
+  const screen=deepScreen();screen.results[screen.groups[0].id].rating.pain=true;assert.throws(()=>S.freezeRetest(screen),/疼痛/);
+  const study=deepRetest(),group=study.groups.at(-1);study.results[group.id].rating.pain=true;assert.equal(S.analyze(study).recommendation.action,'insufficient');assert.equal(S.analyze(study).status,'pain-stop');assert.ok(study.results[group.id]);
 });
